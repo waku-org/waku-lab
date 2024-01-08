@@ -4,6 +4,7 @@
 
 This repository is dedicated for proof of concepts, examples and research done around core Waku libraries. 
 
+Repo is hosted at https://lab.waku.org/
 See https://examples.waku.org/ for more examples.
 
 ### Web Chat App

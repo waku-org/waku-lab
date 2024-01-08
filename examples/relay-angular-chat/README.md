@@ -10,13 +10,13 @@
 
 A barebone messaging app to illustrate the seamless integration of `js-waku` into AngularJS.
 
-The `master` branch's HEAD is deployed at https://examples.waku.org/relay-angular-chat/.
+The `master` branch's HEAD is deployed at https://lab.waku.org/relay-angular-chat/.
 
 To run a development version locally, do:
 
 ```shell
 git clone https://github.com/waku-org/js-waku-examples
-cd js-waku-examples/examples/relay-angular-chat
+cd waku-lab/examples/relay-angular-chat
 npm install
 npm start
 ```

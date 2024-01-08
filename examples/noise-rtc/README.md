@@ -9,3 +9,5 @@ What should be done:
 - `TURN` server: similarly to prev point we should be able to cover a need to create WebRTC connection for users who are behind secure `NAT` and are not able to communicated just as it is.
 
 Additional reading that explains why `STUN/TURN` is not easily removable from the equation: https://github.com/libp2p/specs/pull/497/files#diff-2cb0b0dcc282bd123b21f5a0610e8a01b516fc453b95c655cf7e16734f2f7b11R48-R53
+
+The `master` branch's HEAD is deployed at https://lab.waku.org/noise-rtc/
