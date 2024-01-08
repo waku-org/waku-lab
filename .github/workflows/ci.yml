@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+
+jobs:
+  examples_build_and_test:
+    strategy:
+      fail-fast: false
+      matrix:
+        example:
+          [
+            relay-angular-chat,
+            relay-reactjs-chat,
+            web-chat,
+            noise-js,
+            noise-rtc,
+            relay-direct-rtc
+          ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: "*/package-lock.json"
+
+      - name: install
+        run: npm install
+        working-directory: "examples/${{ matrix.example }}"
+
+      - name: build
+        run: npm run build
+        working-directory: "examples/${{ matrix.example }}"
+
+      - name: test
+        run: npm run test --if-present
+        working-directory: "examples/${{ matrix.example }}"
