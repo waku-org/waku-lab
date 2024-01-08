@@ -11,13 +11,13 @@
 
 A ReactJS chat app is provided as a showcase of the library used in the browser.
 It implements [Waku v2 Toy Chat](https://rfc.vac.dev/spec/22/) protocol.
-A deployed version is available at https://examples.waku.org/web-chat/.
+A deployed version is available at https://lab.waku.org/web-chat/.
 
 To run a development version locally, do:
 
 ```shell
-git clone https://github.com/waku-org/js-waku-examples
-cd js-waku-examples/examples/web-chat
+git clone https://github.com/waku-org/waku-lab
+cd waku-lab/examples/web-chat
 npm install
 npm run start
 ```
