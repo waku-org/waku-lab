@@ -19,7 +19,6 @@ pipeline {
     SITE_DOMAIN = 'examples.waku.org'
     GIT_AUTHOR_NAME = 'status-im-auto'
     GIT_AUTHOR_EMAIL = 'auto@status.im'
-    GIT_SSH_COMMAND = 'ssh -o StrictHostKeyChecking=no'
     PUPPETEER_SKIP_DOWNLOAD = 'true'
   }
 
