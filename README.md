@@ -2,10 +2,10 @@
 
 ## Description
 
-This repository is dedicated for proof of concepts, examples and research done around core Waku libraries. 
+This repository is dedicated to experimental proof of concepts and research related to js-waku libraries.
 
-Repo is hosted at https://lab.waku.org/
-See https://examples.waku.org/ for more examples.
+Webapps in this repo are hosted at https://lab.waku.org/
+For ready-to-use examples to build with js-waku. Go to https://examples.waku.org/
 
 ### Web Chat App
 
