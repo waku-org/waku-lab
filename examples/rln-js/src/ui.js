@@ -6,6 +6,8 @@ const nickInput = document.getElementById("nick");
 const textInput = document.getElementById("text");
 const sendButton = document.getElementById("send");
 
+const connectWalletButton = document.getElementById("connect");
+
 export const initUI = () => {
   const onStatusChange = (newStatus, className) => {
     status.innerText = newStatus;
@@ -27,26 +29,32 @@ export const initUI = () => {
   };
 
   const registerEvents = (events) => {
-    events.onSubscribe((nick, text, time, validation) => {
-      _renderMessage(nick, text, time, validation);
-    });
+    connectWalletButton.addEventListener("click", async () => {
+      await events.connectWallet();
+      await events.onInitWaku();
 
-    sendButton.addEventListener("click", async () => {
-      const nick = nickInput.value;
-      const text = textInput.value;
+      onLoaded();
 
-      if (!nick || !text) {
-        console.log("Not sending message: missing nick or text.");
-        return;
-      }
-
-      await events.onSend(nick, text);
-      textInput.value = "";
+      events.onSubscribe((nick, text, time, validation) => {
+        _renderMessage(nick, text, time, validation);
+      });
+  
+      sendButton.addEventListener("click", async () => {
+        const nick = nickInput.value;
+        const text = textInput.value;
+  
+        if (!nick || !text) {
+          console.log("Not sending message: missing nick or text.");
+          return;
+        }
+  
+        await events.onSend(nick, text);
+        textInput.value = "";
+      });
     });
   };
 
   return {
-    onLoaded,
     registerEvents,
     onStatusChange,
   };

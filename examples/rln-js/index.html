@@ -110,12 +110,15 @@
 
       .pairingInfo button {
         flex-grow: 1;
-        cursor: pointer;
-        padding: 10px;
       }
 
       .pairingInfo button + button {
         margin-left: 5px;
+      }
+
+      button {
+        cursor: pointer;
+        padding: 10px;
       }
 
       .chatArea {
@@ -141,6 +144,15 @@
         padding: 5px;
         margin-bottom: 10px;
       }
+
+      .mb-1 {
+        margin-bottom: 1rem;
+      }
+
+      .status {
+        display: flex;
+        justify-content: space-between;
+      }
     </style>
   </head>
   <body>
@@ -150,6 +162,7 @@
           <b>Status:</b>
           <span id="status" class="progress">Starting...</span>
         </h3>
+        <button id="connect" class="mb-1">Connect wallet</button>
       </div>
 
       <div class="chatArea" id="chat-area" style="display: none">

@@ -1,7 +1,5 @@
 import { createRLN, extractMetaMaskSigner } from "@waku/rln";
 
-import { KEYSTORE, MEMBERSHIP_HASH, MEMBERSHIP_PASSWORD } from "./const";
-
 export async function initRLN(onStatusChange) {
   onStatusChange("Initializing RLN...");
 
@@ -27,14 +25,7 @@ export async function initRLN(onStatusChange) {
 
     try {
       onStatusChange("Connecting to Ethereum...");
-      await rln.start({
-        signer,
-        credentials: {
-          keystore: KEYSTORE,
-          id: MEMBERSHIP_HASH,
-          password: MEMBERSHIP_PASSWORD,
-        },
-      });
+      await rln.start({ signer });
     } catch (err) {
       onStatusChange(`Failed to connect to Ethereum: ${err}`, "error");
       throw Error(err);

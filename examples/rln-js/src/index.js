@@ -3,15 +3,14 @@ import { initRLN } from "./rln";
 import { initWaku } from "./waku";
 
 async function run() {
-  const { onLoaded, onStatusChange, registerEvents } = initUI();
+  const { onStatusChange, registerEvents } = initUI();
   const { rln, connectWallet } = await initRLN(onStatusChange);
-  const { onSend, onSubscribe } = await initWaku({
+  const { onSend, onSubscribe, onInitWaku } = await initWaku({
     rln,
     onStatusChange,
   });
 
-  onLoaded();
-  registerEvents({ onSend, onSubscribe, connectWallet });
+  registerEvents({ onSend, onSubscribe, connectWallet, onInitWaku });
 }
 
 run();

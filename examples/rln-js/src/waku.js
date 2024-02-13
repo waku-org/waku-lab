@@ -1,21 +1,39 @@
 import { createLightNode, waitForRemotePeer } from "@waku/sdk";
 
-import { ProtoChatMessage, CONTENT_TOPIC } from "./const";
+import {
+  ProtoChatMessage,
+  CONTENT_TOPIC,
+  KEYSTORE,
+  MEMBERSHIP_HASH,
+  MEMBERSHIP_PASSWORD,
+} from "./const";
 
 export async function initWaku({ rln, onStatusChange }) {
-  const encoder = rln.createEncoder({
-    ephemeral: false,
-    contentTopic: CONTENT_TOPIC,
-  });
-  const decoder = rln.createDecoder(CONTENT_TOPIC);
+  let node;
+  let encoder, decoder;
+  let subscription;
 
-  onStatusChange("Initializing Waku...");
-  const node = await createLightNode({
-    defaultBootstrap: true,
-  });
-  onStatusChange("Waiting for peers");
-  await node.start();
-  await waitForRemotePeer(node);
+  const onInitWaku = async () => {
+    encoder = await rln.createEncoder({
+      ephemeral: false,
+      contentTopic: CONTENT_TOPIC,
+      credentials: {
+        keystore: KEYSTORE,
+        id: MEMBERSHIP_HASH,
+        password: MEMBERSHIP_PASSWORD,
+      },
+    });
+    decoder = rln.createDecoder(CONTENT_TOPIC);
+  
+    onStatusChange("Initializing Waku...");
+    node = await createLightNode({
+      pubsubTopics: ["/waku/2/default-waku/proto"],
+      defaultBootstrap: true,
+    });
+    onStatusChange("Waiting for peers");
+    await node.start();
+    await waitForRemotePeer(node);
+  };
 
   const onSend = async (nick, text) => {
     const timestamp = new Date();
@@ -31,9 +49,10 @@ export async function initWaku({ rln, onStatusChange }) {
     console.log("Message sent:", res);
   };
 
-  onStatusChange("Subscribing to content topic...");
-  const subscription = await node.filter.createSubscription();
   const onSubscribe = async (cb) => {
+    onStatusChange("Subscribing to content topic...");
+    subscription = await node.filter.createSubscription();
+
     await subscription.subscribe(decoder, (message) => {
       try {
         const { timestamp, nick, text } = ProtoChatMessage.decode(
@@ -66,12 +85,13 @@ export async function initWaku({ rln, onStatusChange }) {
         console.error("Failed in subscription listener: ", error);
       }
     });
-  };
 
-  onStatusChange("Waku initialized", "success");
+    onStatusChange("Waku initialized", "success");
+  };
 
   return {
     onSend,
     onSubscribe,
+    onInitWaku,
   };
 }
