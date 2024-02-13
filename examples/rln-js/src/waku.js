@@ -27,7 +27,6 @@ export async function initWaku({ rln, onStatusChange }) {
   
     onStatusChange("Initializing Waku...");
     node = await createLightNode({
-      pubsubTopics: ["/waku/2/default-waku/proto"],
       defaultBootstrap: true,
     });
     onStatusChange("Waiting for peers");
