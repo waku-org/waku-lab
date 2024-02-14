@@ -18,7 +18,9 @@ jobs:
             web-chat,
             noise-js,
             noise-rtc,
-            relay-direct-rtc
+            relay-direct-rtc,
+            rln-js,
+            rln-identity
           ]
     runs-on: ubuntu-latest
     steps:

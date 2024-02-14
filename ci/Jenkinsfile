@@ -40,6 +40,8 @@ pipeline {
         stage('noise-js') { steps { script { buildExample() } } }
         stage('noise-rtc') { steps { script { buildExample() } } }
         stage('relay-direct-rtc') { steps { script { buildExample() } } }
+        stage('rln-js') { steps { script { buildExample() } } }
+        stage('rln-identity') { steps { script { buildExample() } } }
       }
     }
 
