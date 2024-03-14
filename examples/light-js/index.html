@@ -76,11 +76,12 @@
         createDecoder,
         utf8ToBytes,
         bytesToUtf8,
-      } from "https://unpkg.com/@waku/sdk@0.0.20/bundle/index.js";
+        Protocols
+      } from "https://unpkg.com/@waku/sdk@0.0.23/bundle/index.js";
       import {
         enrTree,
         DnsNodeDiscovery,
-      } from "https://unpkg.com/@waku/dns-discovery@0.0.16/bundle/index.js";
+      } from "https://unpkg.com/@waku/dns-discovery@0.0.21/bundle/index.js";
       import { messageHash } from "https://unpkg.com/@waku/message-hash@0.1.8/bundle/index.js";
 
       const peerIdDiv = document.getElementById("peer-id");
@@ -97,7 +98,7 @@
       const getPeersButton = document.getElementById("getPeersButton");
       const peersSelector = document.getElementById("peer-select");
 
-      const ContentTopic = "/js-waku-examples/1/chat/utf8";
+      const ContentTopic = "/spasm/1.0.0/category-privacy/proto";
       const decoder = createDecoder(ContentTopic);
       const encoder = createEncoder({ contentTopic: ContentTopic });
       // Each key is a unique identifier for the message. Each value is an obj { text, timestamp }
@@ -116,19 +117,24 @@
         div.innerHTML += "</ul>";
       };
 
-      try {
-        await getPeers();
-      } catch (e) {
-        console.log("Failed to find a peer", e);
-        remoteMultiAddrDiv.value =
-          "/dns4/node-01.ac-cn-hongkong-c.wakuv2.test.statusim.net/tcp/8000/wss/p2p/16Uiu2HAkvWiyFsgRhuJEb9JfjYxEkoHLgnUQmr1N5mKWnYjxYRVm";
-      }
+      // try {
+      //   await getPeers();
+      // } catch (e) {
+      //   console.log("Failed to find a peer", e);
+      //   remoteMultiAddrDiv.value =
+      //     "/dns4/node-01.ac-cn-hongkong-c.wakuv2.test.statusim.net/tcp/8000/wss/p2p/16Uiu2HAkvWiyFsgRhuJEb9JfjYxEkoHLgnUQmr1N5mKWnYjxYRVm";
+      // }
 
       statusDiv.innerHTML = "<p>Creating Waku node.</p>";
-      const node = await createLightNode();
+      const node = await createLightNode({ defaultBootstrap: true, libp2p: { hideWebSocketInfo: true }});
 
       statusDiv.innerHTML = "<p>Starting Waku node.</p>";
       await node.start();
+
+      await waitForRemotePeer(node, [
+        Protocols.LightPush,
+        Protocols.Filter,
+      ]);
 
       window.waku = node;
       console.info(
@@ -259,6 +265,8 @@
           filter: defaultNodeCount,
           lightPush: defaultNodeCount,
         });
+
+        console.log(peers)
 
         // Create an option element for each peer's multiaddr and append to select element
         const optionElements = peers.map((peer) => {
