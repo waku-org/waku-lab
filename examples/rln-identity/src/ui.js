@@ -1,5 +1,6 @@
 import { renderBytes } from "./utils";
 
+// Identity
 const status = document.getElementById("status");
 const connectWalletButton = document.getElementById("connect");
 const importKeystoreButton = document.getElementById("import");
@@ -10,6 +11,16 @@ const keystorePassword = document.getElementById("password");
 const readCredentialButton = document.getElementById("read-credential");
 const registerNewCredentialButton = document.getElementById("register-new");
 const currentCredentials = document.getElementById("current-credentials");
+const createEncoderDecoderButton = document.getElementById("create-coders-button");
+
+// Chat
+const chat = document.getElementById("chat-area");
+const messages = document.getElementById("messages");
+
+const nickInput = document.getElementById("nick");
+const textInput = document.getElementById("text");
+const sendButton = document.getElementById("send");
+
 
 export function initUI() {
   const _renderCredential = (hash, credential) => {
@@ -59,11 +70,15 @@ export function initUI() {
     readCredential,
     saveLocalKeystore,
     importLocalKeystore,
+    createEncoderDecoder,
+    onSend
   }) => {
     connectWalletButton.addEventListener("click", async () => {
       await connectWallet();
       const keystoreKeys = readKeystoreOptions();
-      _renderKeystoreOptions(keystoreKeys);
+      if (keystoreKeys) {
+        _renderKeystoreOptions(keystoreKeys);
+      }
     });
 
     registerNewCredentialButton.addEventListener("click", async () => {
@@ -104,6 +119,7 @@ export function initUI() {
       }
 
       const credential = await readCredential(currentHash, password);
+      console.log(credential)
       _renderCredential(currentHash, credential);
     });
 
@@ -136,6 +152,27 @@ export function initUI() {
       link.href = URL.createObjectURL(file);
       link.download = filename;
       link.click();
+    });
+
+    createEncoderDecoderButton.addEventListener("click", async () => {
+      const currentHash = keystoreOptions.value;
+      const password = keystorePassword.value;
+      const credential = await readCredential(currentHash, password);
+      const { encoder, decoder } = await createEncoderDecoder(credential)
+      console.log('Encoder and Decoder created:', encoder, decoder);
+    });
+
+    sendButton.addEventListener("click", async () => {
+      const nick = nickInput.value;
+      const text = textInput.value;
+
+      if (!nick || !text) {
+        console.log("Not sending message: missing nick or text.");
+        return;
+      }
+
+      await onSend(nick, text);
+      textInput.value = "";
     });
   };
 

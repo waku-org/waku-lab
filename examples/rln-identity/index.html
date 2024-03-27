@@ -1,206 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>RLN Credential management</title>
-    <link rel="apple-touch-icon" href="./favicon.png" />
-    <link rel="manifest" href="./manifest.json" />
-    <link rel="icon" href="./favicon.ico" />
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        word-wrap: break-word;
-        box-sizing: border-box;
-      }
 
-      html,
-      body {
-        width: 100%;
-        height: 100%;
-        max-width: 100%;
-        max-height: 100%;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>RLN Credential management</title>
+  <link rel="apple-touch-icon" href="./favicon.png" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./favicon.ico" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      word-wrap: break-word;
+      box-sizing: border-box;
+    }
 
-      html {
-        font-size: 16px;
-        overflow: hidden;
-      }
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+    }
 
-      body {
-        display: flex;
-        align-items: center;
-        padding: 10px;
-        flex-direction: column;
-        justify-content: center;
-      }
+    html {
+      font-size: 16px;
+      overflow: hidden;
+    }
 
-      .container {
-        width: 100%;
-        min-width: 300px;
-        max-width: 800px;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-content: space-between;
-      }
+    body {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      flex-direction: column;
+      justify-content: center;
+    }
 
-      h2 {
-        text-align: center;
-        margin-bottom: 5px;
-      }
+    .container {
+      width: 100%;
+      min-width: 300px;
+      max-width: 800px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-content: space-between;
+    }
 
-      h3 {
-        margin-bottom: 10px;
-      }
+    h2 {
+      text-align: center;
+      margin-bottom: 5px;
+    }
 
-      h3:last-of-type {
-        margin-bottom: 20px;
-      }
+    h3 {
+      margin-bottom: 10px;
+    }
 
-      h2 span,
-      h3 span {
-        font-weight: normal;
-      }
+    h3:last-of-type {
+      margin-bottom: 20px;
+    }
 
-      .progress {
-        color: #9ea13b;
-      }
+    h2 span,
+    h3 span {
+      font-weight: normal;
+    }
 
-      .success {
-        color: #3ba183;
-      }
+    .progress {
+      color: #9ea13b;
+    }
 
-      .error {
-        color: #c84740;
-      }
+    .success {
+      color: #3ba183;
+    }
 
-      input {
-        padding: 0.5rem;
-      }
+    .error {
+      color: #c84740;
+    }
 
-      select {
-        padding: 0.5rem;
-        max-width: 150px;
-      }
+    input {
+      padding: 0.5rem;
+    }
 
-      button {
-        padding: 0.5rem;
-      }
+    select {
+      padding: 0.5rem;
+      max-width: 150px;
+    }
 
-      button.progress {
-        color: white;
-        background-color: #9ea13b;
-      }
+    button {
+      padding: 0.5rem;
+    }
 
-      button.success {
-        color: white;
-        background-color: #3ba183;
-      }
+    button.progress {
+      color: white;
+      background-color: #9ea13b;
+    }
 
-      button.error {
-        color: white;
-        background-color: #c84740;
-      }
+    button.success {
+      color: white;
+      background-color: #3ba183;
+    }
 
-      .mb-1 {
-        margin-bottom: 1rem;
-      }
-      .mb-2 {
-        margin-bottom: 2rem;
-      }
-      .mb-3 {
-        margin-bottom: 3rem;
-      }
-      .mt-1 {
-        margin-top: 1rem;
-      }
+    button.error {
+      color: white;
+      background-color: #c84740;
+    }
 
-      .block {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
+    .mb-1 {
+      margin-bottom: 1rem;
+    }
 
-      .hidden {
-        display: none;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="status">
-        <h3>
-          <b>Status:</b>
-          <span id="status" class="progress">Starting...</span>
-        </h3>
-      </div>
+    .mb-2 {
+      margin-bottom: 2rem;
+    }
 
-      <div class="block mb-1">
-        <h2>Wallet</h2>
-        <button id="connect">Connect</button>
-      </div>
+    .mb-3 {
+      margin-bottom: 3rem;
+    }
 
-      <div class="block mb-1">
-        <h2>Keystore</h2>
-        <div>
-          <button id="import">Import</button>
-          <input id="import-file" class="hidden" type="file" />
-          <button id="export">Export</button>
-        </div>
-      </div>
+    .mt-1 {
+      margin-top: 1rem;
+    }
 
-      <hr />
+    .block {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-      <h3 class="mt-1">Existing credentials</h3>
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
 
-      <div class="block mb-2">
-        <select id="keystore"></select>
-        <div>
-          <input id="password" placeholder="password" />
-          <button id="read-credential">Read</button>
-        </div>
-      </div>
+<body>
+  <div class="container">
+    <div class="status">
+      <h3>
+        <b>Status:</b>
+        <span id="status" class="progress">Starting...</span>
+      </h3>
+    </div>
 
-      <div class="block mb-3">
-        <h3>Create new (will use the password)</h3>
-        <button id="register-new">Register</button>
-      </div>
+    <div class="block mb-1">
+      <h2>Wallet</h2>
+      <button id="connect">Connect</button>
+    </div>
 
-      <div id="current-credentials">
-        <div class="block mb-1">
-          <p>Keystore hash</p>
-          <code>none</code>
-        </div>
-
-        <div class="block mb-1">
-          <p>Membership ID</p>
-          <code>none</code>
-        </div>
-
-        <div class="block mb-1">
-          <p>Secret Hash</p>
-          <code>none</code>
-        </div>
-
-        <div class="block mb-1">
-          <p>Commitment</p>
-          <code>none</code>
-        </div>
-
-        <div class="block mb-1">
-          <p>Nullifier</p>
-          <code>none</code>
-        </div>
-
-        <div class="block mb-1">
-          <p>Trapdoor</p>
-          <code>none</code>
-        </div>
+    <div class="block mb-1">
+      <h2>Keystore</h2>
+      <div>
+        <button id="import">Import</button>
+        <input id="import-file" class="hidden" type="file" />
+        <button id="export">Export</button>
       </div>
     </div>
 
-    <script src="./index.js"></script>
-  </body>
+    <hr />
+
+    <h3 class="mt-1">Existing credentials</h3>
+
+    <div class="block mb-2">
+      <select id="keystore"></select>
+      <div>
+        <input id="password" placeholder="password" />
+        <button id="read-credential">Read</button>
+      </div>
+    </div>
+
+    <div class="block mb-3">
+      <h3>Create new (will use the password)</h3>
+      <button id="register-new">Register</button>
+    </div>
+
+    <div id="current-credentials">
+      <div class="block mb-1">
+        <p>Keystore hash</p>
+        <code>none</code>
+      </div>
+
+      <div class="block mb-1">
+        <p>Membership ID</p>
+        <code>none</code>
+      </div>
+
+      <div class="block mb-1">
+        <p>Secret Hash</p>
+        <code>none</code>
+      </div>
+
+      <div class="block mb-1">
+        <p>Commitment</p>
+        <code>none</code>
+      </div>
+
+      <div class="block mb-1">
+        <p>Nullifier</p>
+        <code>none</code>
+      </div>
+
+      <div class="block mb-1">
+        <p>Trapdoor</p>
+        <code>none</code>
+      </div>
+    </div>
+  </div>
+
+  <div class="chatArea" id="chat-area">
+    <h2>Chat</h2>
+    <ul id="messages"></ul>
+
+    <div>
+      <button id="create-coders-button">Create Encoder/Decoder</button>
+      <input id="nick" placeholder="Choose a nickname" type="text" />
+      <textarea id="text" placeholder="Type your message here" type="text"></textarea>
+      <button id="send" type="button">Send message</button>
+    </div>
+  </div>
+  <script src="./index.js"></script>
+</body>
+
 </html>

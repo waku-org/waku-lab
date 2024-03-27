@@ -10,6 +10,8 @@ async function run() {
     readCredential,
     saveLocalKeystore,
     importLocalKeystore,
+    createEncoderDecoder,
+    onSend
   } = await initRLN({
     onStatusChange,
   });
@@ -21,6 +23,8 @@ async function run() {
     readCredential,
     saveLocalKeystore,
     importLocalKeystore,
+    createEncoderDecoder,
+    onSend
   });
 }
 
