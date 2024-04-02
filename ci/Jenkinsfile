@@ -3,6 +3,7 @@ pipeline {
     dockerfile {
       label 'linux'
       dir 'ci'
+      args '-v /home/jenkins/.ssh/known_hosts:/home/jenkins/.ssh/known_hosts:ro'
     }
   }
 
