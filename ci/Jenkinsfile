@@ -61,9 +61,9 @@ pipeline {
       } }
     }
   }
-  post {
-    always { cleanWs() }
-  }
+//  post {
+//    always { cleanWs() }
+//  }
 }
 
 def buildExample(example=STAGE_NAME) {
