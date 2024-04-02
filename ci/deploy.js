@@ -12,7 +12,7 @@ const USE_HTTPS = Args[0] && Args[0].toUpperCase() === "HTTPS";
 
 const branch = "gh-pages";
 const org = "waku-org";
-const repo = "waku-lab";
+const repo = "lab.waku.org";
 /* use SSH auth by default */
 let repoUrl = USE_HTTPS
   ? `https://github.com/${org}/${repo}.git`
