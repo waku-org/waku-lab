@@ -28,9 +28,11 @@ export async function initRLN({ onStatusChange }) {
     try {
       onStatusChange("Connecting to Ethereum...");
       const localKeystore = readLocalKeystore();
-      rln.keystore = Keystore.fromString(localKeystore);
 
-      await rln.start({ signer });
+      await rln.start({
+        signer,
+        credentials: { keystore: localKeystore },
+      });
     } catch (err) {
       onStatusChange(`Failed to connect to Ethereum: ${err}`, "error");
       throw Error(err);

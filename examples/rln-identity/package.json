@@ -7,7 +7,7 @@
     "start": "webpack-dev-server"
   },
   "dependencies": {
-    "@waku/rln": "0.1.2-126bce3",
+    "@waku/rln": "0.1.3",
     "@waku/sdk": "^0.0.22",
     "@waku/utils": "^0.0.14",
     "ethers": "^5.7.2",
