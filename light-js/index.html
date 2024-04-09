@@ -76,12 +76,12 @@
         createDecoder,
         utf8ToBytes,
         bytesToUtf8,
-      } from "https://unpkg.com/@waku/sdk@0.0.20/bundle/index.js";
+      } from "https://unpkg.com/@waku/sdk@0.0.24-070b625.0/bundle/index.js";
       import {
         enrTree,
         DnsNodeDiscovery,
-      } from "https://unpkg.com/@waku/dns-discovery@0.0.16/bundle/index.js";
-      import { messageHash } from "https://unpkg.com/@waku/message-hash@0.1.8/bundle/index.js";
+      } from "https://unpkg.com/@waku/discovery@0.0.2-070b625.0/bundle/index.js";
+      import { messageHash } from "https://unpkg.com/@waku/message-hash@0.1.12-070b625.0/bundle/index.js";
 
       const peerIdDiv = document.getElementById("peer-id");
       const remotePeerIdDiv = document.getElementById("remote-peer-id");
@@ -121,7 +121,7 @@
       } catch (e) {
         console.log("Failed to find a peer", e);
         remoteMultiAddrDiv.value =
-          "/dns4/node-01.ac-cn-hongkong-c.wakuv2.test.statusim.net/tcp/8000/wss/p2p/16Uiu2HAkvWiyFsgRhuJEb9JfjYxEkoHLgnUQmr1N5mKWnYjxYRVm";
+          "/dns4/node-01.do-ams3.waku.test.statusim.net/tcp/8000/wss/p2p/16Uiu2HAkykgaECHswi3YKJ5dMLbq2kPVCo89fcyTd38UcQD6ej5W";
       }
 
       statusDiv.innerHTML = "<p>Creating Waku node.</p>";
@@ -149,7 +149,7 @@
       };
 
       // Refreshes list of connected peers each time a new one is detected
-      node.store.addLibp2pEventListener("peer:connect", async (event) => {
+      node.store.protocol.addLibp2pEventListener("peer:connect", async (event) => {
         const peerId = event.detail;
         console.log(`Peer connected with peer id: ${peerId}`);
         // Wait half a second after receiving event for peer to show up in peer store
