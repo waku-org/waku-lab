@@ -24,7 +24,7 @@
     "@waku/core": "^0.0.6",
     "@waku/create": "^0.0.4",
     "@waku/interfaces": "^0.0.5",
-    "protobufjs": "^7.1.2",
+    "protobufjs": "^7.2.5",
     "rxjs": "~7.5.7",
     "tslib": "^2.4.1",
     "zone.js": "~0.11.8"
