@@ -35,21 +35,20 @@ pipeline {
 
     stage('Examples') {
       parallel {
-        stage('relay-angular-chat') { steps { script { buildExample() } } }
-        stage('relay-reactjs-chat') { steps { script { buildExample() } } }
-        stage('web-chat') { steps { script { buildExample() } } }
-        stage('noise-js') { steps { script { buildExample() } } }
-        stage('noise-rtc') { steps { script { buildExample() } } }
-        stage('relay-direct-rtc') { steps { script { buildExample() } } }
-        stage('rln-js') { steps { script { buildExample() } } }
-        stage('rln-identity') { steps { script { buildExample() } } }
+        stage('experimental/web-chat') { steps { script { buildExample() } } }
+        stage('experimental/noise-js') { steps { script { buildExample() } } }
+        stage('experimental/noise-rtc') { steps { script { buildExample() } } }
+        stage('experimental/relay-direct-rtc') { steps { script { buildExample() } } }
+        stage('experimental/rln-js') { steps { script { buildExample() } } }
+        stage('experimental/rln-identity') { steps { script { buildExample() } } }
+        stage('flush-notes') { steps { script { buildExample() } } }
       }
     }
 
     stage('HTML Examples') {
       parallel {
-        stage('relay-js') { steps { script { copyExample() } } }
-        stage('light-js') { steps { script { copyExample() } } }
+        stage('experimental/relay-js') { steps { script { copyExample() } } }
+        stage('experimental/light-js') { steps { script { copyExample() } } }
       }
     }
 

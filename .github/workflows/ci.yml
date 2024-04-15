@@ -13,14 +13,13 @@ jobs:
       matrix:
         example:
           [
-            relay-angular-chat,
-            relay-reactjs-chat,
-            web-chat,
-            noise-js,
-            noise-rtc,
-            relay-direct-rtc,
-            rln-js,
-            rln-identity
+            experimental/web-chat,
+            experimental/noise-js,
+            experimental/noise-rtc,
+            experimental/relay-direct-rtc,
+            experimental/rln-js,
+            experimental/rln-identity,
+            flush-notes
           ]
     runs-on: ubuntu-latest
     steps:
