@@ -99,8 +99,8 @@
       const peersSelector = document.getElementById("peer-select");
 
       const ContentTopic = "/js-waku-examples/1/chat/utf8";
-      const decoder = createDecoder(ContentTopic/*, "/waku/2/rs/1/5"*/);
-      const encoder = createEncoder({ contentTopic: ContentTopic/*, pubsubTopic: "/waku/2/rs/1/5" */});
+      const decoder = createDecoder(ContentTopic);
+      const encoder = createEncoder({ contentTopic: ContentTopic});
       // Each key is a unique identifier for the message. Each value is an obj { text, timestamp }
       let messages = {};
       let unsubscribe;
@@ -131,11 +131,6 @@
           contentTopics: [ContentTopic]
         },
         defaultBootstrap: true,
-        // libp2p: {
-        //   peerDiscovery: [
-        //     wakuDnsDiscovery([enrTree["TEST"]], { lightPush: 5, filter: 5, store: 5 }),
-        //   ]
-        // }
       });
 
       statusDiv.innerHTML = "<p>Starting Waku node.</p>";
