@@ -76,12 +76,13 @@
         createDecoder,
         utf8ToBytes,
         bytesToUtf8,
-      } from "https://unpkg.com/@waku/sdk@0.0.24-070b625.0/bundle/index.js";
+      } from "https://unpkg.com/@waku/sdk@0.0.25-fd60cc2.0/bundle/index.js";
       import {
         enrTree,
         DnsNodeDiscovery,
-      } from "https://unpkg.com/@waku/discovery@0.0.2-070b625.0/bundle/index.js";
-      import { messageHash } from "https://unpkg.com/@waku/message-hash@0.1.12-070b625.0/bundle/index.js";
+        wakuDnsDiscovery,
+      } from "https://unpkg.com/@waku/discovery@0.0.2-fd60cc2.0/bundle/index.js";
+      import { messageHash } from "https://unpkg.com/@waku/message-hash@0.1.13-fd60cc2.0/bundle/index.js";
 
       const peerIdDiv = document.getElementById("peer-id");
       const remotePeerIdDiv = document.getElementById("remote-peer-id");
@@ -99,7 +100,7 @@
 
       const ContentTopic = "/js-waku-examples/1/chat/utf8";
       const decoder = createDecoder(ContentTopic);
-      const encoder = createEncoder({ contentTopic: ContentTopic });
+      const encoder = createEncoder({ contentTopic: ContentTopic});
       // Each key is a unique identifier for the message. Each value is an obj { text, timestamp }
       let messages = {};
       let unsubscribe;
@@ -125,7 +126,12 @@
       }
 
       statusDiv.innerHTML = "<p>Creating Waku node.</p>";
-      const node = await createLightNode();
+      const node = await createLightNode({
+        shardInfo: {
+          contentTopics: [ContentTopic]
+        },
+        defaultBootstrap: true,
+      });
 
       statusDiv.innerHTML = "<p>Starting Waku node.</p>";
       await node.start();

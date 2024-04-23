@@ -1,8 +1,12 @@
 import { createLightNode, waitForRemotePeer } from "@waku/sdk";
 import * as utils from "@waku/utils/bytes";
+import { contentTopicToPubsubTopic } from "@waku/utils";
 import * as noise from "@waku/noise";
 import protobuf from "protobufjs";
 import QRCode from "qrcode";
+
+const ContentTopic = "/noise-js/1/message/proto";
+const PubsubTopic = contentTopicToPubsubTopic(ContentTopic);
 
 // Protobuf
 const ProtoChatMessage = new protobuf.Type("ChatMessage")
@@ -19,6 +23,9 @@ async function main() {
   // Starting the node
   const node = await createLightNode({
     defaultBootstrap: true,
+    shardInfo: {
+      contentTopics: [ContentTopic],
+    }
   });
 
   try {
@@ -27,13 +34,14 @@ async function main() {
 
     ui.waku.connected();
 
-    const myStaticKey = noise.generateX25519KeyPair();
+    const myStaticKey = new noise.X25519DHKey();
     const urlPairingInfo = getPairingInfoFromURL();
 
     const pairingObj = new noise.WakuPairing(
+      PubsubTopic,
       node.lightPush,
       node.filter,
-      myStaticKey,
+      myStaticKey.generateKeyPair(),
       urlPairingInfo || new noise.ResponderParameters()
     );
     const pExecute = pairingObj.execute(120000); // timeout after 2m
