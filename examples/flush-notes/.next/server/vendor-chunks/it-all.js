@@ -1,0 +1,25 @@
+"use strict";
+/*
+ * ATTENTION: An "eval-source-map" devtool has been used.
+ * This devtool is neither made for production nor for readable output files.
+ * It uses "eval()" calls to create a separate source file with attached SourceMaps in the browser devtools.
+ * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
+ * or disable the default devtool with "devtool: false".
+ * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
+ */
+exports.id = "vendor-chunks/it-all";
+exports.ids = ["vendor-chunks/it-all"];
+exports.modules = {
+
+/***/ "(ssr)/./node_modules/it-all/dist/src/index.js":
+/*!***********************************************!*\
+  !*** ./node_modules/it-all/dist/src/index.js ***!
+  \***********************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/**\n * @packageDocumentation\n *\n * For when you need a one-liner to collect iterable values.\n *\n * @example\n *\n * ```javascript\n * import all from 'it-all'\n *\n * // This can also be an iterator, etc\n * const values = function * () {\n *   yield * [0, 1, 2, 3, 4]\n * }\n *\n * const arr = all(values)\n *\n * console.info(arr) // 0, 1, 2, 3, 4\n * ```\n *\n * Async sources must be awaited:\n *\n * ```javascript\n * const values = async function * () {\n *   yield * [0, 1, 2, 3, 4]\n * }\n *\n * const arr = await all(values())\n *\n * console.info(arr) // 0, 1, 2, 3, 4\n * ```\n */ function isAsyncIterable(thing) {\n    return thing[Symbol.asyncIterator] != null;\n}\nfunction all(source) {\n    if (isAsyncIterable(source)) {\n        return (async ()=>{\n            const arr = [];\n            for await (const entry of source){\n                arr.push(entry);\n            }\n            return arr;\n        })();\n    }\n    const arr = [];\n    for (const entry of source){\n        arr.push(entry);\n    }\n    return arr;\n}\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (all); //# sourceMappingURL=index.js.map\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiKHNzcikvLi9ub2RlX21vZHVsZXMvaXQtYWxsL2Rpc3Qvc3JjL2luZGV4LmpzIiwibWFwcGluZ3MiOiI7Ozs7QUFBQTs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztDQStCQyxHQUNELFNBQVNBLGdCQUFnQkMsS0FBSztJQUMxQixPQUFPQSxLQUFLLENBQUNDLE9BQU9DLGFBQWEsQ0FBQyxJQUFJO0FBQzFDO0FBQ0EsU0FBU0MsSUFBSUMsTUFBTTtJQUNmLElBQUlMLGdCQUFnQkssU0FBUztRQUN6QixPQUFPLENBQUM7WUFDSixNQUFNQyxNQUFNLEVBQUU7WUFDZCxXQUFXLE1BQU1DLFNBQVNGLE9BQVE7Z0JBQzlCQyxJQUFJRSxJQUFJLENBQUNEO1lBQ2I7WUFDQSxPQUFPRDtRQUNYO0lBQ0o7SUFDQSxNQUFNQSxNQUFNLEVBQUU7SUFDZCxLQUFLLE1BQU1DLFNBQVNGLE9BQVE7UUFDeEJDLElBQUlFLElBQUksQ0FBQ0Q7SUFDYjtJQUNBLE9BQU9EO0FBQ1g7QUFDQSxpRUFBZUYsR0FBR0EsRUFBQyxDQUNuQixpQ0FBaUMiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly9mbHVzaC1ub3Rlcy8uL25vZGVfbW9kdWxlcy9pdC1hbGwvZGlzdC9zcmMvaW5kZXguanM/ZDA5OCJdLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBwYWNrYWdlRG9jdW1lbnRhdGlvblxuICpcbiAqIEZvciB3aGVuIHlvdSBuZWVkIGEgb25lLWxpbmVyIHRvIGNvbGxlY3QgaXRlcmFibGUgdmFsdWVzLlxuICpcbiAqIEBleGFtcGxlXG4gKlxuICogYGBgamF2YXNjcmlwdFxuICogaW1wb3J0IGFsbCBmcm9tICdpdC1hbGwnXG4gKlxuICogLy8gVGhpcyBjYW4gYWxzbyBiZSBhbiBpdGVyYXRvciwgZXRjXG4gKiBjb25zdCB2YWx1ZXMgPSBmdW5jdGlvbiAqICgpIHtcbiAqICAgeWllbGQgKiBbMCwgMSwgMiwgMywgNF1cbiAqIH1cbiAqXG4gKiBjb25zdCBhcnIgPSBhbGwodmFsdWVzKVxuICpcbiAqIGNvbnNvbGUuaW5mbyhhcnIpIC8vIDAsIDEsIDIsIDMsIDRcbiAqIGBgYFxuICpcbiAqIEFzeW5jIHNvdXJjZXMgbXVzdCBiZSBhd2FpdGVkOlxuICpcbiAqIGBgYGphdmFzY3JpcHRcbiAqIGNvbnN0IHZhbHVlcyA9IGFzeW5jIGZ1bmN0aW9uICogKCkge1xuICogICB5aWVsZCAqIFswLCAxLCAyLCAzLCA0XVxuICogfVxuICpcbiAqIGNvbnN0IGFyciA9IGF3YWl0IGFsbCh2YWx1ZXMoKSlcbiAqXG4gKiBjb25zb2xlLmluZm8oYXJyKSAvLyAwLCAxLCAyLCAzLCA0XG4gKiBgYGBcbiAqL1xuZnVuY3Rpb24gaXNBc3luY0l0ZXJhYmxlKHRoaW5nKSB7XG4gICAgcmV0dXJuIHRoaW5nW1N5bWJvbC5hc3luY0l0ZXJhdG9yXSAhPSBudWxsO1xufVxuZnVuY3Rpb24gYWxsKHNvdXJjZSkge1xuICAgIGlmIChpc0FzeW5jSXRlcmFibGUoc291cmNlKSkge1xuICAgICAgICByZXR1cm4gKGFzeW5jICgpID0+IHtcbiAgICAgICAgICAgIGNvbnN0IGFyciA9IFtdO1xuICAgICAgICAgICAgZm9yIGF3YWl0IChjb25zdCBlbnRyeSBvZiBzb3VyY2UpIHtcbiAgICAgICAgICAgICAgICBhcnIucHVzaChlbnRyeSk7XG4gICAgICAgICAgICB9XG4gICAgICAgICAgICByZXR1cm4gYXJyO1xuICAgICAgICB9KSgpO1xuICAgIH1cbiAgICBjb25zdCBhcnIgPSBbXTtcbiAgICBmb3IgKGNvbnN0IGVudHJ5IG9mIHNvdXJjZSkge1xuICAgICAgICBhcnIucHVzaChlbnRyeSk7XG4gICAgfVxuICAgIHJldHVybiBhcnI7XG59XG5leHBvcnQgZGVmYXVsdCBhbGw7XG4vLyMgc291cmNlTWFwcGluZ1VSTD1pbmRleC5qcy5tYXAiXSwibmFtZXMiOlsiaXNBc3luY0l0ZXJhYmxlIiwidGhpbmciLCJTeW1ib2wiLCJhc3luY0l0ZXJhdG9yIiwiYWxsIiwic291cmNlIiwiYXJyIiwiZW50cnkiLCJwdXNoIl0sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///(ssr)/./node_modules/it-all/dist/src/index.js\n");
+
+/***/ })
+
+};
+;

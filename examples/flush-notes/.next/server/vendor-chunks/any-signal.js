@@ -1,0 +1,25 @@
+"use strict";
+/*
+ * ATTENTION: An "eval-source-map" devtool has been used.
+ * This devtool is neither made for production nor for readable output files.
+ * It uses "eval()" calls to create a separate source file with attached SourceMaps in the browser devtools.
+ * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
+ * or disable the default devtool with "devtool: false".
+ * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
+ */
+exports.id = "vendor-chunks/any-signal";
+exports.ids = ["vendor-chunks/any-signal"];
+exports.modules = {
+
+/***/ "(ssr)/./node_modules/any-signal/dist/src/index.js":
+/*!***************************************************!*\
+  !*** ./node_modules/any-signal/dist/src/index.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   anySignal: () => (/* binding */ anySignal)\n/* harmony export */ });\n/**\n * Takes an array of AbortSignals and returns a single signal.\n * If any signals are aborted, the returned signal will be aborted.\n */ function anySignal(signals) {\n    const controller = new globalThis.AbortController();\n    function onAbort() {\n        controller.abort();\n        for (const signal of signals){\n            if (signal?.removeEventListener != null) {\n                signal.removeEventListener(\"abort\", onAbort);\n            }\n        }\n    }\n    for (const signal of signals){\n        if (signal?.aborted === true) {\n            onAbort();\n            break;\n        }\n        if (signal?.addEventListener != null) {\n            signal.addEventListener(\"abort\", onAbort);\n        }\n    }\n    function clear() {\n        for (const signal of signals){\n            if (signal?.removeEventListener != null) {\n                signal.removeEventListener(\"abort\", onAbort);\n            }\n        }\n    }\n    const signal = controller.signal;\n    signal.clear = clear;\n    return signal;\n} //# sourceMappingURL=index.js.map\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiKHNzcikvLi9ub2RlX21vZHVsZXMvYW55LXNpZ25hbC9kaXN0L3NyYy9pbmRleC5qcyIsIm1hcHBpbmdzIjoiOzs7O0FBQUE7OztDQUdDLEdBQ00sU0FBU0EsVUFBVUMsT0FBTztJQUM3QixNQUFNQyxhQUFhLElBQUlDLFdBQVdDLGVBQWU7SUFDakQsU0FBU0M7UUFDTEgsV0FBV0ksS0FBSztRQUNoQixLQUFLLE1BQU1DLFVBQVVOLFFBQVM7WUFDMUIsSUFBSU0sUUFBUUMsdUJBQXVCLE1BQU07Z0JBQ3JDRCxPQUFPQyxtQkFBbUIsQ0FBQyxTQUFTSDtZQUN4QztRQUNKO0lBQ0o7SUFDQSxLQUFLLE1BQU1FLFVBQVVOLFFBQVM7UUFDMUIsSUFBSU0sUUFBUUUsWUFBWSxNQUFNO1lBQzFCSjtZQUNBO1FBQ0o7UUFDQSxJQUFJRSxRQUFRRyxvQkFBb0IsTUFBTTtZQUNsQ0gsT0FBT0csZ0JBQWdCLENBQUMsU0FBU0w7UUFDckM7SUFDSjtJQUNBLFNBQVNNO1FBQ0wsS0FBSyxNQUFNSixVQUFVTixRQUFTO1lBQzFCLElBQUlNLFFBQVFDLHVCQUF1QixNQUFNO2dCQUNyQ0QsT0FBT0MsbUJBQW1CLENBQUMsU0FBU0g7WUFDeEM7UUFDSjtJQUNKO0lBQ0EsTUFBTUUsU0FBU0wsV0FBV0ssTUFBTTtJQUNoQ0EsT0FBT0ksS0FBSyxHQUFHQTtJQUNmLE9BQU9KO0FBQ1gsRUFDQSxpQ0FBaUMiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly9mbHVzaC1ub3Rlcy8uL25vZGVfbW9kdWxlcy9hbnktc2lnbmFsL2Rpc3Qvc3JjL2luZGV4LmpzP2I4M2EiXSwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBUYWtlcyBhbiBhcnJheSBvZiBBYm9ydFNpZ25hbHMgYW5kIHJldHVybnMgYSBzaW5nbGUgc2lnbmFsLlxuICogSWYgYW55IHNpZ25hbHMgYXJlIGFib3J0ZWQsIHRoZSByZXR1cm5lZCBzaWduYWwgd2lsbCBiZSBhYm9ydGVkLlxuICovXG5leHBvcnQgZnVuY3Rpb24gYW55U2lnbmFsKHNpZ25hbHMpIHtcbiAgICBjb25zdCBjb250cm9sbGVyID0gbmV3IGdsb2JhbFRoaXMuQWJvcnRDb250cm9sbGVyKCk7XG4gICAgZnVuY3Rpb24gb25BYm9ydCgpIHtcbiAgICAgICAgY29udHJvbGxlci5hYm9ydCgpO1xuICAgICAgICBmb3IgKGNvbnN0IHNpZ25hbCBvZiBzaWduYWxzKSB7XG4gICAgICAgICAgICBpZiAoc2lnbmFsPy5yZW1vdmVFdmVudExpc3RlbmVyICE9IG51bGwpIHtcbiAgICAgICAgICAgICAgICBzaWduYWwucmVtb3ZlRXZlbnRMaXN0ZW5lcignYWJvcnQnLCBvbkFib3J0KTtcbiAgICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgIH1cbiAgICBmb3IgKGNvbnN0IHNpZ25hbCBvZiBzaWduYWxzKSB7XG4gICAgICAgIGlmIChzaWduYWw/LmFib3J0ZWQgPT09IHRydWUpIHtcbiAgICAgICAgICAgIG9uQWJvcnQoKTtcbiAgICAgICAgICAgIGJyZWFrO1xuICAgICAgICB9XG4gICAgICAgIGlmIChzaWduYWw/LmFkZEV2ZW50TGlzdGVuZXIgIT0gbnVsbCkge1xuICAgICAgICAgICAgc2lnbmFsLmFkZEV2ZW50TGlzdGVuZXIoJ2Fib3J0Jywgb25BYm9ydCk7XG4gICAgICAgIH1cbiAgICB9XG4gICAgZnVuY3Rpb24gY2xlYXIoKSB7XG4gICAgICAgIGZvciAoY29uc3Qgc2lnbmFsIG9mIHNpZ25hbHMpIHtcbiAgICAgICAgICAgIGlmIChzaWduYWw/LnJlbW92ZUV2ZW50TGlzdGVuZXIgIT0gbnVsbCkge1xuICAgICAgICAgICAgICAgIHNpZ25hbC5yZW1vdmVFdmVudExpc3RlbmVyKCdhYm9ydCcsIG9uQWJvcnQpO1xuICAgICAgICAgICAgfVxuICAgICAgICB9XG4gICAgfVxuICAgIGNvbnN0IHNpZ25hbCA9IGNvbnRyb2xsZXIuc2lnbmFsO1xuICAgIHNpZ25hbC5jbGVhciA9IGNsZWFyO1xuICAgIHJldHVybiBzaWduYWw7XG59XG4vLyMgc291cmNlTWFwcGluZ1VSTD1pbmRleC5qcy5tYXAiXSwibmFtZXMiOlsiYW55U2lnbmFsIiwic2lnbmFscyIsImNvbnRyb2xsZXIiLCJnbG9iYWxUaGlzIiwiQWJvcnRDb250cm9sbGVyIiwib25BYm9ydCIsImFib3J0Iiwic2lnbmFsIiwicmVtb3ZlRXZlbnRMaXN0ZW5lciIsImFib3J0ZWQiLCJhZGRFdmVudExpc3RlbmVyIiwiY2xlYXIiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///(ssr)/./node_modules/any-signal/dist/src/index.js\n");
+
+/***/ })
+
+};
+;
