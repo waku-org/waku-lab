@@ -59,6 +59,10 @@
     </button>
     <br />
     <div id="messages"></div>
+    <br />
+    <button disabled id="periodicSendButton" type="button">
+      Send message using Light Push every 5 seconds
+    </button>
 
     <div>
       <h2>Store</h2>
@@ -95,6 +99,7 @@
       const messagesDiv = document.getElementById("messages");
       const textInput = document.getElementById("textInput");
       const sendButton = document.getElementById("sendButton");
+      const periodicSendButton = document.getElementById("periodicSendButton");
       const getPeersButton = document.getElementById("getPeersButton");
       const peersSelector = document.getElementById("peer-select");
 
@@ -166,6 +171,7 @@
         // Enable send and subscribe inputs as we are now connected to a peer
         textInput.disabled = false;
         sendButton.disabled = false;
+        periodicSendButton.disabled = false;
         subscribeButton.disabled = false;
         queryStoreButton.disabled = false;
       });
@@ -232,11 +238,34 @@
       sendButton.onclick = async () => {
         const text = textInput.value;
 
-        await node.lightPush.send(encoder, {
+        const result = await node.lightPush.send(encoder, {
           payload: utf8ToBytes(text),
         });
-        console.log("Message sent!");
+        if(result.failures.length > 0 || result.successes.length === 0) {
+          console.log("Message failed to send", result.failures);
+        } else {
+          console.log("Message sent to the following peers:");
+          console.log(result.successes.map(s => s.toString()));
+        }
         textInput.value = null;
+      };
+
+      periodicSendButton.onclick = async () => {
+        let i = 0;
+
+        while(true) {
+          const result = await node.lightPush.send(encoder, {
+            payload: utf8ToBytes(`message ${i}`)
+          });
+          if(result.failures.length > 0 || result.successes.length === 0) {
+              console.log(`Message ${i} failed to send`, result.failures);
+          } else {
+            console.log(`Message ${i} sent to the following peers:`);
+            console.log(result.successes.map(s => s.toString()));
+          }
+          i++;
+          await new Promise(resolve => setTimeout(resolve, 5000));
+        }
       };
 
       getPeersButton.onclick = async () => {
