@@ -14,7 +14,6 @@ import {
 import { CONTENT_TOPIC } from "@/const";
 import {
   contentTopicToPubsubTopic,
-  pubsubTopicToSingleShardInfo,
 } from "@waku/utils";
 
 type EventListener = (event: CustomEvent) => void;
@@ -42,17 +41,9 @@ export class Waku {
     try {
       this.emitStatusEvent(WakuStatus.Initializing);
       this.pubsubTopic = contentTopicToPubsubTopic(CONTENT_TOPIC);
-      const singleShardInfo = pubsubTopicToSingleShardInfo(
-        this.pubsubTopic
-      );
       const node = await createLightNode({
         defaultBootstrap: true,
-        pubsubTopics: [this.pubsubTopic],
-        shardInfo: {
-          contentTopics: [CONTENT_TOPIC],
-          shards: [singleShardInfo.shard],
-          clusterId: singleShardInfo.clusterId,
-        },
+        contentTopics: [CONTENT_TOPIC],
       });
       await node.start();
       this.emitStatusEvent(WakuStatus.WaitingForPeers);
