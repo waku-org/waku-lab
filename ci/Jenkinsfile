@@ -41,6 +41,7 @@ pipeline {
         stage('experimental/relay-direct-rtc') { steps { script { buildExample() } } }
         stage('experimental/rln-js') { steps { script { buildExample() } } }
         stage('experimental/rln-identity') { steps { script { buildExample() } } }
+        stage('dogfooding') { steps { script { buildExample() } } }
         stage('flush-notes') { steps { script { buildExample() } } }
       }
     }

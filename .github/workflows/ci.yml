@@ -19,6 +19,7 @@ jobs:
             experimental/relay-direct-rtc,
             experimental/rln-js,
             experimental/rln-identity,
+            dogfooding,
             flush-notes
           ]
     runs-on: ubuntu-latest
