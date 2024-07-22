@@ -31,13 +31,20 @@ const messageSentEvent = new CustomEvent("messageSent");
 const wakuNode = async (): Promise<LightNode> => {
   return await createLightNode({
     contentTopics: [DEFAULT_CONTENT_TOPIC],
-    defaultBootstrap: true
+    defaultBootstrap: true,
   });
 };
 
 export async function app(telemetryClient: TelemetryClient) {
   const node = await wakuNode();
   await node.start();
+
+  // TODO: https://github.com/waku-org/js-waku/issues/2079
+  // Dialing bootstrap peers right on start in order to have Filter subscription initiated properly
+  await node.dial("/dns4/node-01.do-ams3.waku.test.status.im/tcp/8000/wss");
+  await node.dial("/dns4/node-01.ac-cn-hongkong-c.waku.test.status.im/tcp/8000/wss");
+  await node.dial("/dns4/node-01.gc-us-central1-a.waku.test.status.im/tcp/8000/wss");
+  
   await waitForRemotePeer(node);
 
   const peerId = node.libp2p.peerId.toString();
@@ -185,7 +192,7 @@ export async function app(telemetryClient: TelemetryClient) {
 
   function startSequence() {
     const numMessages = Math.floor(Math.random() * 16) + 5;
-    const messagePeriod = Math.floor(Math.random() * 2001) + 1000;
+    const messagePeriod = Math.floor(Math.random() * 2001) + 5000;
     startLightPushSequence(numMessages, messagePeriod);
   }
 
