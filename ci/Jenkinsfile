@@ -42,7 +42,7 @@ pipeline {
         stage('experimental/rln-js') { steps { script { buildExample() } } }
         stage('experimental/rln-identity') { steps { script { buildExample() } } }
         stage('dogfooding') { steps { script { buildExample() } } }
-        stage('flush-notes') { steps { script { buildExample() } } }
+        stage('flush-notes') { steps { script { buildNextJSExample() } } }
       }
     }
 
@@ -74,6 +74,16 @@ def buildExample(example=STAGE_NAME) {
     sh 'npm run build'
     sh "mkdir -p ${dest}"
     sh "cp -r build/. ${dest}"
+  }
+}
+
+def buildNextJSExample(example=STAGE_NAME) {
+  def dest = "${WORKSPACE}/build/docs/${example}"
+  dir("examples/${example}") {
+    sh 'npm install --silent'
+    sh 'npm run build'
+    sh "mkdir -p ${dest}"
+    sh "cp -r out/. ${dest}"
   }
 }
 
