@@ -1,5 +1,7 @@
 export enum TelemetryType {
   LIGHT_PUSH_FILTER = "LightPushFilter",
+	LIGHT_PUSH_ERROR   = "LightPushError",
+	GENERIC = "Generic"
 }
 
 // Top level structure of a telemetry request
@@ -23,6 +25,23 @@ export interface TelemetryPushFilter extends TelemetryMessage {
   sequenceIndex: number;
   contentTopic: string;
   pubsubTopic: string;
+}
+
+export interface TelemetryPushError extends TelemetryMessage {
+  peerId: string;
+  errorMessage: string;
+  peerIdRemote?: string;
+  contentTopic?: string;
+  pubsubTopic?: string;
+}
+
+export interface TelemetryGeneric extends TelemetryMessage {
+  peerId: string;
+  metricType: string;
+  contentTopic?: string;
+  pubsubTopic?: string;
+  genericData?: string;
+  errorMessage?: string;
 }
 
 
