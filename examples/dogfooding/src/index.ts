@@ -4,8 +4,8 @@ import {
   createDecoder,
   DecodedMessage,
   waitForRemotePeer,
-  DefaultPubsubTopic,
   LightNode,
+  utils
 } from "@waku/sdk";
 
 import { Type, Field } from "protobufjs";
@@ -41,9 +41,9 @@ export async function app(telemetryClient: TelemetryClient) {
 
   // TODO: https://github.com/waku-org/js-waku/issues/2079
   // Dialing bootstrap peers right on start in order to have Filter subscription initiated properly
-  await node.dial("/dns4/node-01.do-ams3.waku.test.status.im/tcp/8000/wss");
-  await node.dial("/dns4/node-01.ac-cn-hongkong-c.waku.test.status.im/tcp/8000/wss");
-  await node.dial("/dns4/node-01.gc-us-central1-a.waku.test.status.im/tcp/8000/wss");
+  // await node.dial("/dns4/node-01.do-ams3.waku.test.status.im/tcp/8000/wss");
+  // await node.dial("/dns4/node-01.ac-cn-hongkong-c.waku.test.status.im/tcp/8000/wss");
+  // await node.dial("/dns4/node-01.gc-us-central1-a.waku.test.status.im/tcp/8000/wss");
   
   await waitForRemotePeer(node);
 
@@ -87,7 +87,7 @@ export async function app(telemetryClient: TelemetryClient) {
               sequenceTotal: sequenceTotal,
               sequenceIndex: sequenceIndex,
               contentTopic: DEFAULT_CONTENT_TOPIC,
-              pubsubTopic: DefaultPubsubTopic,
+              pubsubTopic: utils.contentTopicToPubsubTopic(DEFAULT_CONTENT_TOPIC),
             },
           ]);
 
@@ -145,7 +145,7 @@ export async function app(telemetryClient: TelemetryClient) {
           sequenceTotal: sequencedMessage.total,
           sequenceIndex: sequencedMessage.index,
           contentTopic: DEFAULT_CONTENT_TOPIC,
-          pubsubTopic: DefaultPubsubTopic,
+          pubsubTopic: utils.contentTopicToPubsubTopic(DEFAULT_CONTENT_TOPIC),
         },
       ]);
 
