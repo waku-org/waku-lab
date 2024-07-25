@@ -4,8 +4,8 @@ import {
   createDecoder,
   DecodedMessage,
   waitForRemotePeer,
-  DefaultPubsubTopic,
   LightNode,
+  utils
 } from "@waku/sdk";
 
 import { Type, Field } from "protobufjs";
@@ -87,7 +87,7 @@ export async function app(telemetryClient: TelemetryClient) {
               sequenceTotal: sequenceTotal,
               sequenceIndex: sequenceIndex,
               contentTopic: DEFAULT_CONTENT_TOPIC,
-              pubsubTopic: DefaultPubsubTopic,
+              pubsubTopic: utils.contentTopicToPubsubTopic(DEFAULT_CONTENT_TOPIC),
             },
           ]);
 
@@ -145,7 +145,7 @@ export async function app(telemetryClient: TelemetryClient) {
           sequenceTotal: sequencedMessage.total,
           sequenceIndex: sequencedMessage.index,
           contentTopic: DEFAULT_CONTENT_TOPIC,
-          pubsubTopic: DefaultPubsubTopic,
+          pubsubTopic: utils.contentTopicToPubsubTopic(DEFAULT_CONTENT_TOPIC),
         },
       ]);
 

@@ -23,7 +23,11 @@ module.exports = {
       },
     ],
   },
-  mode: "development",
+  mode: "production",
+  devtool: "source-map",
+  node: {
+    global: false
+  },
   plugins: [
     new CopyWebpackPlugin({
       patterns: ["index.html", "favicon.ico", "favicon.png", "manifest.json"],
