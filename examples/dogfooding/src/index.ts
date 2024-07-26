@@ -11,13 +11,15 @@ import {
 import { Type, Field } from "protobufjs";
 import {
   TelemetryClient,
+  TelemetryPushError,
   TelemetryPushFilter,
   TelemetryType,
 } from "./telemetry_client";
 import { generateRandomNumber, hashNumber } from "./util";
 
 const DEFAULT_CONTENT_TOPIC = "/js-waku-examples/1/message-ratio/utf8";
-const TELEMETRY_URL = process.env.TELEMETRY_URL || "http://localhost:8080/waku-metrics";
+const TELEMETRY_URL =
+  process.env.TELEMETRY_URL || "http://localhost:8080/waku-metrics";
 
 const ProtoSequencedMessage = new Type("SequencedMessage")
   .add(new Field("hash", 1, "string"))
@@ -42,9 +44,13 @@ export async function app(telemetryClient: TelemetryClient) {
   // TODO: https://github.com/waku-org/js-waku/issues/2079
   // Dialing bootstrap peers right on start in order to have Filter subscription initiated properly
   await node.dial("/dns4/node-01.do-ams3.waku.test.status.im/tcp/8000/wss");
-  await node.dial("/dns4/node-01.ac-cn-hongkong-c.waku.test.status.im/tcp/8000/wss");
-  await node.dial("/dns4/node-01.gc-us-central1-a.waku.test.status.im/tcp/8000/wss");
-  
+  await node.dial(
+    "/dns4/node-01.ac-cn-hongkong-c.waku.test.status.im/tcp/8000/wss"
+  );
+  await node.dial(
+    "/dns4/node-01.gc-us-central1-a.waku.test.status.im/tcp/8000/wss"
+  );
+
   await waitForRemotePeer(node);
 
   const peerId = node.libp2p.peerId.toString();
@@ -107,7 +113,17 @@ export async function app(telemetryClient: TelemetryClient) {
           sequenceIndex++;
         }
         if (result.failures.length > 0) {
-          console.error("Failed to send message", result.failures);
+          telemetryClient.push<TelemetryPushError>(
+            result.failures.map((failure) => ({
+              messageType: TelemetryType.LIGHT_PUSH_ERROR,
+              timestamp: Math.floor(new Date().getTime() / 1000),
+              peerId: peerId,
+              peerIdRemote: failure.peerId?.toString(),
+              errorMessage: failure.error.toString(),
+              contentTopic: DEFAULT_CONTENT_TOPIC,
+              pubsubTopic: DefaultPubsubTopic,
+            }))
+          );
         }
         if (sequenceIndex < sequenceTotal) {
           setTimeout(sendMessage, period); // Schedule the next send
@@ -166,10 +182,7 @@ export async function app(telemetryClient: TelemetryClient) {
 }
 
 (async () => {
-  const telemetryClient = new TelemetryClient(
-    TELEMETRY_URL,
-    5000
-  );
+  const telemetryClient = new TelemetryClient(TELEMETRY_URL, 5000);
   const { node, startLightPushSequence, startFilterSubscription } = await app(
     telemetryClient
   );
