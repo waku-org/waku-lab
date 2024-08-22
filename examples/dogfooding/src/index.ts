@@ -32,7 +32,9 @@ const messageSentEvent = new CustomEvent("messageSent");
 
 const wakuNode = async (): Promise<LightNode> => {
   return await createLightNode({
-    contentTopics: [DEFAULT_CONTENT_TOPIC],
+    networkConfig: {
+      contentTopics: [DEFAULT_CONTENT_TOPIC],
+    },
     defaultBootstrap: true,
   });
 };
@@ -43,14 +45,10 @@ export async function app(telemetryClient: TelemetryClient) {
 
   // TODO: https://github.com/waku-org/js-waku/issues/2079
   // Dialing bootstrap peers right on start in order to have Filter subscription initiated properly
-  await node.dial("/dns4/node-01.do-ams3.waku.test.status.im/tcp/8000/wss");
-  await node.dial(
-    "/dns4/node-01.ac-cn-hongkong-c.waku.test.status.im/tcp/8000/wss"
-  );
-  await node.dial(
-    "/dns4/node-01.gc-us-central1-a.waku.test.status.im/tcp/8000/wss"
-  );
-
+  // await node.dial("/dns4/node-01.do-ams3.waku.test.status.im/tcp/8000/wss");
+  // await node.dial("/dns4/node-01.ac-cn-hongkong-c.waku.test.status.im/tcp/8000/wss");
+  // await node.dial("/dns4/node-01.gc-us-central1-a.waku.test.status.im/tcp/8000/wss");
+  
   await waitForRemotePeer(node);
 
   const peerId = node.libp2p.peerId.toString();
@@ -121,7 +119,6 @@ export async function app(telemetryClient: TelemetryClient) {
               peerIdRemote: failure.peerId?.toString(),
               errorMessage: failure.error.toString(),
               contentTopic: DEFAULT_CONTENT_TOPIC,
-              pubsubTopic: DefaultPubsubTopic,
             }))
           );
         }
