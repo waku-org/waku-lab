@@ -71,8 +71,13 @@ export async function app(telemetryClient: TelemetryClient) {
           payload,
           timestamp: new Date(),
         });
+
+        console.log("===");
         console.log("light push successes: ", result.successes.length);
+        console.log(result.successes);
         console.log("light push failures: ", result.failures.length);
+        console.log(result.failures);
+
         if (result.successes.length > 0) {
           // Push to telemetry client
           telemetryClient.push<TelemetryPushFilter>([
