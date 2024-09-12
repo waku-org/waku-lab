@@ -29,6 +29,7 @@ const ProtoSequencedMessage = new Type("SequencedMessage")
 
 const sequenceCompletedEvent = new CustomEvent("sequenceCompleted");
 const messageSentEvent = new CustomEvent("messageSent");
+const messageReceivedEvent = new CustomEvent("messageReceived");
 
 const wakuNode = async (): Promise<LightNode> => {
   return await createLightNode({
@@ -165,6 +166,8 @@ export async function app(telemetryClient: TelemetryClient) {
       messageElement.textContent = `Message: ${sequencedMessage.hash} ${sequencedMessage.index} of ${sequencedMessage.total}`;
       messagesReceived.appendChild(messageElement);
       messagesReceived.appendChild(document.createElement("br"));
+
+      document.dispatchEvent(messageReceivedEvent);
     };
 
     await node.filter.subscribe(decoder, subscriptionCallback);
@@ -197,6 +200,15 @@ export async function app(telemetryClient: TelemetryClient) {
   document.addEventListener("messageSent", () => {
     sentMessagesCount++;
     sentMessagesCounter.textContent = sentMessagesCount.toString();
+  });
+
+  let receivedMessagesCount = 0;
+  const receivedMessagesCounter = document.getElementById(
+    "numReceived"
+  ) as HTMLSpanElement;
+  document.addEventListener("messageReceived", () => {
+    receivedMessagesCount++;
+    receivedMessagesCounter.textContent = receivedMessagesCount.toString();
   });
 
   function startSequence() {
