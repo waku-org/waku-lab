@@ -127,7 +127,7 @@ export async function app(telemetryClient: TelemetryClient) {
               seenTimestamp: timestamp,
               peerId,
               contentTopic: DEFAULT_CONTENT_TOPIC,
-              pubsubTopic: utils.contentTopicToPubsubTopic(DEFAULT_CONTENT_TOPIC),,
+              pubsubTopic: utils.contentTopicToPubsubTopic(DEFAULT_CONTENT_TOPIC),
               ephemeral: false,
               messageHash: reportingHash,
               errorMessage: failure.error.toString(),
