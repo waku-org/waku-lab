@@ -1,49 +1,26 @@
 export enum TelemetryType {
   LIGHT_PUSH_FILTER = "LightPushFilter",
-	LIGHT_PUSH_ERROR   = "LightPushError",
-	GENERIC = "Generic"
 }
 
-// Top level structure of a telemetry request
-export interface TelemetryRequest {
-  id: number;
-  telemetryType: TelemetryType;
-  telemetryData: any; // Using 'any' to represent the raw JSON data
-}
-
-// Common to all telemetry messages
-export interface TelemetryMessage {
+interface TelemetryMessage {
+  type: string;
+  
   timestamp: number;
-  messageType: TelemetryType;
+  contentTopic: string;
+  pubsubTopic: string;
+  peerId: string;
+  errorMessage: string;
+  extraData: string;
 }
 
 export interface TelemetryPushFilter extends TelemetryMessage {
-  peerIdSender: string;
-  peerIdReporter: string;
-  sequenceHash: string;
-  sequenceTotal: number;
-  sequenceIndex: number;
-  contentTopic: string;
-  pubsubTopic: string;
+  type: "LightPushFilter",
+  protocol: string;
+  ephemeral: boolean;
+  seenTimestamp: number;
+  createdAt: number;
+  messageHash: string;
 }
-
-export interface TelemetryPushError extends TelemetryMessage {
-  peerId: string;
-  errorMessage: string;
-  peerIdRemote?: string;
-  contentTopic?: string;
-  pubsubTopic?: string;
-}
-
-export interface TelemetryGeneric extends TelemetryMessage {
-  peerId: string;
-  metricType: string;
-  contentTopic?: string;
-  pubsubTopic?: string;
-  genericData?: string;
-  errorMessage?: string;
-}
-
 
 export class TelemetryClient {
   constructor(
@@ -82,7 +59,7 @@ export class TelemetryClient {
   private async send<T extends TelemetryMessage>(messages: T[]) {
     const telemetryRequests = messages.map((message) => ({
       id: ++this.requestId,
-      telemetryType: message.messageType.toString(),
+      telemetryType: message.type.toString(),
       telemetryData: message
     }));
 
