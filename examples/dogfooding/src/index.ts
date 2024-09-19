@@ -14,9 +14,10 @@ import {
   TelemetryPushFilter,
   TelemetryType,
 } from "./telemetry_client";
-import { generateRandomNumber, sha256 } from "./util";
+import { generateRandomNumber, sha256, buildExtraData, DEFAULT_EXTRA_DATA_STR } from "./util";
 
 const DEFAULT_CONTENT_TOPIC = "/js-waku-examples/1/message-ratio/utf8";
+const DEFAULT_PUBSUB_TOPIC = utils.contentTopicToPubsubTopic(DEFAULT_CONTENT_TOPIC);
 const TELEMETRY_URL =
   process.env.TELEMETRY_URL || "http://localhost:8080/waku-metrics";
 
@@ -83,25 +84,56 @@ export async function app(telemetryClient: TelemetryClient) {
         console.log("light push failures: ", result.failures.length);
         console.log(result.failures);
 
-        if (result.successes.length > 0) {
-          // Push to telemetry client
-          telemetryClient.push<TelemetryPushFilter>([
-            {
+        const successEvents = result
+          .successes
+          .map(async (peerId) => {
+            const extraData = await buildExtraData(node, peerId.toString());
+            return {
               type: TelemetryType.LIGHT_PUSH_FILTER,
               protocol: "lightPush",
               timestamp: timestamp,
               createdAt: timestamp,
               seenTimestamp: timestamp,
-              peerId,
+              peerId: peerId.toString(),
               contentTopic: DEFAULT_CONTENT_TOPIC,
-              pubsubTopic: utils.contentTopicToPubsubTopic(DEFAULT_CONTENT_TOPIC),
+              pubsubTopic: DEFAULT_PUBSUB_TOPIC,
               ephemeral: false,
               messageHash: reportingHash,
               errorMessage: "",
-              extraData: "",
-            }
-          ]);
+              extraData,
+            };
+          });
+        
+        const failureEvents = result
+          .failures
+          .map(async (fail) => {
+            const extraData = await buildExtraData(node, fail.peerId.toString());
+            return {
+              type: TelemetryType.LIGHT_PUSH_FILTER,
+              protocol: "lightPush",
+              timestamp: timestamp,
+              createdAt: timestamp,
+              seenTimestamp: timestamp,
+              peerId: fail.peerId.toString(),
+              contentTopic: DEFAULT_CONTENT_TOPIC,
+              pubsubTopic: DEFAULT_PUBSUB_TOPIC,
+              ephemeral: false,
+              messageHash: reportingHash,
+              errorMessage: fail.error.toString(),
+              extraData,
+            };
+          });
+        
+        const events = await Promise.all([
+          ...successEvents,
+          ...failureEvents,
+        ]);
 
+        if (events.length > 0) {
+          telemetryClient.push<TelemetryPushFilter>(events);
+        }
+
+        if (result.successes.length > 0) {
           // Update ui
           const messageElement = document.createElement("div");
           const messagesSent = document.getElementById("messagesSent");
@@ -116,24 +148,6 @@ export async function app(telemetryClient: TelemetryClient) {
 
           // Increment sequence
           sequenceIndex++;
-        }
-        if (result.failures.length > 0) {
-          telemetryClient.push<TelemetryPushFilter>(
-            result.failures.map((failure) => ({
-              type: TelemetryType.LIGHT_PUSH_FILTER,
-              protocol: "lightPush",
-              timestamp: timestamp,
-              createdAt: timestamp,
-              seenTimestamp: timestamp,
-              peerId,
-              contentTopic: DEFAULT_CONTENT_TOPIC,
-              pubsubTopic: utils.contentTopicToPubsubTopic(DEFAULT_CONTENT_TOPIC),
-              ephemeral: false,
-              messageHash: reportingHash,
-              errorMessage: failure.error.toString(),
-              extraData: "",
-            }))
-          );
         }
         if (sequenceIndex < sequenceTotal) {
           setTimeout(sendMessage, period); // Schedule the next send
@@ -152,7 +166,7 @@ export async function app(telemetryClient: TelemetryClient) {
     const decoder = createDecoder(DEFAULT_CONTENT_TOPIC);
 
     const messagesReceived = document.getElementById("messagesReceived");
-    const subscriptionCallback = (message: DecodedMessage) => {
+    const subscriptionCallback = async (message: DecodedMessage) => {
       const decodedMessage: any = ProtoSequencedMessage.decode(
         message.payload
       );
@@ -162,6 +176,7 @@ export async function app(telemetryClient: TelemetryClient) {
         return;
       }
 
+      const extraData = await buildExtraData(node, peerId);
       const timestamp = Math.floor(new Date().getTime() / 1000);
       telemetryClient.push<TelemetryPushFilter>([
         {
@@ -176,7 +191,7 @@ export async function app(telemetryClient: TelemetryClient) {
           ephemeral: message.ephemeral,
           messageHash: decodedMessage.hash,
           errorMessage: "",
-          extraData: "",
+          extraData,
         },
       ]);
 
@@ -188,7 +203,78 @@ export async function app(telemetryClient: TelemetryClient) {
       document.dispatchEvent(messageReceivedEvent);
     };
 
-    await node.filter.subscribe(decoder, subscriptionCallback);
+    const result = await node.filter.subscribe(decoder, subscriptionCallback);
+
+    let errorEvent = [];
+    if (result.error) {
+      const timestamp = Math.floor(new Date().getTime() / 1000);
+      errorEvent.push({
+        type: TelemetryType.LIGHT_PUSH_FILTER,
+        protocol: "filterCreateSubscription",
+        timestamp,
+        createdAt: timestamp,
+        seenTimestamp: timestamp,
+        peerId: peerId,
+        contentTopic: DEFAULT_CONTENT_TOPIC,
+        pubsubTopic: DEFAULT_PUBSUB_TOPIC,
+        ephemeral: false,
+        messageHash: "",
+        errorMessage: result.error,
+        extraData: DEFAULT_EXTRA_DATA_STR,
+      });
+    }
+    
+    const failEvents = result.results.failures.map(async (fail) => {
+      const extraData = await buildExtraData(node, fail.peerId.toString());
+      const timestamp = Math.floor(new Date().getTime() / 1000);
+      return {
+        type: TelemetryType.LIGHT_PUSH_FILTER,
+        protocol: "filterCreateSubscription",
+        timestamp,
+        createdAt: timestamp,
+        seenTimestamp: timestamp,
+        peerId: fail.peerId.toString(),
+        contentTopic: DEFAULT_CONTENT_TOPIC,
+        pubsubTopic: DEFAULT_PUBSUB_TOPIC,
+        ephemeral: false,
+        messageHash: "",
+        errorMessage: fail.error,
+        extraData,
+      };
+    });
+
+    const successEvents = result.results.successes.map(async (peerId) => {
+      const extraData = await buildExtraData(node, peerId.toString());
+      const timestamp = Math.floor(new Date().getTime() / 1000);
+      return {
+        type: TelemetryType.LIGHT_PUSH_FILTER,
+        protocol: "filterCreateSubscription",
+        timestamp,
+        createdAt: timestamp,
+        seenTimestamp: timestamp,
+        peerId: peerId.toString(),
+        contentTopic: DEFAULT_CONTENT_TOPIC,
+        pubsubTopic: DEFAULT_PUBSUB_TOPIC,
+        ephemeral: false,
+        messageHash: "",
+        errorMessage: "",
+        extraData,
+      };
+    });
+
+    const resolvedEvents = await Promise.all([
+      ...failEvents,
+      ...successEvents,
+    ]);
+
+    const events = [
+      ...errorEvent,
+      ...resolvedEvents,
+    ];
+
+    if (events.length > 0) {
+      telemetryClient.push<TelemetryPushFilter>(events);
+    }
   };
 
   return {
