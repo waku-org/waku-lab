@@ -149,7 +149,6 @@ export async function app(telemetryClient: TelemetryClient) {
           // Increment sequence
           sequenceIndex++;
         }
-
         if (sequenceIndex < sequenceTotal) {
           setTimeout(sendMessage, period); // Schedule the next send
         } else {
