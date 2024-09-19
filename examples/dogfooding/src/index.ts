@@ -218,7 +218,7 @@ export async function app(telemetryClient: TelemetryClient) {
         contentTopic: DEFAULT_CONTENT_TOPIC,
         pubsubTopic: DEFAULT_PUBSUB_TOPIC,
         ephemeral: false,
-        messageHash: "",
+        messageHash: await sha256(generateRandomNumber()),
         errorMessage: result.error,
         extraData: DEFAULT_EXTRA_DATA_STR,
       });
@@ -237,7 +237,7 @@ export async function app(telemetryClient: TelemetryClient) {
         contentTopic: DEFAULT_CONTENT_TOPIC,
         pubsubTopic: DEFAULT_PUBSUB_TOPIC,
         ephemeral: false,
-        messageHash: "",
+        messageHash: await sha256(generateRandomNumber()),
         errorMessage: fail.error,
         extraData,
       };
@@ -256,7 +256,7 @@ export async function app(telemetryClient: TelemetryClient) {
         contentTopic: DEFAULT_CONTENT_TOPIC,
         pubsubTopic: DEFAULT_PUBSUB_TOPIC,
         ephemeral: false,
-        messageHash: "",
+        messageHash: await sha256(generateRandomNumber()),
         errorMessage: "",
         extraData,
       };
