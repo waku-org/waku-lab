@@ -52,7 +52,6 @@ export async function app(telemetryClient: TelemetryClient) {
   });
 
   node.libp2p.addEventListener("peer:discovery", async (event) => {
-    const peerId = node.libp2p.peerId.toString();
     const discoveredPeerId = event.detail.id.toString();
 
     const timestamp = Math.floor(new Date().getTime() / 1000);
@@ -88,11 +87,11 @@ export async function app(telemetryClient: TelemetryClient) {
     const sendMessage = async () => {
       try {
         // TODO(weboko): replace with @waku/message-hash ideally
-        const reportingHash = await sha256(`${sequenceHash}-${sequenceIndex}-${sequenceTotal}`);
+        const messageHash = await sha256(`${sequenceHash}-${sequenceIndex}-${sequenceTotal}`);
 
         const timestamp = Math.floor(new Date().getTime() / 1000);
         const message = ProtoSequencedMessage.create({
-          hash: reportingHash,
+          hash: messageHash,
           seqHash: sequenceHash,
           total: sequenceTotal,
           index: sequenceIndex,
@@ -124,7 +123,7 @@ export async function app(telemetryClient: TelemetryClient) {
               contentTopic: DEFAULT_CONTENT_TOPIC,
               pubsubTopic: DEFAULT_PUBSUB_TOPIC,
               ephemeral: false,
-              messageHash: reportingHash,
+              messageHash: messageHash,
               errorMessage: "",
               extraData,
             };
@@ -144,7 +143,7 @@ export async function app(telemetryClient: TelemetryClient) {
               contentTopic: DEFAULT_CONTENT_TOPIC,
               pubsubTopic: DEFAULT_PUBSUB_TOPIC,
               ephemeral: false,
-              messageHash: reportingHash,
+              messageHash: messageHash,
               errorMessage: fail.error.toString(),
               extraData,
             };
@@ -163,7 +162,7 @@ export async function app(telemetryClient: TelemetryClient) {
           // Update ui
           const messageElement = document.createElement("div");
           const messagesSent = document.getElementById("messagesSent");
-          messageElement.textContent = `Message: ${sequenceHash} ${sequenceIndex} of ${sequenceTotal}`;
+          messageElement.textContent = `Message: ${messageHash} ${sequenceIndex} of ${sequenceTotal}`;
           messagesSent.insertBefore(messageElement, messagesSent.firstChild);
           messagesSent.insertBefore(
             document.createElement("br"),
@@ -211,7 +210,7 @@ export async function app(telemetryClient: TelemetryClient) {
           timestamp,
           createdAt: Math.floor(message.timestamp.getTime() / 1000),
           seenTimestamp: timestamp,
-          peerId: decodedMessage.sender,
+          peerId: peerId,
           contentTopic: message.contentTopic,
           pubsubTopic: message.pubsubTopic,
           ephemeral: message.ephemeral,
@@ -222,7 +221,7 @@ export async function app(telemetryClient: TelemetryClient) {
       ]);
 
       const messageElement = document.createElement("div");
-      messageElement.textContent = `Message: ${decodedMessage.seqHash} ${decodedMessage.index} of ${decodedMessage.total}`;
+      messageElement.textContent = `Message: ${decodedMessage.hash} ${decodedMessage.index} of ${decodedMessage.total}`;
       messagesReceived.appendChild(messageElement);
       messagesReceived.appendChild(document.createElement("br"));
 
