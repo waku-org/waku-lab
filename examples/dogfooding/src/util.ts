@@ -26,7 +26,7 @@ export const buildExtraData = async (node: LightNode, peerId: string): Promise<s
     return JSON.stringify(extraData);
   }
 
-  const hasWebsockes = peer
+  const websocket = peer
     .addresses
     .map(addr => addr.multiaddr.toString())
     .some(addr => addr.includes("ws") || addr.includes("wss"));
@@ -34,7 +34,7 @@ export const buildExtraData = async (node: LightNode, peerId: string): Promise<s
   return JSON.stringify({
     ...extraData,
     peerId,
-    hasWebsockes,
+    websocket,
     enabledProtocols: peer.protocols,
   });
 };
