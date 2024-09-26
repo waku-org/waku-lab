@@ -12,6 +12,7 @@
     "protobufjs": "^7.3.0"
   },
   "devDependencies": {
+    "@libp2p/interface": "^1.7.0",
     "@types/node": "^20.12.11",
     "copy-webpack-plugin": "^11.0.0",
     "eslint": "^8",
