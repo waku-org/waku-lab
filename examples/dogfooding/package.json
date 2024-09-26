@@ -8,10 +8,11 @@
   },
   "dependencies": {
     "@libp2p/peer-id": "^4.1.2",
-    "@waku/sdk": "0.0.28",
+    "@waku/sdk": "0.0.29-d3301ff.0",
     "protobufjs": "^7.3.0"
   },
   "devDependencies": {
+    "@libp2p/interface": "^1.7.0",
     "@types/node": "^20.12.11",
     "copy-webpack-plugin": "^11.0.0",
     "eslint": "^8",

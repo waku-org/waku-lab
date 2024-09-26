@@ -51,6 +51,32 @@ export async function app(telemetryClient: TelemetryClient) {
     contentTopic: DEFAULT_CONTENT_TOPIC,
   });
 
+  node.libp2p.addEventListener("peer:discovery", async (event) => {
+    const peerId = node.libp2p.peerId.toString();
+    const discoveredPeerId = event.detail.id.toString();
+
+    const timestamp = Math.floor(new Date().getTime() / 1000);
+    const extraData = await buildExtraData(node, discoveredPeerId);
+    const hash = await sha256(`${peerId}-${discoveredPeerId}-${timestamp}`);
+
+    telemetryClient.push<TelemetryPushFilter>([
+      {
+        type: TelemetryType.LIGHT_PUSH_FILTER,
+        protocol: "discovery",
+        timestamp,
+        createdAt: timestamp,
+        seenTimestamp: timestamp,
+        peerId: peerId,
+        contentTopic: DEFAULT_CONTENT_TOPIC,
+        pubsubTopic: DEFAULT_PUBSUB_TOPIC,
+        ephemeral: false,
+        messageHash: hash,
+        errorMessage: "",
+        extraData,
+      },
+    ]);
+  });
+
   const startLightPushSequence = async (
     numMessages: number,
     period: number = 3000
@@ -176,7 +202,7 @@ export async function app(telemetryClient: TelemetryClient) {
         return;
       }
 
-      const extraData = await buildExtraData(node, peerId);
+      const extraData = await buildExtraData(node, decodedMessage.sender);
       const timestamp = Math.floor(new Date().getTime() / 1000);
       telemetryClient.push<TelemetryPushFilter>([
         {
@@ -196,7 +222,7 @@ export async function app(telemetryClient: TelemetryClient) {
       ]);
 
       const messageElement = document.createElement("div");
-      messageElement.textContent = `Message: ${decodedMessage.hash} ${decodedMessage.index} of ${decodedMessage.total}`;
+      messageElement.textContent = `Message: ${decodedMessage.seqHash} ${decodedMessage.index} of ${decodedMessage.total}`;
       messagesReceived.appendChild(messageElement);
       messagesReceived.appendChild(document.createElement("br"));
 
