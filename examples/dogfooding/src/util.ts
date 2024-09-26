@@ -2,9 +2,6 @@ import { peerIdFromString } from "@libp2p/peer-id";
 import { Peer } from "@libp2p/interface";
 import type { LightNode } from "@waku/sdk";
 
-// @ts-ignore
-window["peerIdFromString"] = peerIdFromString;
-
 export const generateRandomNumber = (): number => {
     return Math.floor(Math.random() * 1000000);
   };
@@ -18,7 +15,7 @@ export const sha256 = async (number: number | string ): Promise<string> => {
       .join("");
   };
 
-const DEFAULT_EXTRA_DATA = { sdk: "0.0.28" };
+const DEFAULT_EXTRA_DATA = { sdk: "0.0.29-d3301ff.0" };
 export const DEFAULT_EXTRA_DATA_STR = JSON.stringify(DEFAULT_EXTRA_DATA);
 
 export const buildExtraData = async (node: LightNode, peerId: string): Promise<string> => {
