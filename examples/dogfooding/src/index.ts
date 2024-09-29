@@ -7,6 +7,9 @@ import {
   LightNode,
   utils,
 } from "@waku/sdk";
+import { createFromPrivKey } from "@libp2p/peer-id-factory";
+import { unmarshalPrivateKey, generateKeyPairFromSeed } from "@libp2p/crypto/keys";
+import { fromString } from "uint8arrays";
 
 import { Type, Field } from "protobufjs";
 import {
@@ -32,18 +35,31 @@ const messageSentEvent = new CustomEvent("messageSent");
 const messageReceivedEvent = new CustomEvent("messageReceived");
 
 const wakuNode = async (): Promise<LightNode> => {
+  let seed = localStorage.getItem("seed");
+
+  if (!seed) {
+    seed = (await sha256(generateRandomNumber())).slice(0, 32)
+    localStorage.setItem("seed", seed);
+  }
+
+  const privateKey = await generateKeyPairFromSeed("Ed25519", fromString(seed));
+
   return await createLightNode({
     networkConfig: {
       contentTopics: [DEFAULT_CONTENT_TOPIC],
     },
     defaultBootstrap: true,
+    libp2p: {
+      peerId: await createFromPrivKey(await unmarshalPrivateKey(privateKey.bytes))
+    }
   });
 };
 
 export async function app(telemetryClient: TelemetryClient) {
   const node = await wakuNode();
+  (window as any).waku = node;
+  
   await node.start();
-
   await waitForRemotePeer(node);
 
   const peerId = node.libp2p.peerId.toString();
@@ -103,11 +119,8 @@ export async function app(telemetryClient: TelemetryClient) {
           timestamp: new Date(),
         });
 
-        console.log("===");
-        console.log("light push successes: ", result.successes.length);
-        console.log(result.successes);
-        console.log("light push failures: ", result.failures.length);
-        console.log(result.failures);
+        console.log("DEBUG: light push successes: ", result.successes.length, result.successes);
+        console.log("DEBUG: light push failures: ", result.failures.length, result.failures);
 
         const successEvents = result
           .successes
@@ -311,10 +324,9 @@ export async function app(telemetryClient: TelemetryClient) {
 
 (async () => {
   const telemetryClient = new TelemetryClient(TELEMETRY_URL, 5000);
-  const { node, startLightPushSequence, startFilterSubscription } = await app(
+  const { startLightPushSequence, startFilterSubscription } = await app(
     telemetryClient
   );
-  (window as any).waku = node;
 
   const runningScreen = document.getElementById("runningScreen");
   runningScreen.style.display = "block";
@@ -342,7 +354,7 @@ export async function app(telemetryClient: TelemetryClient) {
 
   function startSequence() {
     const numMessages = Math.floor(Math.random() * 16) + 5;
-    const messagePeriod = Math.floor(Math.random() * 2001) + 5000;
+    const messagePeriod = Math.floor(Math.random() * 2001) + 5_000;
     startLightPushSequence(numMessages, messagePeriod);
   }
 

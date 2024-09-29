@@ -7,9 +7,13 @@
     "start": "webpack-dev-server"
   },
   "dependencies": {
-    "@libp2p/peer-id": "^4.1.2",
+    "@libp2p/crypto": "^4.0.1",
+    "@libp2p/peer-id-factory": "^4.2.4",
+    "@multiformats/multiaddr": "^12.3.1",
     "@waku/sdk": "0.0.28",
-    "protobufjs": "^7.3.0"
+    "libp2p": "^1.8.3",
+    "protobufjs": "^7.3.0",
+    "uint8arrays": "^5.1.0"
   },
   "devDependencies": {
     "@libp2p/interface": "^1.7.0",
