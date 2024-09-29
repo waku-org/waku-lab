@@ -10,7 +10,7 @@
     "@libp2p/crypto": "^4.0.1",
     "@libp2p/peer-id-factory": "^4.2.4",
     "@multiformats/multiaddr": "^12.3.1",
-    "@waku/sdk": "0.0.29-d3301ff.0",
+    "@waku/sdk": "0.0.28",
     "libp2p": "^1.8.3",
     "protobufjs": "^7.3.0",
     "uint8arrays": "^5.1.0"
