@@ -58,6 +58,8 @@ const wakuNode = async (): Promise<LightNode> => {
 export async function app(telemetryClient: TelemetryClient) {
   const node = await wakuNode();
   (window as any).waku = node;
+
+  console.log("DEBUG: your peer ID is:", node.libp2p.peerId.toString());
   
   await node.start();
   await waitForRemotePeer(node);
@@ -324,9 +326,12 @@ export async function app(telemetryClient: TelemetryClient) {
 
 (async () => {
   const telemetryClient = new TelemetryClient(TELEMETRY_URL, 5000);
-  const { startLightPushSequence, startFilterSubscription } = await app(
+  const { node, startLightPushSequence, startFilterSubscription } = await app(
     telemetryClient
   );
+
+  const peerIDBlock = document.getElementById("peerID");
+  peerIDBlock.innerText = node.libp2p.peerId.toString();
 
   const runningScreen = document.getElementById("runningScreen");
   runningScreen.style.display = "block";
