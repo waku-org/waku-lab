@@ -50,14 +50,14 @@ const MessageList: React.FC<MessageListProps> = ({ title, messages, showSequence
     <div className="flex-1 min-w-0">
       <h2 className="text-xl font-semibold mb-4 text-gray-700">{title}</h2>
       <div className="bg-gray-50 rounded-lg p-4 h-96 overflow-y-auto border border-gray-200">
-        {Object.entries(groupedMessages).reverse().map(([sequenceId, sequenceMessages]) => (
+        {Object.entries(groupedMessages).map(([sequenceId, sequenceMessages]) => (
           <div key={sequenceId} className={`mb-4 p-2 rounded-lg ${showSequence ? getSequenceColor(Number(sequenceId)) : ''}`}>
             {showSequence && <div className="text-xs font-semibold mb-2">Sequence {sequenceId}</div>}
             {sequenceMessages.map((message: Message, index: number) => (
               <div key={index} className="text-sm mb-2 font-mono bg-white p-2 rounded shadow-sm">
                 {shortenMessage(message.content)}
               </div>
-            ))}
+            )).reverse()}
           </div>
         ))}
       </div>
