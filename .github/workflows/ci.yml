@@ -20,6 +20,7 @@ jobs:
             experimental/rln-js,
             experimental/rln-identity,
             dogfooding,
+            message-monitor,
             flush-notes
           ]
     runs-on: ubuntu-latest
