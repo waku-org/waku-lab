@@ -100,10 +100,10 @@ function App() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-8">
             <MessageList title="Sent Messages" messages={sentMessages} showSequence={true} />
-            <MessageList title="Received Messages" messages={receivedMessages} showSequence={false} />
+            <MessageList title="Received Messages" messages={receivedMessages.reverse()} showSequence={false} />
           </div>
           <div className="space-y-8">
-            <MessageList title="Self-Received Messages" messages={selfReceivedMessages} showSequence={true} />
+            <MessageList title="Self-Received Messages" messages={selfReceivedMessages.reverse()} showSequence={true} />
             <Stats stats={stats} />
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-semibold mb-4 text-gray-700">Node Info</h2>
