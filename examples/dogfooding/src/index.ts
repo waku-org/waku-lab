@@ -3,7 +3,6 @@ import {
   createEncoder,
   createDecoder,
   DecodedMessage,
-  waitForRemotePeer,
   LightNode,
   utils,
 } from "@waku/sdk";
@@ -48,6 +47,7 @@ const wakuNode = async (): Promise<LightNode> => {
     networkConfig: {
       contentTopics: [DEFAULT_CONTENT_TOPIC],
     },
+    numPeersToUse: 2,
     defaultBootstrap: true,
     libp2p: {
       peerId: await createFromPrivKey(await unmarshalPrivateKey(privateKey.bytes))
@@ -59,10 +59,10 @@ export async function app(telemetryClient: TelemetryClient) {
   const node = await wakuNode();
   (window as any).waku = node;
 
-  console.log("DEBUG: your peer ID is:", node.libp2p.peerId.toString());
+  console.log("DEBUG: your peer ID is:", node.peerId.toString());
   
   await node.start();
-  await waitForRemotePeer(node);
+  await node.waitForPeers();
 
   const peerId = node.libp2p.peerId.toString();
   const encoder = createEncoder({
@@ -119,10 +119,10 @@ export async function app(telemetryClient: TelemetryClient) {
         const result = await node.lightPush.send(encoder, {
           payload,
           timestamp: new Date(),
-        });
+        }, {autoRetry: true });
 
-        console.log("DEBUG: light push successes: ", result.successes.length, result.successes);
-        console.log("DEBUG: light push failures: ", result.failures.length, result.failures);
+        console.log("DEBUG: light push successes: ", result.successes.length, result.successes.map(p => p.toString()));
+        console.log("DEBUG: light push failures: ", result.failures.length, result.failures.map(f => ({ error: f.error, peerId: f?.peerId?.toString()})));
 
         const successEvents = result
           .successes
@@ -147,14 +147,14 @@ export async function app(telemetryClient: TelemetryClient) {
         const failureEvents = result
           .failures
           .map(async (fail) => {
-            const extraData = await buildExtraData(node, fail.peerId.toString());
+            const extraData = await buildExtraData(node, fail?.peerId?.toString());
             return {
               type: TelemetryType.LIGHT_PUSH_FILTER,
               protocol: "lightPush",
               timestamp: timestamp,
               createdAt: timestamp,
               seenTimestamp: timestamp,
-              peerId: fail.peerId.toString(),
+              peerId: fail?.peerId?.toString(),
               contentTopic: DEFAULT_CONTENT_TOPIC,
               pubsubTopic: DEFAULT_PUBSUB_TOPIC,
               ephemeral: false,
@@ -195,7 +195,7 @@ export async function app(telemetryClient: TelemetryClient) {
           document.dispatchEvent(sequenceCompletedEvent);
         }
       } catch (error) {
-        console.error("Error sending message", error);
+        console.error("DEBUG: Error sending message", error);
       }
     };
 
@@ -243,7 +243,7 @@ export async function app(telemetryClient: TelemetryClient) {
       document.dispatchEvent(messageReceivedEvent);
     };
 
-    const result = await node.filter.subscribe(decoder, subscriptionCallback);
+    const result = await node.filter.subscribe(decoder, subscriptionCallback, {}, { enableLightPushFilterCheck: true });
 
     let errorEvent = [];
     if (result.error) {
@@ -265,7 +265,7 @@ export async function app(telemetryClient: TelemetryClient) {
     }
     
     const failEvents = result.results.failures.map(async (fail) => {
-      const extraData = await buildExtraData(node, fail.peerId.toString());
+      const extraData = await buildExtraData(node, fail?.peerId?.toString());
       const timestamp = Math.floor(new Date().getTime() / 1000);
       return {
         type: TelemetryType.LIGHT_PUSH_FILTER,
@@ -273,7 +273,7 @@ export async function app(telemetryClient: TelemetryClient) {
         timestamp,
         createdAt: timestamp,
         seenTimestamp: timestamp,
-        peerId: fail.peerId.toString(),
+        peerId: fail?.peerId?.toString(),
         contentTopic: DEFAULT_CONTENT_TOPIC,
         pubsubTopic: DEFAULT_PUBSUB_TOPIC,
         ephemeral: false,
