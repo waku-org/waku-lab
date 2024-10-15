@@ -57,6 +57,10 @@ export class TelemetryClient {
     }
   }
   private async send<T extends TelemetryMessage>(messages: T[]) {
+    if (!window.location.hostname.includes("lab.waku.org")) {
+      return;
+    }
+
     const telemetryRequests = messages.map((message) => ({
       id: ++this.requestId,
       telemetryType: message.type.toString(),
@@ -69,13 +73,12 @@ export class TelemetryClient {
         body: JSON.stringify(telemetryRequests),
       });
       if (res.status !== 201) {
-        console.error("Error sending messages to telemetry service: ", res.status, res.statusText, res.json);
+        console.log("DEBUG: Error sending messages to telemetry service: ", res.status, res.statusText, res.json);
         return false
       }
       return true;
     } catch (e) {
-      console.error("Error sending messages to telemetry service: ", e);
-      console.error("Failed trying to send the following messages: ", telemetryRequests);
+      console.log("DEBUG: Error sending messages to telemetry service", e);
       return false;
     }
   }
