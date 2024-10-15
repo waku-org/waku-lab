@@ -98,7 +98,6 @@ export async function app(telemetryClient: TelemetryClient) {
     numMessages: number,
     period: number = 3000
   ) => {
-    console.log("DEBUG: in startLightPushSequence");
     const sequenceHash = await sha256(generateRandomNumber());
     const sequenceTotal = numMessages;
     let sequenceIndex = 0;
@@ -211,7 +210,6 @@ export async function app(telemetryClient: TelemetryClient) {
       const decodedMessage: any = ProtoSequencedMessage.decode(
         message.payload
       );
-      console.log("DEBUG: subscriptionCallback", decodedMessage.sender, peerId);
 
       // Don't bother reporting messages sent by this same node
       if (decodedMessage.sender === peerId) {
