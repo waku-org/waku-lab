@@ -92,10 +92,12 @@ export async function startLightPushSequence(
       if (success) {
         const messageText = JSON.stringify({ content: `${reportingHash} - ${sequenceIndex + 1} of ${sequenceTotal}`, success: true });
         onMessageSent(messageText, true);
-        sequenceIndex++;
       } else {
-        onMessageSent(JSON.stringify({ content: `Failed to send message ${sequenceIndex + 1} of ${sequenceTotal}`, success: false }), false);
+        const messageText = JSON.stringify({ content: `Failed to send message ${sequenceIndex + 1} of ${sequenceTotal}`, success: false });
+        onMessageSent(messageText, false);
       }
+
+      sequenceIndex++;
 
       if (sequenceIndex < sequenceTotal) {
         let countdown = period / 1000;
@@ -113,7 +115,7 @@ export async function startLightPushSequence(
         }, period);
       } else {
         console.info("Lightpush sequence completed");
-        updateSequenceId(sequenceIndex + 1);
+        updateSequenceId(sequenceIndex);
         updateCountdown(null);
         isRunning.current = false;
         // Start a new sequence after a delay
@@ -121,10 +123,20 @@ export async function startLightPushSequence(
       }
     } catch (error) {
       console.error("Error sending message", error);
-      onMessageSent(JSON.stringify({ content: `Error sending message ${sequenceIndex + 1} of ${sequenceTotal}`, success: false }), false);
-      isRunning.current = false;
-      // Retry starting a new sequence after a delay
-      setTimeout(() => startLightPushSequence(waku, telemetryClient, onMessageSent, updateSequenceId, updateCountdown, isRunning, numMessages, period), period);
+      const messageText = JSON.stringify({ content: `Error sending message ${sequenceIndex + 1} of ${sequenceTotal}`, success: false });
+      onMessageSent(messageText, false);
+      sequenceIndex++;
+      
+      if (sequenceIndex < sequenceTotal) {
+        setTimeout(() => sendMessage(), period);
+      } else {
+        console.info("Lightpush sequence completed with errors");
+        updateSequenceId(sequenceIndex);
+        updateCountdown(null);
+        isRunning.current = false;
+        // Start a new sequence after a delay
+        setTimeout(() => startLightPushSequence(waku, telemetryClient, onMessageSent, updateSequenceId, updateCountdown, isRunning, numMessages, period), period);
+      }
     }
   };
 

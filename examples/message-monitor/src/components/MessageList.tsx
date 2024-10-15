@@ -30,10 +30,14 @@ const MessageList: React.FC<MessageListProps> = ({ title, messages, showSequence
         if (!acc[message.sequenceId]) {
           acc[message.sequenceId] = [];
         }
-        acc[message.sequenceId].unshift(message); // Use unshift instead of push
+        acc[message.sequenceId].push(message);
         return acc;
       }, {} as Record<number, Message[]>)
-    : { 0: messages.slice().reverse() }; // Reverse the messages array
+    : { 0: messages };
+
+  // Sort sequences in descending order
+  const sortedSequences = Object.entries(groupedMessages)
+    .sort((a, b) => Number(b[0]) - Number(a[0]));
 
   if (messages.length === 0) {
     return (
@@ -50,14 +54,16 @@ const MessageList: React.FC<MessageListProps> = ({ title, messages, showSequence
     <div className="flex-1 min-w-0">
       <h2 className="text-xl font-semibold mb-4 text-gray-700">{title}</h2>
       <div className="bg-gray-50 rounded-lg p-4 h-96 overflow-y-auto border border-gray-200">
-        {Object.entries(groupedMessages).map(([sequenceId, sequenceMessages]) => (
+        {sortedSequences.map(([sequenceId, sequenceMessages]) => (
           <div key={sequenceId} className={`mb-4 p-2 rounded-lg ${showSequence ? getSequenceColor(Number(sequenceId)) : ''}`}>
             {showSequence && <div className="text-xs font-semibold mb-2">Sequence {sequenceId}</div>}
-            {sequenceMessages.map((message: Message, index: number) => (
-              <div key={index} className="text-sm mb-2 font-mono bg-white p-2 rounded shadow-sm">
-                {shortenMessage(message.content)}
-              </div>
-            )).reverse()}
+            {sequenceMessages
+              .sort((a, b) => b.timestamp - a.timestamp)
+              .map((message: Message, index: number) => (
+                <div key={index} className="text-sm mb-2 font-mono bg-white p-2 rounded shadow-sm">
+                  {shortenMessage(message.content)}
+                </div>
+              ))}
           </div>
         ))}
       </div>
