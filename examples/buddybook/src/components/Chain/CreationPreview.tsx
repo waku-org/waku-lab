@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
-import ChainPreview from '@/components/Chain/Preview/ChainPreview';
+import { useAccount, useSignMessage } from 'wagmi'
 
 interface FormData {
   title: string;
@@ -13,20 +13,24 @@ interface FormData {
 
 const ChainCreationForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
-    title: '',
-    description: '',
+    title: 'Devcon24 DeFi Dynamo',
+    description: 'A revolutionary blockchain for Devcon 24, focusing on scalable DeFi solutions and cross-chain interoperability.',
   });
   const [errors, setErrors] = useState<Partial<FormData>>({});
-  const [asciiArt, setAsciiArt] = useState<string>('');
   const [showPreview, setShowPreview] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (formData.title) {
-      //TODO: Implement ascii art generation
-      //   const newAsciiArt = generateAsciiArt(formData.title, formData.description);
-      //   setAsciiArt(newAsciiArt);
+  const { address } = useAccount();
+  const { signMessage } = useSignMessage({mutation: {
+    onSuccess(data) {
+      console.log('Message signed:', data);
+      console.log('Form submitted:', formData);
+      setFormData({ title: 'Devcon24 DeFi Dynamo', description: 'A revolutionary blockchain for Devcon 24, focusing on scalable DeFi solutions and cross-chain interoperability.' });
+      setShowPreview(false);
+    },
+    onError(error) {
+      console.error('Error signing message:', error);
     }
-  }, [formData.title, formData.description]);
+  }});
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -34,7 +38,6 @@ const ChainCreationForm: React.FC = () => {
       ...prevData,
       [name]: value,
     }));
-    // Clear error when user starts typing
     if (errors[name as keyof FormData]) {
       setErrors(prevErrors => ({
         ...prevErrors,
@@ -55,13 +58,21 @@ const ChainCreationForm: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleCreateChain = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      // TODO: Handle form submission (to be implemented with Waku integration)
-      console.log('Form submitted:', formData);
       setShowPreview(true);
     }
+  };
+
+  const handleSubmit = async () => {
+    const message = `Chain Creation Request:
+                    Title: ${formData.title}
+                    Description: ${formData.description}
+                    Created by: ${address}
+                      `;
+
+    signMessage({ message });
   };
 
   return (
@@ -70,7 +81,7 @@ const ChainCreationForm: React.FC = () => {
         <CardTitle>Create a New Chain</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleCreateChain} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="title">Chain Title</Label>
             <Input
@@ -98,10 +109,35 @@ const ChainCreationForm: React.FC = () => {
         </form>
       </CardContent>
       {showPreview && (
-        <CardFooter>
-          <ChainPreview title={formData.title} description={formData.description} asciiArt={asciiArt} />
+        <CardFooter className="flex flex-col items-stretch">
+          <ChainPreview title={formData.title} description={formData.description} />
+          <div className="flex justify-end mt-4 space-x-2">
+            <Button variant="outline" onClick={() => setShowPreview(false)}>Edit</Button>
+            <Button onClick={handleSubmit}>Sign</Button>
+          </div>
         </CardFooter>
       )}
+    </Card>
+  );
+};
+
+interface ChainPreviewProps {
+  title: string;
+  description: string;
+}
+
+const ChainPreview: React.FC<ChainPreviewProps> = ({ title, description }) => {
+  return (
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold">Chain Preview</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <h4 className="text-xl font-semibold">{title}</h4>
+          <p className="text-muted-foreground">{description}</p>
+        </div>
+      </CardContent>
     </Card>
   );
 };

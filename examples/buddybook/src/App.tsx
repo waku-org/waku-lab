@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import Header from './components/Header'
-import ChainCreationForm from './components/Chain/Creation/ChainCreationForm'
+import ChainCreationForm from './components/Chain/CreationPreview'
 import { Button } from "@/components/ui/button"
 
 function App() {
