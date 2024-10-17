@@ -4,12 +4,14 @@ import { ConnectKitButton } from 'connectkit';
 import { Button } from "@/components/ui/button";
 import { useWaku } from "@waku/react";
 import { Loader2 } from "lucide-react";
+import { Link, useLocation } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const { isLoading: isWakuLoading, error: wakuError, node: waku } = useWaku();
   const [connections, setConnections] = useState(0);
+  const location = useLocation();
 
   useEffect(() => {
     if (waku) {
@@ -32,7 +34,29 @@ const Header: React.FC = () => {
   return (
     <header className="bg-background border-b border-border">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">BuddyBook</h1>
+        <div className="flex items-center space-x-4">
+          <h1 className="text-2xl font-bold">BuddyBook</h1>
+          <nav>
+            <ul className="flex space-x-4">
+              <li>
+                <Link 
+                  to="/create" 
+                  className={`text-sm ${location.pathname === '/create' ? 'text-primary font-semibold' : 'text-muted-foreground'}`}
+                >
+                  Create Chain
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/view" 
+                  className={`text-sm ${location.pathname === '/view' ? 'text-primary font-semibold' : 'text-muted-foreground'}`}
+                >
+                  View Existing Chains
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        </div>
         <div className="flex items-center space-x-2">
           {isWakuLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
