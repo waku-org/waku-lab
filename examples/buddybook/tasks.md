@@ -1,0 +1,2 @@
+- [ ] waku connections on header should have green/yellow/red color indicator
+  - [ ] clicking on the indicator should show a list of peers 

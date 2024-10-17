@@ -5,26 +5,42 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
 import { useAccount, useSignMessage } from 'wagmi'
+import { useWaku } from '@waku/react';
+import { createMessage, encoder } from '@/lib/waku';
+import type {LightNode} from '@waku/sdk'
 
 interface FormData {
   title: string;
   description: string;
 }
 
+const DEFAULT_FORM_DATA = {
+  title: 'Devcon24 DeFi Dynamo',
+  description: 'A revolutionary blockchain for Devcon 24, focusing on scalable DeFi solutions and cross-chain interoperability.',
+}
+
 const ChainCreationForm: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
-    title: 'Devcon24 DeFi Dynamo',
-    description: 'A revolutionary blockchain for Devcon 24, focusing on scalable DeFi solutions and cross-chain interoperability.',
-  });
+  const [formData, setFormData] = useState<FormData>(DEFAULT_FORM_DATA);
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [showPreview, setShowPreview] = useState<boolean>(false);
 
+  const { node } = useWaku<LightNode>();
+
   const { address } = useAccount();
   const { signMessage } = useSignMessage({mutation: {
-    onSuccess(data) {
+    async onSuccess(data) {
       console.log('Message signed:', data);
-      console.log('Form submitted:', formData);
-      setFormData({ title: 'Devcon24 DeFi Dynamo', description: 'A revolutionary blockchain for Devcon 24, focusing on scalable DeFi solutions and cross-chain interoperability.' });
+      if (!node) return;
+      const wakuMessage = createMessage({
+        title: formData.title,
+        description: formData.description,
+        signedMessage: data,
+        timestamp: Date.now()
+      })
+      const {failures, successes} = await node.lightPush.send(encoder, wakuMessage);
+      console.log('Failures:', failures);
+      console.log('Successes:', successes);
+      setFormData(DEFAULT_FORM_DATA);
       setShowPreview(false);
     },
     onError(error) {

@@ -3,15 +3,27 @@ import './App.css'
 import Header from './components/Header'
 import ChainCreationForm from './components/Chain/CreationPreview'
 import { Button } from "@/components/ui/button"
+import { useWaku } from "@waku/react"
+import { Loader2 } from "lucide-react"
 
 function App() {
   const [showChainCreation, setShowChainCreation] = useState(false)
-
+  const { isLoading: isWakuLoading, error: wakuError } = useWaku();
+  
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
       <main className="container mx-auto px-4 py-8">
-        {showChainCreation ? (
+        {isWakuLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+        ) : wakuError ? (
+          <div className="text-center text-red-500">
+            <p>Error connecting to Waku network</p>
+            <p className="text-sm">{wakuError}</p>
+          </div>
+        ) : showChainCreation ? (
           <ChainCreationForm />
         ) : (
           <div className="space-y-6 text-center">

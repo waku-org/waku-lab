@@ -7,6 +7,9 @@ import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
 import App from './App.tsx'
 import './index.css'
 import { env } from './env'
+import { LightNodeProvider } from "@waku/react";
+
+const WAKU_NODE_OPTIONS = { defaultBootstrap: true };
 
 const config = createConfig(
   getDefaultConfig({
@@ -21,12 +24,16 @@ const config = createConfig(
 
 const queryClient = new QueryClient()
 
+
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <ConnectKitProvider>
-          <App />
+          <LightNodeProvider options={WAKU_NODE_OPTIONS}>
+            <App />
+          </LightNodeProvider>
         </ConnectKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
