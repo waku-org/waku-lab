@@ -3,7 +3,7 @@ import { useAccount, useSignMessage } from 'wagmi';
 import type { LightNode } from '@waku/interfaces';
 import { useWaku } from '@waku/react';
 import { createMessage, encoder, BlockPayload } from '@/lib/waku';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import QRCode from '@/components/QRCode';
@@ -82,6 +82,9 @@ const SignChain: React.FC<SignChainProps> = ({ block, onSuccess }) => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Sign Chain</DialogTitle>
+            <DialogDescription>
+              Review the block details and sign to add your signature to the chain.
+            </DialogDescription>
           </DialogHeader>
           <QRCode data={block} />
           {error && <p className="text-sm text-destructive">{error}</p>}
