@@ -5,21 +5,26 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { useAccount, useSignMessage } from 'wagmi'
-import { useWaku } from '@waku/react';
-import { createMessage, encoder } from '@/lib/waku';
-import type {LightNode} from '@waku/sdk'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Loader2 } from "lucide-react"
 import QRCode from '@/components/QRCode';
+import { v4 as uuidv4 } from 'uuid';
+import { useWaku } from '@waku/react';
+import { LightNode } from '@waku/sdk';
+import { createMessage, encoder } from '@/lib/waku';
 
 interface FormData {
   title: string;
   description: string;
+  uuid: string;
 }
 
-const DEFAULT_FORM_DATA = {
+
+
+const DEFAULT_FORM_DATA: FormData = {
   title: 'Devcon24 DeFi Dynamo',
   description: 'A revolutionary blockchain for Devcon 24, focusing on scalable DeFi solutions and cross-chain interoperability.',
+  uuid: uuidv4(),
 }
 
 const ChainCreationForm: React.FC = () => {
@@ -30,40 +35,38 @@ const ChainCreationForm: React.FC = () => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [sendError, setSendError] = useState<string | null>(null);
   const [signedMessage, setSignedMessage] = useState<string | null>(null);
+
   const { node } = useWaku<LightNode>();
 
   const { address } = useAccount();
-  const { signMessage } = useSignMessage({mutation: {
-    async onSuccess(data) {
-      setSignedMessage(data);
-      console.log('Message signed:', data);
-      if (!node) return;
-      const wakuMessage = createMessage({
+  const { signMessage } = useSignMessage({
+   mutation: {
+    async onSuccess(signature: string) {      
+      if (!address || !node) return;
+
+      setSignedMessage(signature);
+      const message = createMessage({
+        chainUUID: formData.uuid,
+        blockUUID: uuidv4(),
         title: formData.title,
         description: formData.description,
-        signedMessage: data,
-        timestamp: Date.now()
-      })
-      const {failures, successes} = await node.lightPush.send(encoder, wakuMessage);
-      console.log('Failures:', failures);
-      console.log('Successes:', successes);
-      if (failures.length > 0 || successes.length === 0) {
-        console.error('Error sending message to Waku network');
-        setIsSigning(false);
-        setSendError('Failed to send message. Please try signing again.');
-      } else {
-        setFormData(DEFAULT_FORM_DATA);
-        setIsSigning(false);
-        setIsSuccess(true);
-        setSendError(null);
-      }
+        signedMessage: signature,
+        timestamp: Date.now(),
+        signatures: [{address, signature}],
+        parentBlockUUID: null
+      });
+
+      await node?.lightPush.send(encoder, message)
+      setIsSuccess(true);
+      setIsSigning(false);
     },
-    onError(error) {
+    onError(error: Error) {
       console.error('Error signing message:', error);
       setIsSigning(false);
       setSendError('Error signing message. Please try again.');
     }
-  }});
+   }
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -101,12 +104,12 @@ const ChainCreationForm: React.FC = () => {
   const handleSubmit = async () => {
     setIsSigning(true);
     setSendError(null);
-    const message = `Chain Creation Request:
+    const message = `Create Chain:
+                    Chain UUID: ${formData.uuid}
                     Title: ${formData.title}
                     Description: ${formData.description}
-                    Created by: ${address}
-                      `;
-
+                    Timestamp: ${new Date().getTime()}
+                    Signed by: ${address}`;
     signMessage({ message });
   };
 
@@ -183,14 +186,18 @@ const ChainCreationForm: React.FC = () => {
               {signedMessage && (
                 <QRCode
                   data={{
+                    chainUUID: formData.uuid,
+                    blockUUID: uuidv4(),
                     title: formData.title,
                     description: formData.description,
                     signedMessage: signedMessage,
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
+                    signatures: [{address: address!, signature: signedMessage}],
+                    parentBlockUUID: null
                   }}
                 />
               )}
-            </>
+              </>
           )}
         </DialogContent>
       </Dialog>

@@ -61,7 +61,7 @@ function App() {
     try {
       setWakuStatus(prev => ({ ...prev, filter: 'in-progress' }));
       await subscribeToFilter(node as LightNode, (message) => {
-        setChainsData((prevChainsData) => [...prevChainsData, message]);
+        handleChainUpdate(message); // Use the same function for both updates
       })
       setWakuStatus(prev => ({ ...prev, filter: 'success' }));
     } catch (error) {
@@ -79,13 +79,24 @@ function App() {
     );
   }
 
+  const handleChainUpdate = (newBlock: BlockPayload) => {
+    setChainsData(prevChains => {
+      // Check if the block already exists
+      const blockExists = prevChains.some(block => block.blockUUID === newBlock.blockUUID);
+      if (blockExists) {
+        return prevChains; // Don't add duplicate blocks
+      }
+      return [...prevChains, newBlock];
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header wakuStatus={wakuStatus} />
       <main className="container mx-auto px-4 py-8">
         <Routes>
           <Route path="/create" element={<ChainCreationForm />} />
-          <Route path="/view" element={<ChainList chainsData={chainsData} />} />
+          <Route path="/view" element={<ChainList chainsData={chainsData} onChainUpdate={handleChainUpdate} />} />
           <Route path="/" element={<Home />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
