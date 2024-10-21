@@ -126,7 +126,9 @@
 
       statusDiv.innerHTML = "<p>Creating Waku node.</p>";
       const node = await createLightNode({
-        contentTopics: [ContentTopic],
+        networkConfig: {
+          contentTopics: [ContentTopic],
+        },
         defaultBootstrap: true,
       });
 
