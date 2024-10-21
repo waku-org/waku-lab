@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { type BlockPayload } from '@/lib/waku';
 import SignChain from '@/components/Chain/SignChain';
+import { useEnsName } from 'wagmi';
 
 interface ChainListProps {
   chainsData: BlockPayload[];
@@ -48,9 +49,7 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate }) => {
             </Card>
           ) : (
             <div className="flex-grow">
-              <p className="text-sm">
-                Signed by: {block.signatures[0].address.slice(0, 6)}...{block.signatures[0].address.slice(-4)}
-              </p>
+              <SignerName address={block.signatures[0].address} />
             </div>
           )}
         </div>
@@ -80,6 +79,16 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate }) => {
         )}
       </CardContent>
     </Card>
+  );
+};
+
+const SignerName: React.FC<{ address: `0x${string}` }> = ({ address }) => {
+  const { data: ensName } = useEnsName({ address })
+  
+  return (
+    <p className="text-sm">
+      Signed by: {ensName || `${address.slice(0, 6)}...${address.slice(-4)}`}
+    </p>
   );
 };
 

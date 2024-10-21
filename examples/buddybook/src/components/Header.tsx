@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAccount, useDisconnect } from 'wagmi';
+import { useAccount, useDisconnect, useEnsName } from 'wagmi';
 import { ConnectKitButton } from 'connectkit';
 import { Button } from "@/components/ui/button";
 import { useWaku } from "@waku/react";
@@ -24,6 +24,7 @@ const Header: React.FC<HeaderProps> = ({ wakuStatus }) => {
   const { isLoading: isWakuLoading, error: wakuError, node: waku } = useWaku();
   const [connections, setConnections] = useState(0);
   const location = useLocation();
+  const { data: ensName } = useEnsName({ address });
 
   useEffect(() => {
     if (waku) {
@@ -101,7 +102,7 @@ const Header: React.FC<HeaderProps> = ({ wakuStatus }) => {
           {isConnected ? (
             <>
               <span className="text-sm text-muted-foreground">
-                {address?.slice(0, 6)}...{address?.slice(-4)}
+                {ensName || (address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '')}
               </span>
               <Button variant="outline" size="sm" onClick={() => disconnect()}>
                 Logout

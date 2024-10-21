@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAccount, useSignMessage } from 'wagmi';
+import { useAccount, useSignMessage, useEnsName } from 'wagmi';
 import type { LightNode } from '@waku/interfaces';
 import { useWaku } from '@waku/react';
 import { createMessage, encoder, BlockPayload } from '@/lib/waku';
@@ -19,6 +19,7 @@ const SignChain: React.FC<SignChainProps> = ({ block, onSuccess }) => {
   const [isSigning, setIsSigning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { address } = useAccount();
+  const { data: ensName } = useEnsName({ address });
   const { node } = useWaku<LightNode>();
   const { signMessage } = useSignMessage({
     mutation: {
@@ -71,7 +72,7 @@ const SignChain: React.FC<SignChainProps> = ({ block, onSuccess }) => {
                     Description: ${block.description}
                     Timestamp: ${new Date().getTime()}
                     Parent Block UUID: ${block.parentBlockUUID}
-                    Signed by: ${address}`;
+                    Signed by: ${ensName || address}`;
     signMessage({ message });
   };
 
