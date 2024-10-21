@@ -3,11 +3,14 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { useAccount, useSignMessage } from 'wagmi'
 import { useWaku } from '@waku/react';
 import { createMessage, encoder } from '@/lib/waku';
 import type {LightNode} from '@waku/sdk'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Loader2 } from "lucide-react"
+import QRCode from '@/components/QRCode';
 
 interface FormData {
   title: string;
@@ -22,13 +25,17 @@ const DEFAULT_FORM_DATA = {
 const ChainCreationForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(DEFAULT_FORM_DATA);
   const [errors, setErrors] = useState<Partial<FormData>>({});
-  const [showPreview, setShowPreview] = useState<boolean>(false);
-
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [isSigning, setIsSigning] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [signedMessage, setSignedMessage] = useState<string | null>(null);
   const { node } = useWaku<LightNode>();
 
   const { address } = useAccount();
   const { signMessage } = useSignMessage({mutation: {
     async onSuccess(data) {
+      setSignedMessage(data);
       console.log('Message signed:', data);
       if (!node) return;
       const wakuMessage = createMessage({
@@ -40,11 +47,21 @@ const ChainCreationForm: React.FC = () => {
       const {failures, successes} = await node.lightPush.send(encoder, wakuMessage);
       console.log('Failures:', failures);
       console.log('Successes:', successes);
-      setFormData(DEFAULT_FORM_DATA);
-      setShowPreview(false);
+      if (failures.length > 0 || successes.length === 0) {
+        console.error('Error sending message to Waku network');
+        setIsSigning(false);
+        setSendError('Failed to send message. Please try signing again.');
+      } else {
+        setFormData(DEFAULT_FORM_DATA);
+        setIsSigning(false);
+        setIsSuccess(true);
+        setSendError(null);
+      }
     },
     onError(error) {
       console.error('Error signing message:', error);
+      setIsSigning(false);
+      setSendError('Error signing message. Please try again.');
     }
   }});
 
@@ -77,11 +94,13 @@ const ChainCreationForm: React.FC = () => {
   const handleCreateChain = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      setShowPreview(true);
+      setShowModal(true);
     }
   };
 
   const handleSubmit = async () => {
+    setIsSigning(true);
+    setSendError(null);
     const message = `Chain Creation Request:
                     Title: ${formData.title}
                     Description: ${formData.description}
@@ -89,6 +108,13 @@ const ChainCreationForm: React.FC = () => {
                       `;
 
     signMessage({ message });
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setIsSuccess(false);
+    setIsSigning(false);
+    setSendError(null);
   };
 
   return (
@@ -124,36 +150,50 @@ const ChainCreationForm: React.FC = () => {
           <Button type="submit" className="w-full">Create Chain</Button>
         </form>
       </CardContent>
-      {showPreview && (
-        <CardFooter className="flex flex-col items-stretch">
-          <ChainPreview title={formData.title} description={formData.description} />
-          <div className="flex justify-end mt-4 space-x-2">
-            <Button variant="outline" onClick={() => setShowPreview(false)}>Edit</Button>
-            <Button onClick={handleSubmit}>Sign</Button>
-          </div>
-        </CardFooter>
-      )}
-    </Card>
-  );
-};
-
-interface ChainPreviewProps {
-  title: string;
-  description: string;
-}
-
-const ChainPreview: React.FC<ChainPreviewProps> = ({ title, description }) => {
-  return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold">Chain Preview</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <h4 className="text-xl font-semibold">{title}</h4>
-          <p className="text-muted-foreground">{description}</p>
-        </div>
-      </CardContent>
+      <Dialog open={showModal} onOpenChange={handleCloseModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{isSuccess ? "Chain Created" : "Chain Preview"}</DialogTitle>
+          </DialogHeader>
+          {!isSuccess ? (
+            <>
+              <div className="space-y-4">
+                <h4 className="text-xl font-semibold">{formData.title}</h4>
+                <p className="text-muted-foreground">{formData.description}</p>
+                {sendError && <p className="text-sm text-destructive">{sendError}</p>}
+              </div>
+              <DialogFooter className="sm:justify-start">
+                <Button type="button" variant="secondary" onClick={handleCloseModal}>
+                  Edit
+                </Button>
+                <Button type="button" onClick={handleSubmit} disabled={isSigning}>
+                  {isSigning ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Signing...
+                    </>
+                  ) : (
+                    'Sign'
+                  )}
+                </Button>
+              </DialogFooter>
+            </>
+          ) : (
+            <>
+              {signedMessage && (
+                <QRCode
+                  data={{
+                    title: formData.title,
+                    description: formData.description,
+                    signedMessage: signedMessage,
+                    timestamp: Date.now()
+                  }}
+                />
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };

@@ -52,21 +52,21 @@ export async function getMessagesFromStore(node: LightNode) {
 }
 
 export async function subscribeToFilter(node: LightNode, callback: (message: BlockPayload) => void) {
-    console.log({
-        currConnections: node.libp2p.getConnections().length
-    })
     const {error, subscription, results} = await node.filter.subscribe([decoder], (message) => {
         console.log('message received from filter', message)
         if (message.payload) {
             const blockPayload = block.decode(message.payload) as unknown as BlockPayload;
             callback(blockPayload);
         }
-    }, {forceUseAllPeers: true, autoRetry: true});
-    console.log(results)
+    }, {forceUseAllPeers: true});
+
+    console.log("results", results)
+    
     if (error) {
         console.log("Error subscribing to filter", error)
     }
-    console.log("Subscribed to filter", subscription)
 
-    return subscription;
+    if (!subscription || error || results.successes.length === 0 ||results.failures.length >0) {
+        throw new Error("Failed to subscribe to filter")
+    }
 }

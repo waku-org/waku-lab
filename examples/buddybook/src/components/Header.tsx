@@ -6,7 +6,19 @@ import { useWaku } from "@waku/react";
 import { Loader2 } from "lucide-react";
 import { Link, useLocation } from 'react-router-dom';
 
-const Header: React.FC = () => {
+// Add these new types
+type Status = 'success' | 'in-progress' | 'error';
+
+interface WakuStatus {
+  filter: Status;
+  store: Status;
+}
+
+interface HeaderProps {
+  wakuStatus: WakuStatus;
+}
+
+const Header: React.FC<HeaderProps> = ({ wakuStatus }) => {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const { isLoading: isWakuLoading, error: wakuError, node: waku } = useWaku();
@@ -30,6 +42,17 @@ const Header: React.FC = () => {
       };
     }
   }, [waku]);
+
+  const getStatusColor = (status: Status) => {
+    switch (status) {
+      case 'success':
+        return 'bg-green-500';
+      case 'in-progress':
+        return 'bg-yellow-500';
+      case 'error':
+        return 'bg-red-500';
+    }
+  };
 
   return (
     <header className="bg-background border-b border-border">
@@ -58,6 +81,14 @@ const Header: React.FC = () => {
           </nav>
         </div>
         <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1">
+            <span className="text-sm text-muted-foreground">Filter:</span>
+            <div className={`w-3 h-3 rounded-full ${getStatusColor(wakuStatus.filter)}`}></div>
+          </div>
+          <div className="flex items-center space-x-1">
+            <span className="text-sm text-muted-foreground">Store:</span>
+            <div className={`w-3 h-3 rounded-full ${getStatusColor(wakuStatus.store)}`}></div>
+          </div>
           {isWakuLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : wakuError ? (
