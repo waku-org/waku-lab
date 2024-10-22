@@ -1,27 +1,15 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { WagmiProvider, createConfig, http } from 'wagmi'
-import { mainnet } from 'wagmi/chains'
+import { WagmiProvider } from 'wagmi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
+import { ConnectKitProvider} from 'connectkit'
 import { BrowserRouter as Router } from 'react-router-dom'
 import App from './App.tsx'
 import './index.css'
-import { env } from './env'
 import { LightNodeProvider } from "@waku/react";
+import { config } from './lib/walletConnect.ts'
+import { WAKU_NODE_OPTIONS } from './lib/waku.ts'
 
-const WAKU_NODE_OPTIONS = { defaultBootstrap: true };
-
-const config = createConfig(
-  getDefaultConfig({
-    appName: 'BuddyBook',
-    walletConnectProjectId: env.VITE_WALLETCONNECT_PROJECT_ID,
-    chains: [mainnet],
-    transports: {
-      [mainnet.id]: http(),
-    },
-  }),
-)
 
 const queryClient = new QueryClient()
 

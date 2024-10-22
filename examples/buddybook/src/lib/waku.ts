@@ -1,6 +1,9 @@
 import { createEncoder, createDecoder, type LightNode } from "@waku/sdk";
 import protobuf from 'protobufjs';
 
+export const WAKU_NODE_OPTIONS = { defaultBootstrap: true };
+
+
 export type Signature = {
   address: `0x${string}`;
   signature: string;
