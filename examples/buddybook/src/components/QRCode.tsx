@@ -2,6 +2,7 @@ import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { BlockPayload } from '@/lib/waku';
 import { Button } from '@/components/ui/button';
+import { useEnsName } from 'wagmi';
 
 interface QRCodeProps {
   data: BlockPayload;
@@ -24,7 +25,7 @@ const QRCode: React.FC<QRCodeProps> = ({ data, size = 256, onSign }) => {
         <p><strong>Signatures:</strong></p>
         <ul>
           {data.signatures.map((sig, index) => (
-            <li key={index}>{`${sig.address.slice(0, 6)}...${sig.address.slice(-4)}`}</li>
+            <SignatureItem key={index} address={sig.address} />
           ))}
         </ul>
       </div>
@@ -36,6 +37,16 @@ const QRCode: React.FC<QRCodeProps> = ({ data, size = 256, onSign }) => {
       />
       {onSign && <Button onClick={onSign}>Sign This Block</Button>}
     </div>
+  );
+};
+
+const SignatureItem: React.FC<{ address: `0x${string}` }> = ({ address }) => {
+  const { data: ensName } = useEnsName({ address });
+  
+  return (
+    <li>
+      {ensName || `${address.slice(0, 6)}...${address.slice(-4)}`}
+    </li>
   );
 };
 
