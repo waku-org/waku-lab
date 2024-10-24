@@ -9,6 +9,8 @@ import { useWaku } from "@waku/react"
 import { Loader2 } from "lucide-react"
 import { Routes, Route, Navigate, Link } from 'react-router-dom'
 import { BlockPayload, getMessagesFromStore, subscribeToFilter } from './lib/waku'
+import TelemetryOptIn from './components/TelemetryOptIn';
+import TelemetryPage from './components/TelemetryPage';
 
 type Status = 'success' | 'in-progress' | 'error';
 
@@ -26,7 +28,15 @@ function App() {
     filter: 'in-progress',
     store: 'in-progress',
   });
-  
+  const [telemetryOptIn, setTelemetryOptIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const storedOptIn = localStorage.getItem('telemetryOptIn');
+    if (storedOptIn !== null) {
+      setTelemetryOptIn(storedOptIn === 'true');
+    }
+  }, []);
+
   useEffect(() => {
     if (isWakuLoading || !node || node.libp2p.getConnections().length === 0 || chainsData.length > 0 || isListening)  return;
 
@@ -37,6 +47,11 @@ function App() {
     
     
   }, [node, isWakuLoading, wakuStatus])
+
+  const handleTelemetryOptIn = (optIn: boolean) => {
+    setTelemetryOptIn(optIn);
+    localStorage.setItem('telemetryOptIn', optIn.toString());
+  };
 
   if (isWakuLoading) {
     return (
@@ -90,6 +105,10 @@ function App() {
     });
   };
 
+  if (telemetryOptIn === null) {
+    return <TelemetryOptIn onOptIn={handleTelemetryOptIn} />;
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header wakuStatus={wakuStatus} />
@@ -99,6 +118,7 @@ function App() {
           <Route path="/view" element={<ChainList chainsData={chainsData} onChainUpdate={handleChainUpdate} />} />
           <Route path="/" element={<Home />} />
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/telemetry" element={<TelemetryPage />} />
         </Routes>
       </main>
     </div>

@@ -1,2 +1,7 @@
 - [ ] waku connections on header should have green/yellow/red color indicator
   - [ ] clicking on the indicator should show a list of peers 
+- [ ] chains can't be signed twice by an address
+- [ ] generate waku peer id using the wallet address
+- [ ] telemetry
+  - [ x ] disclaimer
+  - [ ] functionality

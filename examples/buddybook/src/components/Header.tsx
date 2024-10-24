@@ -78,6 +78,14 @@ const Header: React.FC<HeaderProps> = ({ wakuStatus }) => {
                   View Existing Chains
                 </Link>
               </li>
+              <li>
+                <Link 
+                  to="/telemetry" 
+                  className={`text-sm ${location.pathname === '/telemetry' ? 'text-primary font-semibold' : 'text-muted-foreground'}`}
+                >
+                  Telemetry
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>
