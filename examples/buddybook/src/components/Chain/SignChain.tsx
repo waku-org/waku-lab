@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAccount, useSignMessage, useEnsName } from 'wagmi';
 import type { LightNode } from '@waku/interfaces';
 import { useWaku } from '@waku/react';
@@ -18,14 +18,30 @@ const SignChain: React.FC<SignChainProps> = ({ block, onSuccess }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [alreadySigned, setAlreadySigned] = useState(false);
   const { address } = useAccount();
   const { data: ensName } = useEnsName({ address });
   const { node } = useWaku<LightNode>();
+
+  useEffect(() => {
+    if (address) {
+      const hasAlreadySigned = block.signatures.some(sig => sig.address.toLowerCase() === address.toLowerCase());
+      setAlreadySigned(hasAlreadySigned);
+    }
+  }, [address, block.signatures]);
+
   const { signMessage } = useSignMessage({
     mutation: {
       async onSuccess(signature) {
         if (!address || !node) return;
         
+        // Check if the address has already signed
+        if (block.signatures.some(sig => sig.address.toLowerCase() === address.toLowerCase())) {
+          setError('You have already signed this chain.');
+          setIsSigning(false);
+          return;
+        }
+
         const newBlock: BlockPayload = {
           chainUUID: block.chainUUID,
           blockUUID: uuidv4(),
@@ -63,6 +79,10 @@ const SignChain: React.FC<SignChainProps> = ({ block, onSuccess }) => {
   });
 
   const handleSign = () => {
+    if (alreadySigned) {
+      setError('You have already signed this chain.');
+      return;
+    }
     setIsSigning(true);
     setError(null);
     const message = `Sign Block:
@@ -78,25 +98,31 @@ const SignChain: React.FC<SignChainProps> = ({ block, onSuccess }) => {
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>Sign Chain</Button>
+      <Button onClick={() => setIsOpen(true)} disabled={alreadySigned}>
+        {alreadySigned ? 'Already Signed' : 'Sign Chain'}
+      </Button>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Sign Chain</DialogTitle>
             <DialogDescription>
-              Review the block details and sign to add your signature to the chain.
+              {alreadySigned 
+                ? 'You have already signed this chain.'
+                : 'Review the block details and sign to add your signature to the chain.'}
             </DialogDescription>
           </DialogHeader>
           <QRCode data={block} />
           {error && <p className="text-sm text-destructive">{error}</p>}
           <DialogFooter>
             <Button variant="secondary" onClick={() => setIsOpen(false)}>Cancel</Button>
-            <Button onClick={handleSign} disabled={isSigning}>
+            <Button onClick={handleSign} disabled={isSigning || alreadySigned}>
               {isSigning ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Signing...
                 </>
+              ) : alreadySigned ? (
+                'Already Signed'
               ) : (
                 'Sign'
               )}
