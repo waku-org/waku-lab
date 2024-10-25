@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button"
 import { type LightNode } from "@waku/sdk"
 import { useWaku } from "@waku/react"
 import { Loader2 } from "lucide-react"
-import { Routes, Route, Navigate, Link } from 'react-router-dom'
+import { Routes, Route, Navigate, Link, useParams } from 'react-router-dom'
 import { BlockPayload, getMessagesFromStore, subscribeToFilter } from './lib/waku'
 import TelemetryOptIn from './components/TelemetryOptIn';
 import TelemetryPage from './components/TelemetryPage';
+import SignSharedChain from './components/Chain/SignSharedChain'
 
 type Status = 'success' | 'in-progress' | 'error';
 
@@ -29,6 +30,7 @@ function App() {
     store: 'in-progress',
   });
   const [telemetryOptIn, setTelemetryOptIn] = useState<boolean | null>(null);
+  const [isLoadingChains, setIsLoadingChains] = useState(true);
 
   useEffect(() => {
     const storedOptIn = localStorage.getItem('telemetryOptIn');
@@ -65,12 +67,15 @@ function App() {
     console.log("Starting message listening")
     try {
       setWakuStatus(prev => ({ ...prev, store: 'in-progress' }));
+      setIsLoadingChains(true);
       const storeMessages = await getMessagesFromStore(node as LightNode)
       setChainsData(storeMessages)
       setWakuStatus(prev => ({ ...prev, store: 'success' }));
     } catch (error) {
       console.error("Error fetching messages from store:", error);
       setWakuStatus(prev => ({ ...prev, store: 'error' }));
+    } finally {
+      setIsLoadingChains(false);
     }
 
     try {
@@ -115,10 +120,11 @@ function App() {
       <main className="container mx-auto px-4 py-8">
         <Routes>
           <Route path="/create" element={<ChainCreationForm />} />
-          <Route path="/view" element={<ChainList chainsData={chainsData} onChainUpdate={handleChainUpdate} />} />
+          <Route path="/view" element={<ChainList chainsData={chainsData} onChainUpdate={handleChainUpdate} isLoading={isLoadingChains} />} />
           <Route path="/" element={<Home />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/sign/:chainUUID/:blockUUID" element={<SignSharedChain chainsData={chainsData} onChainUpdate={handleChainUpdate} />} />
           <Route path="/telemetry" element={<TelemetryPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
     </div>

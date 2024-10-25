@@ -1,15 +1,20 @@
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent} from "@/components/ui/card";
 import { type BlockPayload } from '@/lib/waku';
 import SignChain from '@/components/Chain/SignChain';
 import { useEnsName } from 'wagmi';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import QRCode from '@/components/QRCode';
+import { Loader2 } from "lucide-react";
 
 interface ChainListProps {
   chainsData: BlockPayload[];
   onChainUpdate: (newBlock: BlockPayload) => void;
+  isLoading: boolean;
 }
 
-const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate }) => {
+const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoading }) => {
   const handleChainUpdate = (newBlock: BlockPayload) => {
     onChainUpdate(newBlock);
   };
@@ -17,6 +22,8 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate }) => {
   const renderBlock = (block: BlockPayload, depth: number = 0) => {
     const childBlocks = chainsData.filter(b => b.parentBlockUUID === block.blockUUID);
     const totalSignatures = block.signatures.length + childBlocks.reduce((acc, child) => acc + child.signatures.length, 0);
+
+    const shareUrl = `${window.location.origin}/sign/${block.chainUUID ?? block.blockUUID}/${block.blockUUID}`;
 
     return (
       <li key={`${block.blockUUID}-${depth}`} className="mb-4">
@@ -42,8 +49,28 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate }) => {
                 <p className="text-sm text-muted-foreground">
                   Block UUID: {block.blockUUID}
                 </p>
-                <div className="mt-2">
+                <div className="mt-2 space-x-2">
                   <SignChain block={block} onSuccess={handleChainUpdate} />
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline">Share</Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Share this Chain</DialogTitle>
+                      </DialogHeader>
+                      <div className="flex flex-col items-center space-y-4">
+                        <QRCode text={shareUrl} width={200} height={200} />
+                        <p className="text-sm text-center break-all">{shareUrl}</p>
+                        <Button
+                          onClick={() => navigator.clipboard.writeText(shareUrl)}
+                          variant="outline"
+                        >
+                          Copy Link
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </CardContent>
             </Card>
@@ -70,7 +97,11 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate }) => {
         <CardTitle>Existing Chains</CardTitle>
       </CardHeader>
       <CardContent>
-        {rootBlocks.length === 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center h-32">
+            <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+        ) : rootBlocks.length === 0 ? (
           <p>No chains found.</p>
         ) : (
           <ul className="space-y-4">
