@@ -1,5 +1,5 @@
 import { peerIdFromString } from "@libp2p/peer-id";
-import type { Waku } from "@waku/interfaces";
+import type { IWaku } from "@waku/interfaces";
 
 export const generateRandomNumber = (): number => {
   return Math.floor(Math.random() * 1000000);
@@ -17,7 +17,7 @@ export const sha256 = async (number: number | string): Promise<string> => {
 const DEFAULT_EXTRA_DATA = { sdk: "0.0.28" };
 export const DEFAULT_EXTRA_DATA_STR = JSON.stringify(DEFAULT_EXTRA_DATA);
 
-export const buildExtraData = async (node: Waku, peerId: string): Promise<string> => {
+export const buildExtraData = async (node: IWaku, peerId: string): Promise<string> => {
   const peer = await node.libp2p.peerStore.get(peerIdFromString(peerId));
   const hasWebsockes = peer
     .addresses
