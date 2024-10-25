@@ -44,6 +44,16 @@ pipeline {
         stage('dogfooding') { steps { script { buildExample() } } }
         stage('message-monitor') { steps { script { buildExample() } } }
         stage('flush-notes') { steps { script { buildNextJSExample() } } }
+        stage('buddybook') { 
+          steps { 
+            script { 
+              dir('examples/buddybook') {
+                sh 'npm install'
+                sh 'npm run build:ci'
+              }
+            } 
+          } 
+        }
       }
     }
 

@@ -21,7 +21,8 @@ jobs:
             experimental/rln-identity,
             dogfooding,
             message-monitor,
-            flush-notes
+            flush-notes,
+            buddybook
           ]
     runs-on: ubuntu-latest
     steps:
@@ -40,7 +41,12 @@ jobs:
         working-directory: "examples/${{ matrix.example }}"
 
       - name: build
-        run: npm run build
+        run: |
+          if [ "${{ matrix.example }}" == "buddybook" ]; then
+            npm run build:ci
+          else
+            npm run build
+          fi
         working-directory: "examples/${{ matrix.example }}"
 
       - name: test
