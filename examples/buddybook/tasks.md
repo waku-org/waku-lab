@@ -5,3 +5,4 @@
 - [ ] telemetry
   - [ x ] disclaimer
   - [ ] functionality
+- [ ] landing page
