@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { type LightNode } from "@waku/sdk"
 import { useWaku } from "@waku/react"
 import { Loader2 } from "lucide-react"
-import { Routes, Route, Navigate, Link } from 'react-router-dom'
+import { Routes, Route, Navigate, Link, useParams } from 'react-router-dom'
 import { BlockPayload, getMessagesFromStore, subscribeToFilter } from './lib/waku'
 import TelemetryOptIn from './components/TelemetryOptIn';
 import TelemetryPage from './components/TelemetryPage';

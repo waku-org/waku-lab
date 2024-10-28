@@ -23,7 +23,7 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
     const childBlocks = chainsData.filter(b => b.parentBlockUUID === block.blockUUID);
     const totalSignatures = block.signatures.length + childBlocks.reduce((acc, child) => acc + child.signatures.length, 0);
 
-    const shareUrl = `${window.location.origin}/sign/${block.chainUUID}/${block.blockUUID}`;
+    const shareUrl = `${window.location.origin}/sign/${block.chainUUID ?? block.blockUUID}/${block.blockUUID}`;
 
     return (
       <li key={`${block.blockUUID}-${depth}`} className="mb-4">
@@ -66,7 +66,16 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
                           Share this chain with others to collect their signatures.
                         </DialogDescription>
                       </DialogHeader>
-                      <QRCode text={shareUrl} />
+                      <div className="flex flex-col items-center space-y-4">
+                        <QRCode text={shareUrl} width={200} height={200} />
+                        <p className="text-sm text-center break-all">{shareUrl}</p>
+                        <Button
+                          onClick={() => navigator.clipboard.writeText(shareUrl)}
+                          variant="outline"
+                        >
+                          Copy Link
+                        </Button>
+                      </div>
                     </DialogContent>
                   </Dialog>
                 </div>

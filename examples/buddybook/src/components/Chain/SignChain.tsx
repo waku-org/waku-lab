@@ -139,7 +139,7 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
               <p className="text-sm text-muted-foreground">{block.title}</p>
               <p className="text-sm text-muted-foreground">{block.description}</p>
             </div>
-            <QRCode data={block} />
+            <QRCode text={`${window.location.origin}/sign/${block.chainUUID}/${block.blockUUID}`} />
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <DialogFooter>
