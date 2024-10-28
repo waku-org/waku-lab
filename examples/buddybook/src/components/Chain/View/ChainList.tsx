@@ -4,7 +4,7 @@ import { type BlockPayload } from '@/lib/waku';
 import SignChain from '@/components/Chain/SignChain';
 import { useEnsName } from 'wagmi';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import QRCode from '@/components/QRCode';
 import { Loader2 } from "lucide-react";
 
@@ -50,7 +50,11 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
                   Block UUID: {block.blockUUID}
                 </p>
                 <div className="mt-2 space-x-2">
-                  <SignChain block={block} onSuccess={handleChainUpdate} />
+                  <SignChain 
+                    block={block} 
+                    chainsData={chainsData} 
+                    onSuccess={handleChainUpdate} 
+                  />
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="outline">Share</Button>
@@ -58,6 +62,9 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
                     <DialogContent className="sm:max-w-md">
                       <DialogHeader>
                         <DialogTitle>Share this Chain</DialogTitle>
+                        <DialogDescription>
+                          Share this chain with others to collect their signatures.
+                        </DialogDescription>
                       </DialogHeader>
                       <div className="flex flex-col items-center space-y-4">
                         <QRCode text={shareUrl} width={200} height={200} />

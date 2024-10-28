@@ -41,13 +41,8 @@ function App() {
 
   useEffect(() => {
     if (isWakuLoading || !node || node.libp2p.getConnections().length === 0 || chainsData.length > 0 || isListening)  return;
-
-    setTimeout(() => {
       setIsListening(true);
       startMessageListening();
-    }, 3000);
-    
-    
   }, [node, isWakuLoading, wakuStatus])
 
   const handleTelemetryOptIn = (optIn: boolean) => {
@@ -117,7 +112,7 @@ function App() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header wakuStatus={wakuStatus} />
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-4 md:py-8 max-w-7xl">
         <Routes>
           <Route path="/create" element={<ChainCreationForm />} />
           <Route path="/view" element={<ChainList chainsData={chainsData} onChainUpdate={handleChainUpdate} isLoading={isLoadingChains} />} />
@@ -132,22 +127,20 @@ function App() {
 }
 
 const Home: React.FC = () => (
-  <div className="space-y-6 text-center">
-    <h1 className="text-4xl font-bold">BuddyChain</h1>
-    <div className="max-w-md mx-auto p-6 bg-card rounded-lg shadow-md">
+  <div className="space-y-4 md:space-y-6 p-4 md:p-6">
+    <h1 className="text-2xl md:text-4xl font-bold">BuddyBook</h1>
+    <div className="w-full max-w-sm mx-auto p-4 md:p-6 bg-card rounded-lg shadow-md">
       <Link to="/create">
-        <Button 
-          className="w-full mb-4"
-        >
+        <Button className="w-full mb-4">
           Create New Chain
         </Button>
       </Link>
-      <p className="text-muted-foreground">
+      <p className="text-sm md:text-base text-muted-foreground">
         Click the button above to start creating a new chain.
       </p>
     </div>
-    <p className="text-sm text-muted-foreground">
-      Welcome to BuddyChain - Create and share your chains!
+    <p className="text-xs md:text-sm text-muted-foreground text-center">
+      Welcome to BuddyBook - Create and share your chains!
     </p>
   </div>
 )

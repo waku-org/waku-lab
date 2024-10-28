@@ -11,10 +11,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 interface SignChainProps {
   block: BlockPayload;
+  chainsData: BlockPayload[]; // Add this prop
   onSuccess: (newBlock: BlockPayload) => void;
 }
 
-const SignChain: React.FC<SignChainProps> = ({ block, onSuccess }) => {
+const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,17 +26,37 @@ const SignChain: React.FC<SignChainProps> = ({ block, onSuccess }) => {
 
   useEffect(() => {
     if (address) {
-      const hasAlreadySigned = block.signatures.some(sig => sig.address.toLowerCase() === address.toLowerCase());
+      // Check if the address has signed this block or any blocks in the chain
+      const checkSignatures = (blockToCheck: BlockPayload): boolean => {
+        // Check current block's signatures
+        if (blockToCheck.signatures.some(
+          sig => sig.address.toLowerCase() === address.toLowerCase()
+        )) {
+          return true;
+        }
+
+        // Check parent blocks
+        const parentBlock = chainsData.find(b => b.blockUUID === blockToCheck.parentBlockUUID);
+        if (parentBlock && checkSignatures(parentBlock)) {
+          return true;
+        }
+
+        // Check child blocks
+        const childBlocks = chainsData.filter(b => b.parentBlockUUID === blockToCheck.blockUUID);
+        return childBlocks.some(childBlock => checkSignatures(childBlock));
+      };
+
+      const hasAlreadySigned = checkSignatures(block);
       setAlreadySigned(hasAlreadySigned);
     }
-  }, [address, block.signatures]);
+  }, [address, block, chainsData]);
 
   const { signMessage } = useSignMessage({
     mutation: {
       async onSuccess(signature) {
         if (!address || !node) return;
         
-        // Check if the address has already signed
+        // Double check signature before proceeding
         if (block.signatures.some(sig => sig.address.toLowerCase() === address.toLowerCase())) {
           setError('You have already signed this chain.');
           setIsSigning(false);
@@ -79,6 +100,7 @@ const SignChain: React.FC<SignChainProps> = ({ block, onSuccess }) => {
   });
 
   const handleSign = () => {
+    // Add an additional check here before signing
     if (alreadySigned) {
       setError('You have already signed this chain.');
       return;
@@ -102,7 +124,7 @@ const SignChain: React.FC<SignChainProps> = ({ block, onSuccess }) => {
         {alreadySigned ? 'Already Signed' : 'Sign Chain'}
       </Button>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Sign Chain</DialogTitle>
             <DialogDescription>
@@ -111,7 +133,14 @@ const SignChain: React.FC<SignChainProps> = ({ block, onSuccess }) => {
                 : 'Review the block details and sign to add your signature to the chain.'}
             </DialogDescription>
           </DialogHeader>
-          <QRCode data={block} />
+          <div className="flex flex-col space-y-4">
+            <div className="space-y-2">
+              <h4 className="font-medium">Block Details</h4>
+              <p className="text-sm text-muted-foreground">{block.title}</p>
+              <p className="text-sm text-muted-foreground">{block.description}</p>
+            </div>
+            <QRCode text={`${window.location.origin}/sign/${block.chainUUID}/${block.blockUUID}`} />
+          </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <DialogFooter>
             <Button variant="secondary" onClick={() => setIsOpen(false)}>Cancel</Button>

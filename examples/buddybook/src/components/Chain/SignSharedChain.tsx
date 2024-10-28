@@ -44,7 +44,11 @@ const SignSharedChain: React.FC<SignSharedChainProps> = ({ chainsData, onChainUp
       <CardContent>
         <h2 className="text-xl font-semibold mb-2">{block.title}</h2>
         <p className="mb-4">{block.description}</p>
-        <SignChain block={block} onSuccess={onChainUpdate} />
+        <SignChain 
+          block={block} 
+          chainsData={chainsData} 
+          onSuccess={onChainUpdate} 
+        />
       </CardContent>
     </Card>
   );
