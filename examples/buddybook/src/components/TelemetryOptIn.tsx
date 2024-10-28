@@ -6,22 +6,22 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { privacyPolicy } from '@/lib/privacyPolicy';
 import ReactMarkdown from 'react-markdown';
 
-interface TelemetryOptInProps {
+interface PrivacyPolicyOptInProps {
   onOptIn: (optIn: boolean) => void;
 }
 
-const TelemetryOptIn: React.FC<TelemetryOptInProps> = ({ onOptIn }) => {
+const PrivacyPolicyOptIn: React.FC<PrivacyPolicyOptInProps> = ({ onOptIn }) => {
   const [showFullPolicy, setShowFullPolicy] = useState(false);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Telemetry Data Collection</CardTitle>
+          <CardTitle>Privacy Policy & Data Collection</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground mb-4">
-            We collect telemetry data to improve our services. This data is anonymous and helps us understand how our application is used. You can opt-in or opt-out of this data collection.
+            We collect data to improve our services. This data is anonymous and helps us understand how our application is used. You can opt-in or opt-out of this data collection.
           </p>
           <Button variant="link" onClick={() => setShowFullPolicy(true)}>
             View Full Privacy Policy
@@ -51,4 +51,4 @@ const TelemetryOptIn: React.FC<TelemetryOptInProps> = ({ onOptIn }) => {
   );
 };
 
-export default TelemetryOptIn;
+export default PrivacyPolicyOptIn;

@@ -6,38 +6,38 @@ import { privacyPolicy } from '@/lib/privacyPolicy';
 import ReactMarkdown from 'react-markdown';
 
 
-const TelemetryPage: React.FC = () => {
-  const [telemetryOptIn, setTelemetryOptIn] = useState<boolean>(false);
+const PrivacyPolicyPage: React.FC = () => {
+  const [privacyPolicyOptIn, setPrivacyPolicyOptIn] = useState<boolean>(false);
 
   useEffect(() => {
-    const storedOptIn = localStorage.getItem('telemetryOptIn');
+    const storedOptIn = localStorage.getItem('privacyPolicyOptIn');
     if (storedOptIn !== null) {
-      setTelemetryOptIn(storedOptIn === 'true');
+      setPrivacyPolicyOptIn(storedOptIn === 'true');
     }
   }, []);
 
-  const handleToggleTelemetry = () => {
-    const newOptIn = !telemetryOptIn;
-    setTelemetryOptIn(newOptIn);
-    localStorage.setItem('telemetryOptIn', newOptIn.toString());
+  const handleTogglePrivacyPolicy = () => {
+    const newOptIn = !privacyPolicyOptIn;
+    setPrivacyPolicyOptIn(newOptIn);
+    localStorage.setItem('privacyPolicyOptIn', newOptIn.toString());
   };
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle>Telemetry Settings</CardTitle>
+        <CardTitle>Privacy Policy Settings</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
           <div>
             <p className="text-sm text-muted-foreground mb-2">
-              We collect telemetry data to improve our services. This data is anonymous and helps us understand how our application is used.
+              We collect data to improve our services. This data is anonymous and helps us understand how our application is used.
             </p>
             <p className="font-semibold mb-2">
-              Current status: {telemetryOptIn ? 'Opted In' : 'Opted Out'}
+              Current status: {privacyPolicyOptIn ? 'Opted In' : 'Opted Out'}
             </p>
-            <Button onClick={handleToggleTelemetry}>
-              {telemetryOptIn ? 'Opt Out' : 'Opt In'}
+            <Button onClick={handleTogglePrivacyPolicy}>
+              {privacyPolicyOptIn ? 'Opt Out' : 'Opt In'}
             </Button>
           </div>
           <div>
@@ -54,4 +54,4 @@ const TelemetryPage: React.FC = () => {
   );
 };
 
-export default TelemetryPage;
+export default PrivacyPolicyPage;
