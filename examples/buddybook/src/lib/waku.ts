@@ -22,7 +22,7 @@ export type BlockPayload = {
     parentBlockUUID: string | null;
 }
 
-const contentTopic = "/buddychain-dogfood/1/chain/proto";
+const contentTopic = "/buddybook-dogfood/1/chain/proto";
 
 export const encoder = createEncoder({
     contentTopic: contentTopic,
