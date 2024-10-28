@@ -23,27 +23,32 @@ const PrivacyPolicyPage: React.FC = () => {
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle>Privacy Policy Settings</CardTitle>
+    <Card className="w-full max-w-4xl mx-auto p-4 sm:p-6">
+      <CardHeader className="space-y-2">
+        <CardTitle className="text-2xl sm:text-3xl">Privacy Policy Settings</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-6">
-          <div>
-            <p className="text-sm text-muted-foreground mb-2">
+        <div className="space-y-6 sm:space-y-8">
+          <div className="space-y-4">
+            <p className="text-sm sm:text-base text-muted-foreground">
               We collect data to improve our services. This data is anonymous and helps us understand how our application is used.
             </p>
-            <p className="font-semibold mb-2">
-              Current status: {privacyPolicyOptIn ? 'Opted In' : 'Opted Out'}
-            </p>
-            <Button onClick={handleTogglePrivacyPolicy}>
-              {privacyPolicyOptIn ? 'Opt Out' : 'Opt In'}
-            </Button>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <p className="font-semibold">
+                Current status: {privacyPolicyOptIn ? 'Opted In' : 'Opted Out'}
+              </p>
+              <Button 
+                onClick={handleTogglePrivacyPolicy}
+                className="w-full sm:w-auto"
+              >
+                {privacyPolicyOptIn ? 'Opt Out' : 'Opt In'}
+              </Button>
+            </div>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4">Privacy Policy</h3>
-            <ScrollArea className="h-[60vh] border rounded-md p-4">
-              <ReactMarkdown className="prose dark:prose-invert max-w-none">
+            <h3 className="text-lg sm:text-xl font-semibold mb-4">Privacy Policy</h3>
+            <ScrollArea className="h-[50vh] sm:h-[60vh] border rounded-md p-2 sm:p-4">
+              <ReactMarkdown className="prose dark:prose-invert max-w-none text-sm sm:text-base">
                 {privacyPolicy}
               </ReactMarkdown>
             </ScrollArea>

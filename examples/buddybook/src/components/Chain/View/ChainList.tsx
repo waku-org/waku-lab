@@ -50,7 +50,11 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
                   Block UUID: {block.blockUUID}
                 </p>
                 <div className="mt-2 space-x-2">
-                  <SignChain block={block} onSuccess={handleChainUpdate} />
+                  <SignChain 
+                    block={block} 
+                    chainsData={chainsData} 
+                    onSuccess={handleChainUpdate} 
+                  />
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="outline">Share</Button>
