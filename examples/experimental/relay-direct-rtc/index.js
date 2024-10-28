@@ -1,5 +1,5 @@
 import {
-  createRelayNode,
+  createNode as createRelayNode,
   bytesToUtf8,
   utf8ToBytes,
   createDecoder,

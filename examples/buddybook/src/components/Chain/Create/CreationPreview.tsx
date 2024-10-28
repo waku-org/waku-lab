@@ -19,8 +19,6 @@ interface FormData {
   uuid: string;
 }
 
-
-
 const DEFAULT_FORM_DATA: FormData = {
   title: 'Devcon24 DeFi Dynamo',
   description: 'A revolutionary blockchain for Devcon 24, focusing on scalable DeFi solutions and cross-chain interoperability.',
@@ -185,7 +183,7 @@ const ChainCreationForm: React.FC = () => {
             <>
               {signedMessage && (
                 <QRCode
-                  data={{
+                  text={JSON.stringify({
                     chainUUID: formData.uuid,
                     blockUUID: uuidv4(),
                     title: formData.title,
@@ -194,7 +192,7 @@ const ChainCreationForm: React.FC = () => {
                     timestamp: Date.now(),
                     signatures: [{address: address!, signature: signedMessage}],
                     parentBlockUUID: null
-                  }}
+                  })}
                 />
               )}
               </>
