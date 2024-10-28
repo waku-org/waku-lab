@@ -41,13 +41,8 @@ function App() {
 
   useEffect(() => {
     if (isWakuLoading || !node || node.libp2p.getConnections().length === 0 || chainsData.length > 0 || isListening)  return;
-
-    setTimeout(() => {
       setIsListening(true);
       startMessageListening();
-    }, 3000);
-    
-    
   }, [node, isWakuLoading, wakuStatus])
 
   const handleTelemetryOptIn = (optIn: boolean) => {

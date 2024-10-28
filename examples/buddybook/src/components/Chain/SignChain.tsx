@@ -124,7 +124,7 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
         {alreadySigned ? 'Already Signed' : 'Sign Chain'}
       </Button>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Sign Chain</DialogTitle>
             <DialogDescription>
@@ -133,7 +133,14 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
                 : 'Review the block details and sign to add your signature to the chain.'}
             </DialogDescription>
           </DialogHeader>
-          <QRCode data={block} />
+          <div className="flex flex-col space-y-4">
+            <div className="space-y-2">
+              <h4 className="font-medium">Block Details</h4>
+              <p className="text-sm text-muted-foreground">{block.title}</p>
+              <p className="text-sm text-muted-foreground">{block.description}</p>
+            </div>
+            <QRCode data={block} />
+          </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <DialogFooter>
             <Button variant="secondary" onClick={() => setIsOpen(false)}>Cancel</Button>

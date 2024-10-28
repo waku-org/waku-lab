@@ -4,7 +4,7 @@ import { type BlockPayload } from '@/lib/waku';
 import SignChain from '@/components/Chain/SignChain';
 import { useEnsName } from 'wagmi';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import QRCode from '@/components/QRCode';
 import { Loader2 } from "lucide-react";
 
@@ -23,7 +23,7 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
     const childBlocks = chainsData.filter(b => b.parentBlockUUID === block.blockUUID);
     const totalSignatures = block.signatures.length + childBlocks.reduce((acc, child) => acc + child.signatures.length, 0);
 
-    const shareUrl = `${window.location.origin}/sign/${block.chainUUID ?? block.blockUUID}/${block.blockUUID}`;
+    const shareUrl = `${window.location.origin}/sign/${block.chainUUID}/${block.blockUUID}`;
 
     return (
       <li key={`${block.blockUUID}-${depth}`} className="mb-4">
@@ -62,17 +62,11 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
                     <DialogContent className="sm:max-w-md">
                       <DialogHeader>
                         <DialogTitle>Share this Chain</DialogTitle>
+                        <DialogDescription>
+                          Share this chain with others to collect their signatures.
+                        </DialogDescription>
                       </DialogHeader>
-                      <div className="flex flex-col items-center space-y-4">
-                        <QRCode text={shareUrl} width={200} height={200} />
-                        <p className="text-sm text-center break-all">{shareUrl}</p>
-                        <Button
-                          onClick={() => navigator.clipboard.writeText(shareUrl)}
-                          variant="outline"
-                        >
-                          Copy Link
-                        </Button>
-                      </div>
+                      <QRCode text={shareUrl} />
                     </DialogContent>
                   </Dialog>
                 </div>
