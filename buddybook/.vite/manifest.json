@@ -1,42 +1,30 @@
 {
-  "_events-0WpuQ3DP.js": {
-    "file": "assets/events-0WpuQ3DP.js",
+  "_events-B42VzzV1.js": {
+    "file": "assets/events-B42VzzV1.js",
     "name": "events",
     "imports": [
       "index.html"
     ]
   },
-  "_hooks.module-ClmD75_J.js": {
-    "file": "assets/hooks.module-ClmD75_J.js",
+  "_hooks.module-CT0-Us0C.js": {
+    "file": "assets/hooks.module-CT0-Us0C.js",
     "name": "hooks.module",
     "imports": [
       "index.html",
-      "_events-0WpuQ3DP.js",
-      "_inherits_browser-C53US4G5.js"
+      "_events-B42VzzV1.js",
+      "_inherits_browser-DmlooEhV.js"
     ]
   },
-  "_index-BNMaGkP5.js": {
-    "file": "assets/index-BNMaGkP5.js",
+  "_index-BaoCDrcG.js": {
+    "file": "assets/index-BaoCDrcG.js",
     "name": "index",
     "isDynamicEntry": true,
     "imports": [
-      "index.html",
-      "_hooks.module-ClmD75_J.js"
+      "_events-B42VzzV1.js"
     ]
   },
-  "_index-BSVGFq6n.js": {
-    "file": "assets/index-BSVGFq6n.js",
-    "name": "index",
-    "isDynamicEntry": true,
-    "imports": [
-      "index.html",
-      "_inherits_browser-C53US4G5.js",
-      "_hooks.module-ClmD75_J.js",
-      "_events-0WpuQ3DP.js"
-    ]
-  },
-  "_index-CtjScd1r.js": {
-    "file": "assets/index-CtjScd1r.js",
+  "_index-DiHOtb9W.js": {
+    "file": "assets/index-DiHOtb9W.js",
     "name": "index",
     "isDynamicEntry": true,
     "imports": [
@@ -46,32 +34,44 @@
       "node_modules/@walletconnect/modal-ui/dist/index.js"
     ]
   },
-  "_index-D0eaAjbe.js": {
-    "file": "assets/index-D0eaAjbe.js",
+  "_index-Dxt9QxSa.js": {
+    "file": "assets/index-Dxt9QxSa.js",
     "name": "index",
     "isDynamicEntry": true,
     "imports": [
-      "_events-0WpuQ3DP.js"
+      "index.html",
+      "_hooks.module-CT0-Us0C.js"
     ]
   },
-  "_inherits_browser-C53US4G5.js": {
-    "file": "assets/inherits_browser-C53US4G5.js",
+  "_index-YlO1xeDk.js": {
+    "file": "assets/index-YlO1xeDk.js",
+    "name": "index",
+    "isDynamicEntry": true,
+    "imports": [
+      "index.html",
+      "_inherits_browser-DmlooEhV.js",
+      "_hooks.module-CT0-Us0C.js",
+      "_events-B42VzzV1.js"
+    ]
+  },
+  "_inherits_browser-DmlooEhV.js": {
+    "file": "assets/inherits_browser-DmlooEhV.js",
     "name": "inherits_browser",
     "imports": [
       "index.html"
     ]
   },
   "index.html": {
-    "file": "assets/index-CP6_TFKv.js",
+    "file": "assets/index-Dixv1Mqn.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
     "dynamicImports": [
       "node_modules/viem/_esm/utils/ccip.js",
-      "_index-BNMaGkP5.js",
-      "_index-BSVGFq6n.js",
+      "_index-Dxt9QxSa.js",
+      "_index-YlO1xeDk.js",
       "node_modules/@safe-global/safe-apps-sdk/dist/esm/index.js",
-      "_index-D0eaAjbe.js",
+      "_index-BaoCDrcG.js",
       "node_modules/@walletconnect/ethereum-provider/dist/index.es.js"
     ],
     "css": [
@@ -79,7 +79,7 @@
     ]
   },
   "node_modules/@safe-global/safe-apps-sdk/dist/esm/index.js": {
-    "file": "assets/index-i9SwLR_n.js",
+    "file": "assets/index-Dof4M4et.js",
     "name": "index",
     "src": "node_modules/@safe-global/safe-apps-sdk/dist/esm/index.js",
     "isDynamicEntry": true,
@@ -88,31 +88,31 @@
     ]
   },
   "node_modules/@walletconnect/ethereum-provider/dist/index.es.js": {
-    "file": "assets/index.es-DaAD1bdq.js",
+    "file": "assets/index.es-BUlvYXHR.js",
     "name": "index.es",
     "src": "node_modules/@walletconnect/ethereum-provider/dist/index.es.js",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
-      "_events-0WpuQ3DP.js",
-      "_inherits_browser-C53US4G5.js"
+      "_events-B42VzzV1.js",
+      "_inherits_browser-DmlooEhV.js"
     ],
     "dynamicImports": [
-      "_index-CtjScd1r.js"
+      "_index-DiHOtb9W.js"
     ]
   },
   "node_modules/@walletconnect/modal-ui/dist/index.js": {
-    "file": "assets/index-D03YFe01.js",
+    "file": "assets/index-B3vbEC3B.js",
     "name": "index",
     "src": "node_modules/@walletconnect/modal-ui/dist/index.js",
     "isDynamicEntry": true,
     "imports": [
-      "_index-CtjScd1r.js",
+      "_index-DiHOtb9W.js",
       "index.html"
     ]
   },
   "node_modules/viem/_esm/utils/ccip.js": {
-    "file": "assets/ccip-ColseNtL.js",
+    "file": "assets/ccip-buaxQrap.js",
     "name": "ccip",
     "src": "node_modules/viem/_esm/utils/ccip.js",
     "isDynamicEntry": true,
