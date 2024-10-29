@@ -26,7 +26,12 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    
+    /* Add these options */
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowJs": true
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

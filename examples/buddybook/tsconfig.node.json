@@ -16,7 +16,16 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    
+    /* Add these options */
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    
+    /* Emission settings */
+    "emitDeclarationOnly": true,
+    "outDir": "./dist"
   },
   "include": ["vite.config.ts"]
 }
