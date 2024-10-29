@@ -69,7 +69,7 @@ pipeline {
   }
 }
 
-def buildExample(example=STAGE_NAME, outDir=build) {
+def buildExample(example=STAGE_NAME, outDir='build') {
   def dest = "${WORKSPACE}/build/docs/${example}"
   dir("examples/${example}") {
     sh 'npm install --silent'
