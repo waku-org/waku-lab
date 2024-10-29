@@ -43,8 +43,8 @@ pipeline {
         stage('experimental/rln-identity') { steps { script { buildExample() } } }
         stage('dogfooding') { steps { script { buildExample() } } }
         stage('message-monitor') { steps { script { buildExample() } } }
-        stage('flush-notes') { steps { script { buildExample(outDir='out') } } }
-        stage('buddybook') { steps { script { buildExample(outDir='dist') } } }
+        stage('flush-notes') { steps { script { buildExample(example='flush-notes', outDir='out') } } }
+        stage('buddybook') { steps { script { buildExample(example='buddybook', outDir='dist') } } }
       }
     }
 
@@ -69,7 +69,7 @@ pipeline {
   }
 }
 
-def buildExample(example=STAGE_NAME, outDir='build') {
+def buildExample(example=STAGE_NAME, outDir='build) {
   def dest = "${WORKSPACE}/build/docs/${example}"
   dir("examples/${example}") {
     sh 'npm install --silent'
