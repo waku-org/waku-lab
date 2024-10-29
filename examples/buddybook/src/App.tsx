@@ -117,7 +117,16 @@ function App() {
           <Route path="/create" element={<ChainCreationForm />} />
           <Route path="/view" element={<ChainList chainsData={chainsData} onChainUpdate={handleChainUpdate} isLoading={isLoadingChains} />} />
           <Route path="/" element={<Home />} />
-          <Route path="/sign/:chainUUID/:blockUUID" element={<SignSharedChain chainsData={chainsData} onChainUpdate={handleChainUpdate} />} />
+          <Route 
+            path="/sign/:chainUUID/:blockUUID" 
+            element={
+              <SignSharedChain 
+                chainsData={chainsData} 
+                onChainUpdate={handleChainUpdate} 
+                isLoading={isLoadingChains}
+              />
+            } 
+          />
           <Route path="/telemetry" element={<TelemetryPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

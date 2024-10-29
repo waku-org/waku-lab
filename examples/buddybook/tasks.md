@@ -8,4 +8,4 @@
 - [ ] look into high initial loading times
 - [ ] fix deployment/hosting
 - [ ] sign shared chain route should show spinner while waiting for the store query to resolve
-- [ ] create chain -> QR modal should have a sharable link instead of the object
+- [ x ] create chain -> QR modal should have a sharable link instead of the object
