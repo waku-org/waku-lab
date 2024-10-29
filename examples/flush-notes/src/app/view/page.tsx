@@ -19,7 +19,7 @@ const View = () => {
     }
 
     notes.readNote(id, key).then((note) => setNote(note || ""));
-  }, [id, key, setNote]);
+  }, [id, key, setNote, router]);
 
   if (!note) {
     return <Loading />;
