@@ -4,13 +4,15 @@ import { BlockPayload } from '@/lib/waku';
 import SignChain from './SignChain';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 interface SignSharedChainProps {
   chainsData: BlockPayload[];
   onChainUpdate: (newBlock: BlockPayload) => void;
+  isLoading: boolean;
 }
 
-const SignSharedChain: React.FC<SignSharedChainProps> = ({ chainsData, onChainUpdate }) => {
+const SignSharedChain: React.FC<SignSharedChainProps> = ({ chainsData, onChainUpdate, isLoading }) => {
   const { chainUUID, blockUUID } = useParams();
   const [block, setBlock] = useState<BlockPayload | null>(null);
   const navigate = useNavigate();
@@ -21,6 +23,17 @@ const SignSharedChain: React.FC<SignSharedChainProps> = ({ chainsData, onChainUp
       setBlock(foundBlock);
     }
   }, [chainsData, chainUUID, blockUUID]);
+
+  if (isLoading && !block) {
+    return (
+      <Card className="w-full max-w-md mx-auto">
+        <CardContent className="flex flex-col items-center justify-center py-8 space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <p className="text-sm text-muted-foreground">Looking for chain...</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (!block) {
     return (

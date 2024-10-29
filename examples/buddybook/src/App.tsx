@@ -52,8 +52,14 @@ function App() {
 
   if (isWakuLoading) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex justify-center items-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="min-h-screen bg-background text-foreground">
+        <div className="container mx-auto px-4 py-16 flex flex-col items-center justify-center space-y-4">
+          <h1 className="text-2xl md:text-4xl font-bold">BuddyBook</h1>
+          <div className="flex flex-col items-center space-y-2">
+            <Loader2 className="h-8 w-8 animate-spin" />
+            <p className="text-muted-foreground">Connecting to Waku's decentralized network...</p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -63,8 +69,17 @@ function App() {
     try {
       setWakuStatus(prev => ({ ...prev, store: 'in-progress' }));
       setIsLoadingChains(true);
-      const storeMessages = await getMessagesFromStore(node as LightNode)
-      setChainsData(storeMessages)
+      const messageGenerator = getMessagesFromStore(node as LightNode);
+      
+      // Process messages as they arrive
+      for await (const message of messageGenerator) {
+        setChainsData(prevChains => {
+          const blockExists = prevChains.some(block => block.blockUUID === message.blockUUID);
+          if (blockExists) return prevChains;
+          return [...prevChains, message];
+        });
+      }
+      
       setWakuStatus(prev => ({ ...prev, store: 'success' }));
     } catch (error) {
       console.error("Error fetching messages from store:", error);
@@ -117,7 +132,16 @@ function App() {
           <Route path="/create" element={<ChainCreationForm />} />
           <Route path="/view" element={<ChainList chainsData={chainsData} onChainUpdate={handleChainUpdate} isLoading={isLoadingChains} />} />
           <Route path="/" element={<Home />} />
-          <Route path="/sign/:chainUUID/:blockUUID" element={<SignSharedChain chainsData={chainsData} onChainUpdate={handleChainUpdate} />} />
+          <Route 
+            path="/sign/:chainUUID/:blockUUID" 
+            element={
+              <SignSharedChain 
+                chainsData={chainsData} 
+                onChainUpdate={handleChainUpdate} 
+                isLoading={isLoadingChains}
+              />
+            } 
+          />
           <Route path="/telemetry" element={<TelemetryPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
