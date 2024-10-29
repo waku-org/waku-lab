@@ -9,7 +9,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  base: './',
+  base: '/buddybook/',
   build: {
     assetsDir: 'assets',
     manifest: true,
