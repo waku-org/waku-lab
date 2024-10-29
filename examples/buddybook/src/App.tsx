@@ -24,7 +24,6 @@ function App() {
   const [isListening, setIsListening] = useState(false);
   const [chainsData, setChainsData] = useState<BlockPayload[]>([])
   const { isLoading: isWakuLoading, error: wakuError, node } = useWaku();
-  // Add this new state
   const [wakuStatus, setWakuStatus] = useState<WakuStatus>({
     filter: 'in-progress',
     store: 'in-progress',
@@ -39,11 +38,51 @@ function App() {
     }
   }, []);
 
+  const handleChainUpdate = (newBlock: BlockPayload) => {
+    setChainsData(prevChains => {
+      const blockExists = prevChains.some(block => block.blockUUID === newBlock.blockUUID);
+      if (blockExists) {
+        return prevChains;
+      }
+      return [...prevChains, newBlock];
+    });
+  };
+
+  const startMessageListening = async () => {
+    console.log("Starting message listening")
+    try {
+      setWakuStatus(prev => ({ ...prev, store: 'in-progress' }));
+      setIsLoadingChains(true);
+      const messageGenerator = getMessagesFromStore(node as LightNode);
+      
+      for await (const message of messageGenerator) {
+        handleChainUpdate(message);
+      }
+      
+      setWakuStatus(prev => ({ ...prev, store: 'success' }));
+    } catch (error) {
+      console.error("Error fetching messages from store:", error);
+      setWakuStatus(prev => ({ ...prev, store: 'error' }));
+    } finally {
+      setIsLoadingChains(false);
+    }
+
+    try {
+      setWakuStatus(prev => ({ ...prev, filter: 'in-progress' }));
+      await subscribeToFilter(node as LightNode, handleChainUpdate);
+      setWakuStatus(prev => ({ ...prev, filter: 'success' }));
+    } catch (error) {
+      console.error("Error subscribing to filter:", error);
+      setWakuStatus(prev => ({ ...prev, filter: 'error' }));
+    }
+  }
+
   useEffect(() => {
-    if (isWakuLoading || !node || node.libp2p.getConnections().length === 0 || chainsData.length > 0 || isListening)  return;
-      setIsListening(true);
-      startMessageListening();
-  }, [node, isWakuLoading, wakuStatus])
+    if (isWakuLoading || !node || node.libp2p.getConnections().length === 0 || chainsData.length > 0 || isListening) return;
+    setIsListening(true);
+    startMessageListening();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [node, isWakuLoading, chainsData.length, isListening]);
 
   const handleTelemetryOptIn = (optIn: boolean) => {
     setTelemetryOptIn(optIn);
@@ -64,42 +103,6 @@ function App() {
     );
   }
 
-  const startMessageListening = async () => {
-    console.log("Starting message listening")
-    try {
-      setWakuStatus(prev => ({ ...prev, store: 'in-progress' }));
-      setIsLoadingChains(true);
-      const messageGenerator = getMessagesFromStore(node as LightNode);
-      
-      // Process messages as they arrive
-      for await (const message of messageGenerator) {
-        setChainsData(prevChains => {
-          const blockExists = prevChains.some(block => block.blockUUID === message.blockUUID);
-          if (blockExists) return prevChains;
-          return [...prevChains, message];
-        });
-      }
-      
-      setWakuStatus(prev => ({ ...prev, store: 'success' }));
-    } catch (error) {
-      console.error("Error fetching messages from store:", error);
-      setWakuStatus(prev => ({ ...prev, store: 'error' }));
-    } finally {
-      setIsLoadingChains(false);
-    }
-
-    try {
-      setWakuStatus(prev => ({ ...prev, filter: 'in-progress' }));
-      await subscribeToFilter(node as LightNode, (message) => {
-        handleChainUpdate(message); // Use the same function for both updates
-      })
-      setWakuStatus(prev => ({ ...prev, filter: 'success' }));
-    } catch (error) {
-      console.error("Error subscribing to filter:", error);
-      setWakuStatus(prev => ({ ...prev, filter: 'error' }));
-    }
-  }
-
   if (wakuError) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col justify-center items-center">
@@ -108,17 +111,6 @@ function App() {
       </div>
     );
   }
-
-  const handleChainUpdate = (newBlock: BlockPayload) => {
-    setChainsData(prevChains => {
-      // Check if the block already exists
-      const blockExists = prevChains.some(block => block.blockUUID === newBlock.blockUUID);
-      if (blockExists) {
-        return prevChains; // Don't add duplicate blocks
-      }
-      return [...prevChains, newBlock];
-    });
-  };
 
   if (telemetryOptIn === null) {
     return <TelemetryOptIn onOptIn={handleTelemetryOptIn} />;
