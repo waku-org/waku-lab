@@ -65,18 +65,19 @@ export function createMessage({
     return { payload: payload };
 }
 
-export async function getMessagesFromStore(node: LightNode) {
+export async function* getMessagesFromStore(node: LightNode) {
     console.time("getMessagesFromStore")
-    const messages: BlockPayload[] = [];
-    await node.store.queryWithOrderedCallback([decoder], async (message) => {
-        console.log(message)
-        if (!message.payload) return;
-        const blockPayload = block.decode(message.payload) as unknown as BlockPayload;
-        blockPayload.signatures = blockPayload.signatures.map(s => JSON.parse(s as unknown as string) as Signature);
-        messages.push(blockPayload);
-    })
+    for await (const messagePromises of node.store.queryGenerator([decoder])) {
+        const messages = await Promise.all(messagePromises);
+        for (const message of messages) {
+            console.log(message)
+            if (!message?.payload) continue;
+            const blockPayload = block.decode(message.payload) as unknown as BlockPayload;
+            blockPayload.signatures = blockPayload.signatures.map(s => JSON.parse(s as unknown as string) as Signature);
+            yield blockPayload;
+        }
+    }
     console.timeEnd("getMessagesFromStore")
-    return messages;
 }
 
 export async function subscribeToFilter(node: LightNode, callback: (message: BlockPayload) => void) {

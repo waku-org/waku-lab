@@ -9,3 +9,4 @@
 - [ ] fix deployment/hosting
 - [ x ] sign shared chain route should show spinner while waiting for the store query to resolve
 - [ x ] create chain -> QR modal should have a sharable link instead of the object
+- [ x ] store query should yield messages as they come in, instead of waiting for all of them to come in before displaying anything

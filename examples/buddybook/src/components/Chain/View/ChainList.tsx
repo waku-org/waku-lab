@@ -98,29 +98,21 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
 
   const rootBlocks = chainsData.filter(block => !block.parentBlockUUID);
 
-  if (isLoading) {
-    return (
-      <Card className="w-full max-w-4xl mx-auto">
-        <CardHeader>
-          <CardTitle>Loading Chains</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center space-y-4 py-8">
-            <Loader2 className="h-8 w-8 animate-spin" />
-            <p className="text-muted-foreground">Fetching chains from the network...</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle>Existing Chains</CardTitle>
+        <CardTitle>
+          Existing Chains
+          {isLoading && (
+            <span className="ml-2 inline-flex items-center text-muted-foreground text-sm font-normal">
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              Loading more chains...
+            </span>
+          )}
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        {rootBlocks.length === 0 ? (
+        {rootBlocks.length === 0 && !isLoading ? (
           <p>No chains found.</p>
         ) : (
           <ul className="space-y-4">

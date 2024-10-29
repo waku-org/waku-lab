@@ -69,8 +69,17 @@ function App() {
     try {
       setWakuStatus(prev => ({ ...prev, store: 'in-progress' }));
       setIsLoadingChains(true);
-      const storeMessages = await getMessagesFromStore(node as LightNode)
-      setChainsData(storeMessages)
+      const messageGenerator = getMessagesFromStore(node as LightNode);
+      
+      // Process messages as they arrive
+      for await (const message of messageGenerator) {
+        setChainsData(prevChains => {
+          const blockExists = prevChains.some(block => block.blockUUID === message.blockUUID);
+          if (blockExists) return prevChains;
+          return [...prevChains, message];
+        });
+      }
+      
       setWakuStatus(prev => ({ ...prev, store: 'success' }));
     } catch (error) {
       console.error("Error fetching messages from store:", error);
