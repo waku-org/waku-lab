@@ -34,6 +34,7 @@ const ChainCreationForm: React.FC = () => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [sendError, setSendError] = useState<string | null>(null);
   const [signedMessage, setSignedMessage] = useState<string | null>(null);
+  const [createdBlockUUID, setCreatedBlockUUID] = useState<string | null>(null);
 
   const { node } = useWaku<LightNode>();
 
@@ -44,9 +45,12 @@ const ChainCreationForm: React.FC = () => {
       if (!address || !node) return;
 
       setSignedMessage(signature);
+      const blockUUID = uuidv4();
+      setCreatedBlockUUID(blockUUID);
+      
       const message = createMessage({
         chainUUID: formData.uuid,
-        blockUUID: uuidv4(),
+        blockUUID: blockUUID,
         title: formData.title,
         description: formData.description,
         signedMessage: signature,
@@ -122,6 +126,7 @@ const ChainCreationForm: React.FC = () => {
     setIsSuccess(false);
     setIsSigning(false);
     setSendError(null);
+    setCreatedBlockUUID(null);
   };
 
   return (
@@ -187,21 +192,27 @@ const ChainCreationForm: React.FC = () => {
             </>
           ) : (
             <>
-              {signedMessage && (
-                <QRCode
-                  text={JSON.stringify({
-                    chainUUID: formData.uuid,
-                    blockUUID: uuidv4(),
-                    title: formData.title,
-                    description: formData.description,
-                    signedMessage: signedMessage,
-                    timestamp: Date.now(),
-                    signatures: [{address: address!, signature: signedMessage}],
-                    parentBlockUUID: null
-                  })}
-                />
+              {signedMessage && createdBlockUUID && (
+                <>
+                  <div className="flex flex-col items-center space-y-4">
+                    <QRCode
+                      text={`${window.location.origin}/sign/${formData.uuid}/${createdBlockUUID}`}
+                      width={200}
+                      height={200}
+                    />
+                    <p className="text-sm text-center break-all">
+                      {`${window.location.origin}/sign/${formData.uuid}/${createdBlockUUID}`}
+                    </p>
+                    <Button
+                      onClick={() => navigator.clipboard.writeText(`${window.location.origin}/sign/${formData.uuid}/${createdBlockUUID}`)}
+                      variant="outline"
+                    >
+                      Copy Link
+                    </Button>
+                  </div>
+                </>
               )}
-              </>
+            </>
           )}
         </DialogContent>
       </Dialog>
