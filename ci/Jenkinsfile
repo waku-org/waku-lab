@@ -44,7 +44,7 @@ pipeline {
         stage('dogfooding') { steps { script { buildExample() } } }
         stage('message-monitor') { steps { script { buildExample() } } }
         stage('flush-notes') { steps { script { buildNextJSExample() } } }
-        stage('buddybook') { steps { script { buildExample() } } }
+        stage('buddybook') { steps { script { buildViteExample() } } }
       }
     }
 
@@ -86,6 +86,16 @@ def buildNextJSExample(example=STAGE_NAME) {
     sh 'npm run build'
     sh "mkdir -p ${dest}"
     sh "cp -r out/. ${dest}"
+  }
+}
+
+def buildViteExample(example=STAGE_NAME) {
+  def dest = "${WORKSPACE}/build/docs/${example}"
+  dir("examples/${example}") {
+    sh 'npm install --silent'
+    sh 'npm run build'
+    sh "mkdir -p ${dest}"
+    sh "cp -r dist/. ${dest}"
   }
 }
 
