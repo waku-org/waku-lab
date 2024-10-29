@@ -7,5 +7,5 @@
 - [ ] landing page
 - [ ] look into high initial loading times
 - [ ] fix deployment/hosting
-- [ ] sign shared chain route should show spinner while waiting for the store query to resolve
+- [ x ] sign shared chain route should show spinner while waiting for the store query to resolve
 - [ x ] create chain -> QR modal should have a sharable link instead of the object

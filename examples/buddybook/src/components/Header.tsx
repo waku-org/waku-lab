@@ -93,14 +93,28 @@ const Header: React.FC<HeaderProps> = ({ wakuStatus }) => {
           
           <div className="flex flex-wrap justify-center md:justify-end items-center gap-2 w-full md:w-auto">
             <div className="flex items-center space-x-2 text-xs md:text-sm">
-              <div className="flex items-center space-x-1">
-                <span className="text-muted-foreground">Filter:</span>
-                <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${getStatusColor(wakuStatus.filter)}`}></div>
-              </div>
-              <div className="flex items-center space-x-1">
-                <span className="text-muted-foreground">Store:</span>
-                <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${getStatusColor(wakuStatus.store)}`}></div>
-              </div>
+              {isWakuLoading ? (
+                <div className="flex items-center space-x-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="text-muted-foreground">Connecting...</span>
+                </div>
+              ) : wakuError ? (
+                <span className="text-destructive">Network Error</span>
+              ) : (
+                <>
+                  <div className="flex items-center space-x-1">
+                    <span className="text-muted-foreground">Filter:</span>
+                    <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${getStatusColor(wakuStatus.filter)}`}></div>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <span className="text-muted-foreground">Store:</span>
+                    <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${getStatusColor(wakuStatus.store)}`}></div>
+                  </div>
+                  <span className="text-xs md:text-sm text-muted-foreground hidden md:inline">
+                    {connections > 0 ? `${connections} peer${connections === 1 ? '' : 's'}` : 'Connecting...'}
+                  </span>
+                </>
+              )}
             </div>
             
             <div className="flex items-center space-x-2">

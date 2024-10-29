@@ -52,8 +52,14 @@ function App() {
 
   if (isWakuLoading) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex justify-center items-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="min-h-screen bg-background text-foreground">
+        <div className="container mx-auto px-4 py-16 flex flex-col items-center justify-center space-y-4">
+          <h1 className="text-2xl md:text-4xl font-bold">BuddyBook</h1>
+          <div className="flex flex-col items-center space-y-2">
+            <Loader2 className="h-8 w-8 animate-spin" />
+            <p className="text-muted-foreground">Connecting to Waku's decentralized network...</p>
+          </div>
+        </div>
       </div>
     );
   }
