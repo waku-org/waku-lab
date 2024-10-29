@@ -24,11 +24,12 @@ const SignSharedChain: React.FC<SignSharedChainProps> = ({ chainsData, onChainUp
     }
   }, [chainsData, chainUUID, blockUUID]);
 
-  if (isLoading) {
+  if (isLoading && !block) {
     return (
       <Card className="w-full max-w-md mx-auto">
-        <CardContent className="flex justify-center items-center py-8">
+        <CardContent className="flex flex-col items-center justify-center py-8 space-y-4">
           <Loader2 className="h-8 w-8 animate-spin" />
+          <p className="text-sm text-muted-foreground">Looking for chain...</p>
         </CardContent>
       </Card>
     );
