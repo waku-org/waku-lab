@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useWaku } from '@waku/react';
 import { LightNode } from '@waku/sdk';
 import { createMessage, encoder } from '@/lib/waku';
+import { useWalletPrompt } from '@/hooks/useWalletPrompt';
 
 interface FormData {
   title: string;
@@ -66,6 +67,8 @@ const ChainCreationForm: React.FC = () => {
    }
   });
 
+  const { ensureWalletConnected } = useWalletPrompt();
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prevData => ({
@@ -94,6 +97,9 @@ const ChainCreationForm: React.FC = () => {
 
   const handleCreateChain = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!ensureWalletConnected()) {
+      return;
+    }
     if (validateForm()) {
       setShowModal(true);
     }

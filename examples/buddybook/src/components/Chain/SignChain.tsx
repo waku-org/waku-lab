@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import QRCode from '@/components/QRCode';
 import { v4 as uuidv4 } from 'uuid';
+import { useWalletPrompt } from '@/hooks/useWalletPrompt';
 
 interface SignChainProps {
   block: BlockPayload;
@@ -23,6 +24,7 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
   const { address } = useAccount();
   const { data: ensName } = useEnsName({ address });
   const { node } = useWaku<LightNode>();
+  const { ensureWalletConnected } = useWalletPrompt();
 
   useEffect(() => {
     if (address) {
@@ -100,6 +102,9 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
   });
 
   const handleSign = () => {
+    if (!ensureWalletConnected()) {
+      return;
+    }
     // Add an additional check here before signing
     if (alreadySigned) {
       setError('You have already signed this chain.');

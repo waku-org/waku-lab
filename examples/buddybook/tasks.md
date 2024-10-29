@@ -1,8 +1,11 @@
 - [ x ] waku connections on header should have green/yellow/red color indicator
-  - [ ] clicking on the indicator should show a list of peers 
 - [ x ] chains can't be signed twice by an address
 - [ ] generate waku peer id using the wallet address
 - [ ] telemetry
   - [ x ] disclaimer
   - [ ] functionality
 - [ ] landing page
+- [ ] look into high initial loading times
+- [ ] fix deployment/hosting
+- [ ] sign shared chain route should show spinner while waiting for the store query to resolve
+- [ ] create chain -> QR modal should have a sharable link instead of the object
