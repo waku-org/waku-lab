@@ -2,11 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BuddyBook Dogfood</title>
     <base href="/" />
-    <script type="module" crossorigin src="/buddybook/assets/index-CLqSQ1yP.js"></script>
-    <link rel="stylesheet" crossorigin href="/buddybook/assets/index-Dt_CGZqf.css">
+    <script>
+      window.global = window;
+      window.process = {
+        env: { 
+          NODE_ENV: 'production',
+          VITE_WALLETCONNECT_PROJECT_ID: '1d93edc21291f98e3bed6ff7617ff539'
+        },
+        nextTick: function(fn) { setTimeout(fn, 0); },
+        platform: 'browser',
+        version: 'v16.0.0',
+        browser: true
+      };
+    </script>
+    <script type="module" crossorigin src="/assets/index-mI-wCQlz.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Dt_CGZqf.css">
   </head>
   <body>
     <div id="root"></div>
