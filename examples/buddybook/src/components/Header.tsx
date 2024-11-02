@@ -57,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({ wakuStatus }) => {
 
   return (
     <header className="border-b">
-      <div className="container mx-auto px-4 py-2 md:py-4">
+      <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
           <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 w-full md:w-auto">
             <h1 className="text-xl md:text-2xl font-bold">BuddyBook</h1>
@@ -65,24 +65,24 @@ const Header: React.FC<HeaderProps> = ({ wakuStatus }) => {
               <ul className="flex justify-center md:justify-start space-x-4">
                 <li>
                   <Link 
-                    to="/create" 
-                    className={`text-sm ${location.pathname === '/create' ? 'text-primary font-semibold' : 'text-muted-foreground'}`}
+                    to="create"
+                    className={`text-sm ${location.pathname.endsWith('/create') ? 'text-primary font-semibold' : 'text-muted-foreground'}`}
                   >
                     Create Chain
                   </Link>
                 </li>
                 <li>
                   <Link 
-                    to="/view" 
-                    className={`text-sm ${location.pathname === '/view' ? 'text-primary font-semibold' : 'text-muted-foreground'}`}
+                    to="view"
+                    className={`text-sm ${location.pathname.endsWith('/view') ? 'text-primary font-semibold' : 'text-muted-foreground'}`}
                   >
                     View Chains
                   </Link>
                 </li>
                 <li>
                   <Link 
-                    to="/telemetry" 
-                    className={`text-sm ${location.pathname === '/telemetry' ? 'text-primary font-semibold' : 'text-muted-foreground'}`}
+                    to="telemetry"
+                    className={`text-sm ${location.pathname.endsWith('/telemetry') ? 'text-primary font-semibold' : 'text-muted-foreground'}`}
                   >
                     Telemetry
                   </Link>
