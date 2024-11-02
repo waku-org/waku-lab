@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { WagmiProvider } from 'wagmi'
@@ -8,8 +9,15 @@ import App from './App.tsx'
 import './index.css'
 import { LightNodeProvider } from "@waku/react";
 import { config } from './lib/walletConnect.ts'
-import { WAKU_NODE_OPTIONS } from './lib/waku.ts'
+import { WAKU_NODE_OPTIONS } from './lib/waku-config.ts'
 
+// Polyfills
+if (typeof global === 'undefined') {
+  (window as any).global = window;
+}
+if (typeof Buffer === 'undefined') {
+  (window as any).Buffer = Buffer;
+}
 
 const queryClient = new QueryClient()
 
@@ -19,7 +27,7 @@ createRoot(document.getElementById('root')!).render(
       <QueryClientProvider client={queryClient}>
         <ConnectKitProvider>
           <LightNodeProvider options={WAKU_NODE_OPTIONS}>
-            <Router>
+            <Router basename={import.meta.env.BASE_URL}>
               <App />
             </Router>
           </LightNodeProvider>

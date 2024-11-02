@@ -101,6 +101,7 @@ function App() {
   }
 
   if (wakuError) {
+    console.error("Waku error:", wakuError);
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col justify-center items-center">
         <p className="text-red-500">Error connecting to Waku network</p>

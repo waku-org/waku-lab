@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc && vite build",
     "build:ci": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "serve": "vite preview --port 3000 --mode production",
+    "clean": "rimraf dist"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.2",
@@ -21,18 +23,22 @@
     "@tailwindcss/typography": "^0.5.15",
     "@tanstack/react-query": "^5.59.15",
     "@waku/react": "0.0.7-0adebab",
+    "buffer": "^6.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "connectkit": "^1.8.2",
     "lucide-react": "^0.453.0",
+    "process": "^0.11.10",
     "protobufjs": "^7.4.0",
     "qrcode.react": "^4.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-markdown": "^9.0.1",
     "react-router-dom": "^6.27.0",
+    "stream-browserify": "^3.0.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
+    "util": "^0.12.5",
     "uuid": "^10.0.0",
     "viem": "^2.21.28",
     "wagmi": "^2.12.19",
@@ -42,6 +48,7 @@
     "@types/node": "^22.7.6",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.2",
     "autoprefixer": "^10.4.20",
     "copy-webpack-plugin": "^11.0.0",
     "eslint": "^8.56.0",
@@ -51,10 +58,9 @@
     "tailwindcss": "^3.4.14",
     "ts-loader": "^9.5.1",
     "typescript": "^5.5.3",
+    "vite": "^5.4.8",
     "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^4.11.1",
-    "@vitejs/plugin-react": "^4.3.2",
-    "vite": "^5.4.8"
+    "webpack-dev-server": "^4.11.1"
   }
 }

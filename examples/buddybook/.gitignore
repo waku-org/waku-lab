@@ -15,3 +15,11 @@ instructions
 *.sw?
 
 .env
+.env.*
+!.env.example
+
+# Build
+/build
+/dist
+.output
+.vercel
