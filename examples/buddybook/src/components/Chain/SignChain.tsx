@@ -101,10 +101,20 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
     }
   });
 
-  const handleSign = () => {
-    if (!ensureWalletConnected()) {
-      return;
+  const handleSign = async () => {
+    if (!address) {
+      // If not connected, try to connect first
+      const connected = ensureWalletConnected();
+      if (!connected) return;
+      
+      // After successful connection, proceed with signing
+      handleSignAfterConnection();
+    } else {
+      handleSignAfterConnection();
     }
+  };
+
+  const handleSignAfterConnection = () => {
     // Add an additional check here before signing
     if (alreadySigned) {
       setError('You have already signed this chain.');
@@ -126,7 +136,7 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
   return (
     <>
       <Button onClick={() => setIsOpen(true)} disabled={alreadySigned}>
-        {alreadySigned ? 'Already Signed' : 'Sign Chain'}
+        {alreadySigned ? 'Already Signed' : !address ? 'Connect Wallet' : 'Sign Chain'}
       </Button>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-md">
@@ -157,6 +167,8 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
                 </>
               ) : alreadySigned ? (
                 'Already Signed'
+              ) : !address ? (
+                'Connect Wallet'
               ) : (
                 'Sign'
               )}
