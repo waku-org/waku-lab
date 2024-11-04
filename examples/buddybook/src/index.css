@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -27,8 +28,9 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem
+    --radius: 0.5rem;
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -53,36 +55,46 @@
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%
+    --chart-5: 340 75% 55%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   body {
     @apply bg-background text-foreground;
-  } 
+    overscroll-behavior-y: none;
+  }
+
+  button, a {
+    @apply cursor-pointer touch-manipulation;
+  }
+
   .container {
     @apply px-4 md:px-6 lg:px-8;
   }
-  
+
   h1 {
     @apply text-2xl md:text-4xl font-bold;
   }
-  
+
   h2 {
     @apply text-xl md:text-3xl font-semibold;
   }
-  
+
   h3 {
     @apply text-lg md:text-2xl font-semibold;
   }
+
   .section {
     @apply py-4 md:py-6 lg:py-8;
   }
-  
+
   .card {
     @apply p-4 md:p-6;
   }
