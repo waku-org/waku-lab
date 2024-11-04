@@ -71,13 +71,17 @@ function App() {
       setIsLoadingChains(true);
       const messageGenerator = getMessagesFromStore(node as LightNode);
       
-      // Process messages as they arrive
-      for await (const message of messageGenerator) {
-        setChainsData(prevChains => {
-          const blockExists = prevChains.some(block => block.blockUUID === message.blockUUID);
-          if (blockExists) return prevChains;
-          return [...prevChains, message];
-        });
+      try {
+        for await (const message of messageGenerator) {
+          setChainsData(prevChains => {
+            const blockExists = prevChains.some(block => block.blockUUID === message.blockUUID);
+            if (blockExists) return prevChains;
+            return [...prevChains, message];
+          });
+        }
+      } catch (error) {
+        console.error("Error processing message:", error);
+        // Continue processing other messages
       }
       
       setWakuStatus(prev => ({ ...prev, store: 'success' }));
@@ -130,9 +134,9 @@ function App() {
       <Header wakuStatus={wakuStatus} />
       <main className="container mx-auto px-4 py-4 md:py-8 max-w-7xl">
         <Routes>
+          <Route path="" element={<Home />} />
           <Route path="create" element={<ChainCreationForm />} />
           <Route path="view" element={<ChainList chainsData={chainsData} onChainUpdate={handleChainUpdate} isLoading={isLoadingChains} />} />
-          <Route path="" element={<Home />} />
           <Route 
             path="sign/:chainUUID/:blockUUID"
             element={

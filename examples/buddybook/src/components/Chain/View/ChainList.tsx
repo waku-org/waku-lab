@@ -23,7 +23,7 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
     const childBlocks = chainsData.filter(b => b.parentBlockUUID === block.blockUUID);
     const totalSignatures = block.signatures.length + childBlocks.reduce((acc, child) => acc + child.signatures.length, 0);
 
-    const shareUrl = `${window.location.origin}/sign/${block.chainUUID ?? block.blockUUID}/${block.blockUUID}`;
+    const shareUrl = `${window.location.origin}${import.meta.env.BASE_URL}sign/${block.chainUUID ?? block.blockUUID}/${block.blockUUID}`;
 
     return (
       <li key={`${block.blockUUID}-${depth}`} className="mb-4">

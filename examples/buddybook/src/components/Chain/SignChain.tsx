@@ -55,28 +55,32 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
 
   const { signMessage } = useSignMessage({
     mutation: {
+      onMutate() {
+        // Reset any previous errors when starting a new signing attempt
+        setError(null);
+        setIsSigning(true);
+      },
       async onSuccess(signature) {
         if (!address || !node) return;
         
-        // Double check signature before proceeding
-        if (block.signatures.some(sig => sig.address.toLowerCase() === address.toLowerCase())) {
-          setError('You have already signed this chain.');
-          setIsSigning(false);
-          return;
-        }
-
-        const newBlock: BlockPayload = {
-          chainUUID: block.chainUUID,
-          blockUUID: uuidv4(),
-          title: block.title,
-          description: block.description,
-          signedMessage: signature,
-          timestamp: Date.now(),
-          signatures: [{ address, signature }],
-          parentBlockUUID: block.blockUUID
-        };
-
         try {
+          // Double check signature before proceeding
+          if (block.signatures.some(sig => sig.address.toLowerCase() === address.toLowerCase())) {
+            setError('You have already signed this chain.');
+            return;
+          }
+
+          const newBlock: BlockPayload = {
+            chainUUID: block.chainUUID,
+            blockUUID: uuidv4(),
+            title: block.title,
+            description: block.description,
+            signedMessage: signature,
+            timestamp: Date.now(),
+            signatures: [{ address, signature }],
+            parentBlockUUID: block.blockUUID
+          };
+
           const wakuMessage = createMessage(newBlock);
           const { failures, successes } = await node.lightPush.send(encoder, wakuMessage);
           
@@ -89,44 +93,55 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
         } catch (error) {
           console.error('Error creating new block:', error);
           setError('Failed to create new block. Please try again.');
-        } finally {
-          setIsSigning(false);
         }
       },
       onError(error) {
         console.error('Error signing message:', error);
-        setError('Error signing message. Please try again.');
+        setError('Error signing message. Please try again. If using a mobile wallet, please ensure your wallet app is open.');
+      },
+      onSettled() {
         setIsSigning(false);
       }
     }
   });
 
-  const handleSign = () => {
-    if (!ensureWalletConnected()) {
-      return;
+  const handleSign = async () => {
+    try {
+      if (!address) {
+        // If not connected, try to connect first
+        const connected = await ensureWalletConnected();
+        if (!connected) return;
+      }
+      
+      // Check if already signed
+      if (alreadySigned) {
+        setError('You have already signed this chain.');
+        return;
+      }
+
+      // Prepare the message
+      const message = `Sign Block:
+Chain UUID: ${block.chainUUID}
+Block UUID: ${block.blockUUID}
+Title: ${block.title}
+Description: ${block.description}
+Timestamp: ${new Date().getTime()}
+Parent Block UUID: ${block.parentBlockUUID}
+Signed by: ${ensName || address}`;
+
+      // Trigger signing
+      signMessage({ message });
+    } catch (error) {
+      console.error('Error in sign flow:', error);
+      setError('Failed to initiate signing. Please try again.');
+      setIsSigning(false);
     }
-    // Add an additional check here before signing
-    if (alreadySigned) {
-      setError('You have already signed this chain.');
-      return;
-    }
-    setIsSigning(true);
-    setError(null);
-    const message = `Sign Block:
-                    Chain UUID: ${block.chainUUID}
-                    Block UUID: ${block.blockUUID}
-                    Title: ${block.title}
-                    Description: ${block.description}
-                    Timestamp: ${new Date().getTime()}
-                    Parent Block UUID: ${block.parentBlockUUID}
-                    Signed by: ${ensName || address}`;
-    signMessage({ message });
   };
 
   return (
     <>
       <Button onClick={() => setIsOpen(true)} disabled={alreadySigned}>
-        {alreadySigned ? 'Already Signed' : 'Sign Chain'}
+        {alreadySigned ? 'Already Signed' : !address ? 'Connect Wallet' : 'Sign Chain'}
       </Button>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-md">
@@ -157,6 +172,8 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
                 </>
               ) : alreadySigned ? (
                 'Already Signed'
+              ) : !address ? (
+                'Connect Wallet'
               ) : (
                 'Sign'
               )}

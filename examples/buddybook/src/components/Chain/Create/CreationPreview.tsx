@@ -145,6 +145,7 @@ const ChainCreationForm: React.FC = () => {
               value={formData.title}
               onChange={handleInputChange}
               maxLength={50}
+              className="text-base sm:text-sm"
             />
             {errors.title && <p className="text-sm text-destructive">{errors.title}</p>}
           </div>
@@ -156,10 +157,11 @@ const ChainCreationForm: React.FC = () => {
               value={formData.description}
               onChange={handleInputChange}
               maxLength={500}
+              className="min-h-[100px] text-base sm:text-sm"
             />
             {errors.description && <p className="text-sm text-destructive">{errors.description}</p>}
           </div>
-          <Button type="submit" className="w-full">Create Chain</Button>
+          <Button type="submit" className="w-full py-6 text-base sm:py-2 sm:text-sm">Create Chain</Button>
         </form>
       </CardContent>
       <Dialog open={showModal} onOpenChange={handleCloseModal}>
@@ -196,15 +198,15 @@ const ChainCreationForm: React.FC = () => {
                 <>
                   <div className="flex flex-col items-center space-y-4">
                     <QRCode
-                      text={`${window.location.origin}/sign/${formData.uuid}/${createdBlockUUID}`}
+                      text={`${window.location.origin}${import.meta.env.BASE_URL}sign/${formData.uuid}/${createdBlockUUID}`}
                       width={200}
                       height={200}
                     />
                     <p className="text-sm text-center break-all">
-                      {`${window.location.origin}/sign/${formData.uuid}/${createdBlockUUID}`}
+                      {`${window.location.origin}${import.meta.env.BASE_URL}sign/${formData.uuid}/${createdBlockUUID}`}
                     </p>
                     <Button
-                      onClick={() => navigator.clipboard.writeText(`${window.location.origin}/sign/${formData.uuid}/${createdBlockUUID}`)}
+                      onClick={() => navigator.clipboard.writeText(`${window.location.origin}${import.meta.env.BASE_URL}sign/${formData.uuid}/${createdBlockUUID}`)}
                       variant="outline"
                     >
                       Copy Link
