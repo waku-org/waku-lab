@@ -165,7 +165,7 @@ const ChainCreationForm: React.FC = () => {
         </form>
       </CardContent>
       <Dialog open={showModal} onOpenChange={handleCloseModal}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{isSuccess ? "Chain Created" : "Chain Preview"}</DialogTitle>
           </DialogHeader>

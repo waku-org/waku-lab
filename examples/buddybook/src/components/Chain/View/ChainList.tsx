@@ -42,7 +42,7 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
                 <p>{block.description}</p>
                 <div className="flex flex-col space-y-2 mt-2">
                   <p className="text-sm text-muted-foreground">
-                    Created by: <SignerName address={block.signatures[0].address} />
+                    <SignerName address={block.signatures[0].address} prefix="Created by" />
                   </p>
                   <p className="text-sm text-muted-foreground">
                     Created at: {new Date(block.timestamp).toLocaleString()}
@@ -88,7 +88,9 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
             </Card>
           ) : (
             <div className="flex-grow">
-              <SignerName address={block.signatures[0].address} />
+              <p className="text-sm">
+                <SignerName address={block.signatures[0].address} prefix="Signed by" />
+              </p>
             </div>
           )}
         </div>
@@ -129,13 +131,13 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
   );
 };
 
-const SignerName: React.FC<{ address: `0x${string}` }> = ({ address }) => {
+const SignerName: React.FC<{ address: `0x${string}`; prefix?: string }> = ({ address, prefix }) => {
   const { data: ensName } = useEnsName({ address })
   
   return (
-    <p className="text-sm">
-      Signed by: {ensName || `${address.slice(0, 6)}...${address.slice(-4)}`}
-    </p>
+    <span className="text-sm">
+      {prefix && `${prefix}: `}{ensName || `${address.slice(0, 6)}...${address.slice(-4)}`}
+    </span>
   );
 };
 
