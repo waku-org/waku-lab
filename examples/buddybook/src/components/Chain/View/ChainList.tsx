@@ -40,15 +40,20 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
               </CardHeader>
               <CardContent>
                 <p>{block.description}</p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Created at: {new Date(block.timestamp).toLocaleString()}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Total Signatures: {totalSignatures}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Block UUID: {block.blockUUID}
-                </p>
+                <div className="flex flex-col space-y-2 mt-2">
+                  <p className="text-sm text-muted-foreground">
+                    Created by: <SignerName address={block.signatures[0].address} />
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Created at: {new Date(block.timestamp).toLocaleString()}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Total Signatures: {totalSignatures}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Block UUID: {block.blockUUID}
+                  </p>
+                </div>
                 <div className="mt-2 space-x-2">
                   <SignChain 
                     block={block} 
