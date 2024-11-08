@@ -1,22 +1,22 @@
 {
-  "_events-CeUgj3WI.js": {
-    "file": "assets/events-CeUgj3WI.js",
+  "_events-C057Z9Er.js": {
+    "file": "assets/events-C057Z9Er.js",
     "name": "events",
     "imports": [
       "index.html"
     ]
   },
-  "_hooks.module-lMHrE8Ax.js": {
-    "file": "assets/hooks.module-lMHrE8Ax.js",
+  "_hooks.module-Yi4kSfBO.js": {
+    "file": "assets/hooks.module-Yi4kSfBO.js",
     "name": "hooks.module",
     "imports": [
       "index.html",
-      "_events-CeUgj3WI.js",
-      "_inherits_browser-Yzy1_4C0.js"
+      "_events-C057Z9Er.js",
+      "_inherits_browser-CGt0BnBO.js"
     ]
   },
-  "_index-BSj2y3-_.js": {
-    "file": "assets/index-BSj2y3-_.js",
+  "_index-Cvpclzcj.js": {
+    "file": "assets/index-Cvpclzcj.js",
     "name": "index",
     "isDynamicEntry": true,
     "imports": [
@@ -26,52 +26,52 @@
       "node_modules/@walletconnect/modal-ui/dist/index.js"
     ]
   },
-  "_index-Bn8Pf8R7.js": {
-    "file": "assets/index-Bn8Pf8R7.js",
-    "name": "index",
-    "isDynamicEntry": true,
-    "imports": [
-      "_events-CeUgj3WI.js"
-    ]
-  },
-  "_index-agLa57vI.js": {
-    "file": "assets/index-agLa57vI.js",
+  "_index-DUffqalo.js": {
+    "file": "assets/index-DUffqalo.js",
     "name": "index",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
-      "_hooks.module-lMHrE8Ax.js"
+      "_hooks.module-Yi4kSfBO.js"
     ]
   },
-  "_index-pUz7yW5Z.js": {
-    "file": "assets/index-pUz7yW5Z.js",
+  "_index-aBPnAnCT.js": {
+    "file": "assets/index-aBPnAnCT.js",
     "name": "index",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
-      "_inherits_browser-Yzy1_4C0.js",
-      "_hooks.module-lMHrE8Ax.js",
-      "_events-CeUgj3WI.js"
+      "_inherits_browser-CGt0BnBO.js",
+      "_hooks.module-Yi4kSfBO.js",
+      "_events-C057Z9Er.js"
     ]
   },
-  "_inherits_browser-Yzy1_4C0.js": {
-    "file": "assets/inherits_browser-Yzy1_4C0.js",
+  "_index-opzckq92.js": {
+    "file": "assets/index-opzckq92.js",
+    "name": "index",
+    "isDynamicEntry": true,
+    "imports": [
+      "_events-C057Z9Er.js"
+    ]
+  },
+  "_inherits_browser-CGt0BnBO.js": {
+    "file": "assets/inherits_browser-CGt0BnBO.js",
     "name": "inherits_browser",
     "imports": [
       "index.html"
     ]
   },
   "index.html": {
-    "file": "assets/index-DEvDjTip.js",
+    "file": "assets/index-CiEbv6PL.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
     "dynamicImports": [
       "node_modules/viem/_esm/utils/ccip.js",
-      "_index-agLa57vI.js",
-      "_index-pUz7yW5Z.js",
+      "_index-DUffqalo.js",
+      "_index-aBPnAnCT.js",
       "node_modules/@safe-global/safe-apps-sdk/dist/esm/index.js",
-      "_index-Bn8Pf8R7.js",
+      "_index-opzckq92.js",
       "node_modules/@walletconnect/ethereum-provider/dist/index.es.js"
     ],
     "css": [
@@ -79,7 +79,7 @@
     ]
   },
   "node_modules/@safe-global/safe-apps-sdk/dist/esm/index.js": {
-    "file": "assets/index-BgyiOKKB.js",
+    "file": "assets/index-DWNekWTW.js",
     "name": "index",
     "src": "node_modules/@safe-global/safe-apps-sdk/dist/esm/index.js",
     "isDynamicEntry": true,
@@ -88,31 +88,31 @@
     ]
   },
   "node_modules/@walletconnect/ethereum-provider/dist/index.es.js": {
-    "file": "assets/index.es-CbpVO8JG.js",
+    "file": "assets/index.es-DRXqQGDV.js",
     "name": "index.es",
     "src": "node_modules/@walletconnect/ethereum-provider/dist/index.es.js",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
-      "_events-CeUgj3WI.js",
-      "_inherits_browser-Yzy1_4C0.js"
+      "_events-C057Z9Er.js",
+      "_inherits_browser-CGt0BnBO.js"
     ],
     "dynamicImports": [
-      "_index-BSj2y3-_.js"
+      "_index-Cvpclzcj.js"
     ]
   },
   "node_modules/@walletconnect/modal-ui/dist/index.js": {
-    "file": "assets/index-CQmw3bIF.js",
+    "file": "assets/index-B8AG8c-Q.js",
     "name": "index",
     "src": "node_modules/@walletconnect/modal-ui/dist/index.js",
     "isDynamicEntry": true,
     "imports": [
-      "_index-BSj2y3-_.js",
+      "_index-Cvpclzcj.js",
       "index.html"
     ]
   },
   "node_modules/viem/_esm/utils/ccip.js": {
-    "file": "assets/ccip-BEsx51-9.js",
+    "file": "assets/ccip-DP2SvETa.js",
     "name": "ccip",
     "src": "node_modules/viem/_esm/utils/ccip.js",
     "isDynamicEntry": true,
