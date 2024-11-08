@@ -27,7 +27,7 @@ createRoot(document.getElementById('root')!).render(
       <QueryClientProvider client={queryClient}>
         <ConnectKitProvider>
           <LightNodeProvider options={WAKU_NODE_OPTIONS}>
-            <Router basename={import.meta.env.BASE_URL}>
+            <Router basename={'/'}>
               <App />
             </Router>
           </LightNodeProvider>
