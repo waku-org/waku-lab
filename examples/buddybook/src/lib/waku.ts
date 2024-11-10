@@ -88,7 +88,7 @@ export async function subscribeToFilter(node: LightNode, callback: (message: Blo
             blockPayload.signatures = blockPayload.signatures.map(s => JSON.parse(s as unknown as string) as Signature);
             callback(blockPayload);
         }
-    }, {forceUseAllPeers: true});
+    }, {forceUseAllPeers: false});
 
     console.log("results", results)
     
