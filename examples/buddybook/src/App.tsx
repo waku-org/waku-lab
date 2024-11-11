@@ -41,8 +41,9 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (isWakuLoading || !node || node.libp2p.getConnections().length === 0 || chainsData.length > 0 || isListening)  return;
+    if (isWakuLoading || !node || node.libp2p.getConnections().length <= 1 || chainsData.length > 0 || isListening)  return;
       setIsListening(true);
+      console.log("connections", node.libp2p.getConnections().length)
       startMessageListening();
   }, [node, isWakuLoading, wakuStatus])
 
@@ -67,6 +68,7 @@ function App() {
 
   const startMessageListening = async () => {
     console.log("Starting message listening")
+    console.log("connections", node.libp2p.getConnections().length)
     try {
       setWakuStatus(prev => ({ ...prev, store: 'in-progress' }));
       setIsLoadingChains(true);

@@ -23,14 +23,6 @@
         browser: true
       };
     </script>
-    <script type="text/javascript">
-      (function() {
-        const path = window.location.pathname;
-        if (path && !window.location.search.includes('?/')) {
-          window.location.replace('/?/' + path + window.location.search + window.location.hash);
-        }
-      })();
-    </script>
   </head>
   <body>
     <div id="root"></div>

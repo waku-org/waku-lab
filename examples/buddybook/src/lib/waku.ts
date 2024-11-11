@@ -1,9 +1,7 @@
 import { createEncoder, createDecoder, type LightNode, type CreateWakuNodeOptions } from "@waku/sdk";
 import protobuf from 'protobufjs';
 
-export const WAKU_NODE_OPTIONS: CreateWakuNodeOptions = { defaultBootstrap: true, nodeToUse: {
-    store: "/dns4/store-02.ac-cn-hongkong-c.status.staging.status.im/tcp/443/wss/p2p/16Uiu2HAmU7xtcwytXpGpeDrfyhJkiFvTkQbLB9upL5MXPLGceG9K"
-} };
+export const WAKU_NODE_OPTIONS: CreateWakuNodeOptions = { defaultBootstrap: true };
 
 
 export type Signature = {
@@ -22,7 +20,7 @@ export type BlockPayload = {
     parentBlockUUID: string | null;
 }
 
-const contentTopic = "/buddybook-dogfood/1/chain/proto";
+const contentTopic = "/buddybook-devcon/1/chain/proto";
 
 export const encoder = createEncoder({
     contentTopic: contentTopic,

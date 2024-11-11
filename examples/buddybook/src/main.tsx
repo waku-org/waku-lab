@@ -9,7 +9,7 @@ import App from './App.tsx'
 import './index.css'
 import { LightNodeProvider } from "@waku/react";
 import { config } from './lib/walletConnect.ts'
-import { WAKU_NODE_OPTIONS } from './lib/waku-config.ts'
+import { WAKU_NODE_OPTIONS } from './lib/waku.ts'
 
 // Polyfills
 if (typeof global === 'undefined') {
