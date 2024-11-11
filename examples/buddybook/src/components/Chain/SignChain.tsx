@@ -7,9 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import QRCode from '@/components/QRCode';
-import { v4 as uuidv4 } from 'uuid';
 import { useWalletPrompt } from '@/hooks/useWalletPrompt';
-
+import { v4 as uuidv4 } from 'uuid';
 interface SignChainProps {
   block: BlockPayload;
   chainsData: BlockPayload[]; // Add this prop
@@ -25,6 +24,7 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
   const { data: ensName } = useEnsName({ address });
   const { node } = useWaku<LightNode>();
   const { ensureWalletConnected } = useWalletPrompt();
+  const [isWalletPrompt, setIsWalletPrompt] = useState(false);
 
   useEffect(() => {
     if (address) {
@@ -109,13 +109,25 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
     try {
       if (!address) {
         // If not connected, try to connect first
+        setIsWalletPrompt(true);
         const connected = await ensureWalletConnected();
-        if (!connected) return;
+        setIsWalletPrompt(false);
+        if (!connected) {
+          setError('Please ensure your wallet is connected and the app is open.');
+          return;
+        }
       }
       
       // Check if already signed
       if (alreadySigned) {
         setError('You have already signed this chain.');
+        return;
+      }
+
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile && typeof window.ethereum === 'undefined') {
+        setError('Please ensure your wallet app is installed and open before signing.');
+        window.location.href = 'metamask:///';
         return;
       }
 
@@ -133,8 +145,10 @@ Signed by: ${ensName || address}`;
       signMessage({ message });
     } catch (error) {
       console.error('Error in sign flow:', error);
-      setError('Failed to initiate signing. Please try again.');
+      setError('Failed to initiate signing. Please ensure your wallet app is open and try again.');
       setIsSigning(false);
+    } finally {
+      setIsWalletPrompt(false);
     }
   };
 
@@ -161,14 +175,41 @@ Signed by: ${ensName || address}`;
             </div>
             <QRCode text={`${window.location.origin}/sign/${block.chainUUID}/${block.blockUUID}`} />
           </div>
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {(error || isWalletPrompt) && (
+            <div className="space-y-2">
+              {error && <p className="text-sm text-destructive">{error}</p>}
+              {isWalletPrompt && (
+                <div className="rounded-md bg-blue-50 p-4">
+                  <p className="text-sm text-blue-700">
+                    Attempting to connect to your wallet...
+                  </p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    If your wallet doesn't open automatically, please open it manually to approve the connection.
+                  </p>
+                </div>
+              )}
+              {/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && (
+                <p className="text-xs text-muted-foreground">
+                  Tip: If your wallet doesn't open automatically, minimize this app and open your wallet manually before trying again.
+                </p>
+              )}
+            </div>
+          )}
           <DialogFooter>
             <Button variant="secondary" onClick={() => setIsOpen(false)}>Cancel</Button>
-            <Button onClick={handleSign} disabled={isSigning || alreadySigned}>
+            <Button 
+              onClick={handleSign} 
+              disabled={isSigning || alreadySigned || isWalletPrompt}
+            >
               {isSigning ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Signing...
+                </>
+              ) : isWalletPrompt ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Connecting...
                 </>
               ) : alreadySigned ? (
                 'Already Signed'

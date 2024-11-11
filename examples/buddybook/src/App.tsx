@@ -80,12 +80,13 @@ function App() {
             return [...prevChains, message];
           });
         }
+        setWakuStatus(prev => ({ ...prev, store: 'success' }));
       } catch (error) {
         console.error("Error processing message:", error);
+        // Update store status to error when query fails
+        setWakuStatus(prev => ({ ...prev, store: 'error' }));
         // Continue processing other messages
       }
-      
-      setWakuStatus(prev => ({ ...prev, store: 'success' }));
     } catch (error) {
       console.error("Error fetching messages from store:", error);
       setWakuStatus(prev => ({ ...prev, store: 'error' }));

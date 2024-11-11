@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
-import type { Status } from '@/App';
+
+type Status = 'success' | 'error' | 'in-progress';
 
 interface ConnectionStatusProps {
   filter: Status;

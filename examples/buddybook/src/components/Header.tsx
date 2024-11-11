@@ -82,30 +82,32 @@ const Header: React.FC<HeaderProps> = ({ wakuStatus }) => {
             </nav>
 
             <div className="flex items-center gap-2 md:gap-4">
-              <div className="hidden md:flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 {!isWakuLoading && !wakuError && (
                   <>
                     <div className="flex items-center space-x-1">
-                      <span className="text-muted-foreground">Filter:</span>
+                      <span className="hidden md:inline text-muted-foreground">Filter:</span>
                       <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${getStatusColor(wakuStatus.filter)}`}></div>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <span className="text-muted-foreground">Store:</span>
+                      <span className="hidden md:inline text-muted-foreground">Store:</span>
                       <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${getStatusColor(wakuStatus.store)}`}></div>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <span className="hidden md:inline text-muted-foreground">Peers:</span>
+                      {isWakuLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : wakuError ? (
+                        <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full bg-red-500`} />
+                      ) : (
+                        <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${connections > 0 ? "bg-green-500" : "bg-yellow-500"}`} />
+                      )}
                     </div>
                   </>
                 )}
               </div>
               
               <div className="flex items-center gap-2">
-                {isWakuLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : wakuError ? (
-                  <span className="text-xs text-red-500">Error</span>
-                ) : (
-                  <div className={`w-2 h-2 rounded-full ${connections > 0 ? "bg-green-500" : "bg-yellow-500"}`} />
-                )}
-                
                 {isConnected ? (
                   <div className="flex items-center gap-2">
                     <span className="text-xs md:text-sm text-muted-foreground truncate max-w-[80px] md:max-w-[120px]">
