@@ -12,6 +12,7 @@ import { BlockPayload, getMessagesFromStore, subscribeToFilter } from './lib/wak
 import TelemetryOptIn from './components/TelemetryOptIn';
 import TelemetryPage from './components/TelemetryPage';
 import SignSharedChain from './components/Chain/SignSharedChain'
+import ConnectionStatus from '@/components/ConnectionStatus';
 
 type Status = 'success' | 'in-progress' | 'error';
 
@@ -132,6 +133,9 @@ function App() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header wakuStatus={wakuStatus} />
+      <div className="md:hidden">
+        <ConnectionStatus filter={wakuStatus.filter} store={wakuStatus.store} />
+      </div>
       <main className="container mx-auto px-4 py-4 md:py-8 max-w-7xl">
         <Routes>
           <Route path="" element={<Home />} />
