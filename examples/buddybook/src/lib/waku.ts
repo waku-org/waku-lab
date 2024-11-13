@@ -142,3 +142,18 @@ export async function subscribeToFilter(node: LightNode, callback: (message: Blo
         throw new Error("Failed to subscribe to filter")
     }
 }
+
+export function calculateTotalSignatures(block: BlockPayload, allBlocks: BlockPayload[]): number {
+    const childBlocks = allBlocks.filter(b => b.parentBlockUUID === block.blockUUID);
+    return block.signatures.length + childBlocks.reduce((acc, child) => 
+        acc + calculateTotalSignatures(child, allBlocks), 0
+    );
+}
+
+export function sortBlocksBySignatures(blocks: BlockPayload[], allBlocks: BlockPayload[]): BlockPayload[] {
+    return [...blocks].sort((a, b) => {
+        const totalSignaturesA = calculateTotalSignatures(a, allBlocks);
+        const totalSignaturesB = calculateTotalSignatures(b, allBlocks);
+        return totalSignaturesB - totalSignaturesA;
+    });
+}

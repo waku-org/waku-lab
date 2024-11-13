@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import QRCode from '@/components/QRCode';
 import { Loader2 } from "lucide-react";
+import { sortBlocksBySignatures } from '@/lib/waku';
 
 interface ChainListProps {
   chainsData: BlockPayload[];
@@ -105,6 +106,7 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
   };
 
   const rootBlocks = chainsData.filter(block => !block.parentBlockUUID);
+  const sortedRootBlocks = sortBlocksBySignatures(rootBlocks, chainsData);
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
@@ -124,7 +126,7 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
           <p>No books found.</p>
         ) : (
           <ul className="space-y-4">
-            {rootBlocks.map((block) => renderBlock(block, 0))}
+            {sortedRootBlocks.map((block) => renderBlock(block, 0))}
           </ul>
         )}
       </CardContent>
