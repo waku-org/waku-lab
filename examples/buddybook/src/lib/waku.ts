@@ -1,7 +1,7 @@
 import { createEncoder, createDecoder, type LightNode, type CreateWakuNodeOptions } from "@waku/sdk";
 import protobuf from 'protobufjs';
 
-export const WAKU_NODE_OPTIONS: CreateWakuNodeOptions = { defaultBootstrap: true };
+export const WAKU_NODE_OPTIONS: CreateWakuNodeOptions = { defaultBootstrap: true, nodeToUse: {store: "/dns4/boot-01.do-ams3.status.staging.status.im/tcp/443/wss/p2p/16Uiu2HAmEqqio4UR1SWqAc7KY19t6qyDvtmyjreZpzUBJvb4u65R"} };
 
 
 export type Signature = {
