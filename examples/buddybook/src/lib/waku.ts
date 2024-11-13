@@ -18,7 +18,7 @@ export type BlockPayload = {
     parentBlockUUID: string | null;
 }
 
-export const contentTopic = "/buddybook-dogfood/1/chain/proto";
+const contentTopic = "/buddybook-devcon/1/chain/proto";
 
 export const encoder = createEncoder({
     contentTopic: contentTopic,
@@ -113,7 +113,7 @@ export async function subscribeToFilter(node: LightNode, callback: (message: Blo
         console.log("Error subscribing to filter", error)
     }
 
-    if (!subscription || error || results.successes.length === 0 ||results.failures.length >0) {
+    if (!subscription || error || results.successes.length === 0 || results.failures.length > 0) {
         throw new Error("Failed to subscribe to filter")
     }
 }

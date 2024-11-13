@@ -4,7 +4,7 @@ import { type BlockPayload } from '@/lib/waku';
 import SignChain from '@/components/Chain/SignChain';
 import { useEnsName } from 'wagmi';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import QRCode from '@/components/QRCode';
 import { Loader2 } from "lucide-react";
 
@@ -64,22 +64,23 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
                     <DialogTrigger asChild>
                       <Button variant="outline">Share</Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
+                    <DialogContent className="flex flex-col gap-4">
                       <DialogHeader>
                         <DialogTitle>Share this Book</DialogTitle>
                         <DialogDescription>
                           Share this book with others to collect their signatures.
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="flex flex-col items-center space-y-4">
-                        <QRCode text={shareUrl} width={200} height={200} />
-                        <p className="text-sm text-center break-all">{shareUrl}</p>
-                        <Button
-                          onClick={() => navigator.clipboard.writeText(shareUrl)}
-                          variant="outline"
-                        >
-                          Copy Link
-                        </Button>
+
+                      <div className="flex flex-col items-center gap-4">
+                        <QRCode 
+                          text={shareUrl} 
+                          width={180} 
+                          height={180}
+                          showCopyButton="text"
+                          title={block.title}
+                          description={`Sign this chain: ${block.title}`}
+                        />
                       </div>
                     </DialogContent>
                   </Dialog>

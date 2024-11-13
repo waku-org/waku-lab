@@ -1,6 +1,5 @@
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
-import { Cross2Icon } from "@radix-ui/react-icons"
 
 import { cn } from "@/lib/utils"
 
@@ -36,9 +35,12 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200",
-        "rounded-lg",
-        "max-h-[85vh] overflow-y-auto",
+        "fixed z-50 border bg-background shadow-lg duration-200",
+        "p-4 md:p-6",
+        "w-full md:w-[calc(100%-2rem)] md:max-w-lg",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+        "bottom-0 rounded-t-lg md:rounded-lg",
+        "md:left-[50%] md:top-[50%] md:translate-x-[-50%] md:translate-y-[-50%]",
         className
       )}
       {...props}

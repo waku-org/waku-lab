@@ -7,13 +7,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import QRCode from '@/components/QRCode';
-import { v4 as uuidv4 } from 'uuid';
 import { useWalletPrompt } from '@/hooks/useWalletPrompt';
+import { v4 as uuidv4 } from 'uuid';
 import { fromLightPush, Telemetry } from '@/lib/telemetry';
 
 interface SignChainProps {
   block: BlockPayload;
-  chainsData: BlockPayload[]; // Add this prop
+  chainsData: BlockPayload[];
   onSuccess: (newBlock: BlockPayload) => void;
 }
 
@@ -22,42 +22,49 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
   const [isSigning, setIsSigning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [alreadySigned, setAlreadySigned] = useState(false);
+  const [isWalletPrompt, setIsWalletPrompt] = useState(false);
+
   const { address } = useAccount();
   const { data: ensName } = useEnsName({ address });
   const { node } = useWaku<LightNode>();
   const { ensureWalletConnected } = useWalletPrompt();
 
+  const checkSignatures = (blockToCheck: BlockPayload, visitedBlocks: Set<string>): boolean => {
+    if (visitedBlocks.has(blockToCheck.blockUUID)) return false;
+    visitedBlocks.add(blockToCheck.blockUUID);
+
+    // Check current block signatures
+    if (blockToCheck.signatures?.some(sig => sig?.address?.toLowerCase() === address?.toLowerCase())) {
+      return true;
+    }
+
+    // Check parent block
+    const parentBlock = chainsData.find(b => b.blockUUID === blockToCheck.parentBlockUUID);
+    if (parentBlock && checkSignatures(parentBlock, visitedBlocks)) {
+      return true;
+    }
+
+    // Check immediate child blocks
+    return chainsData
+      .filter(b => b.parentBlockUUID === blockToCheck.blockUUID)
+      .some(childBlock => checkSignatures(childBlock, visitedBlocks));
+  };
+
   useEffect(() => {
-    if (address) {
-      // Check if the address has signed this block or any blocks in the chain
-      const checkSignatures = (blockToCheck: BlockPayload): boolean => {
-        // Check current block's signatures
-        if (blockToCheck.signatures.some(
-          sig => sig.address.toLowerCase() === address.toLowerCase()
-        )) {
-          return true;
-        }
+    if (!address) return;
 
-        // Check parent blocks
-        const parentBlock = chainsData.find(b => b.blockUUID === blockToCheck.parentBlockUUID);
-        if (parentBlock && checkSignatures(parentBlock)) {
-          return true;
-        }
-
-        // Check child blocks
-        const childBlocks = chainsData.filter(b => b.parentBlockUUID === blockToCheck.blockUUID);
-        return childBlocks.some(childBlock => checkSignatures(childBlock));
-      };
-
-      const hasAlreadySigned = checkSignatures(block);
-      setAlreadySigned(hasAlreadySigned);
+    try {
+      const visitedBlocks = new Set<string>();
+      setAlreadySigned(checkSignatures(block, visitedBlocks));
+    } catch (error) {
+      console.error('Error in signature check:', error);
+      setAlreadySigned(false);
     }
   }, [address, block, chainsData]);
 
   const { signMessage } = useSignMessage({
     mutation: {
       onMutate() {
-        // Reset any previous errors when starting a new signing attempt
         setError(null);
         setIsSigning(true);
       },
@@ -65,7 +72,6 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
         if (!address || !node) return;
         
         try {
-          // Double check signature before proceeding
           if (block.signatures.some(sig => sig.address.toLowerCase() === address.toLowerCase())) {
             setError('You have already signed this chain.');
             return;
@@ -121,35 +127,56 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
   const handleSign = async () => {
     try {
       if (!address) {
-        // If not connected, try to connect first
+        setIsWalletPrompt(true);
         const connected = await ensureWalletConnected();
-        if (!connected) return;
+        if (!connected) {
+          setError('Please ensure your wallet is connected and the app is open.');
+          return;
+        }
       }
       
-      // Check if already signed
       if (alreadySigned) {
         setError('You have already signed this chain.');
         return;
       }
 
-      // Prepare the message
-      const message = `Sign Block:
-Chain UUID: ${block.chainUUID}
-Block UUID: ${block.blockUUID}
-Title: ${block.title}
-Description: ${block.description}
-Timestamp: ${new Date().getTime()}
-Parent Block UUID: ${block.parentBlockUUID}
-Signed by: ${ensName || address}`;
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile && typeof window.ethereum === 'undefined') {
+        setError('Please ensure your wallet app is installed and open before signing.');
+        window.location.href = 'metamask:///';
+        return;
+      }
 
-      // Trigger signing
+      const message = [
+        'Sign Block:',
+        `Chain UUID: ${block.chainUUID}`,
+        `Block UUID: ${block.blockUUID}`,
+        `Title: ${block.title}`,
+        `Description: ${block.description}`,
+        `Timestamp: ${new Date().getTime()}`,
+        `Parent Block UUID: ${block.parentBlockUUID}`,
+        `Signed by: ${ensName || address}`
+      ].join('\n');
+
       signMessage({ message });
     } catch (error) {
       console.error('Error in sign flow:', error);
-      setError('Failed to initiate signing. Please try again.');
+      setError('Failed to initiate signing. Please ensure your wallet app is open and try again.');
       setIsSigning(false);
+    } finally {
+      setIsWalletPrompt(false);
     }
   };
+
+  const getButtonText = () => {
+    if (isSigning) return 'Signing...';
+    if (isWalletPrompt) return 'Connecting...';
+    if (alreadySigned) return 'Already Signed';
+    if (!address) return 'Connect Wallet';
+    return 'Sign';
+  };
+
+  const showLoadingSpinner = isSigning || isWalletPrompt;
 
   return (
     <>
@@ -174,22 +201,27 @@ Signed by: ${ensName || address}`;
             </div>
             <QRCode text={`${window.location.origin}/sign/${block.chainUUID}/${block.blockUUID}`} />
           </div>
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {(error || isWalletPrompt) && (
+            <div className="space-y-2">
+              {error && <p className="text-sm text-destructive">{error}</p>}
+              {isWalletPrompt && (
+                <div className="rounded-md bg-blue-50 p-4">
+                  <p className="text-sm text-blue-700">Attempting to connect to your wallet...</p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    If your wallet doesn't open automatically, please open it manually to approve the connection.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
           <DialogFooter>
             <Button variant="secondary" onClick={() => setIsOpen(false)}>Cancel</Button>
-            <Button onClick={handleSign} disabled={isSigning || alreadySigned}>
-              {isSigning ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing...
-                </>
-              ) : alreadySigned ? (
-                'Already Signed'
-              ) : !address ? (
-                'Connect Wallet'
-              ) : (
-                'Sign'
-              )}
+            <Button 
+              onClick={handleSign} 
+              disabled={isSigning || alreadySigned || isWalletPrompt}
+            >
+              {showLoadingSpinner && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {getButtonText()}
             </Button>
           </DialogFooter>
         </DialogContent>
