@@ -1,10 +1,10 @@
 import { createEncoder, createDecoder, type LightNode, type CreateWakuNodeOptions } from "@waku/sdk";
 import protobuf from 'protobufjs';
+import { Telemetry, fromFilter, fromStore } from "./telemetry";
 
 export const WAKU_NODE_OPTIONS: CreateWakuNodeOptions = { defaultBootstrap: true, nodeToUse: {
     store: "/dns4/store-02.ac-cn-hongkong-c.status.staging.status.im/tcp/443/wss/p2p/16Uiu2HAmU7xtcwytXpGpeDrfyhJkiFvTkQbLB9upL5MXPLGceG9K"
 } };
-
 
 export type Signature = {
   address: `0x${string}`;
@@ -22,7 +22,7 @@ export type BlockPayload = {
     parentBlockUUID: string | null;
 }
 
-const contentTopic = "/buddybook-dogfood/1/chain/proto";
+export const contentTopic = "/buddybook-dogfood/1/chain/proto";
 
 export const encoder = createEncoder({
     contentTopic: contentTopic,
@@ -66,22 +66,35 @@ export function createMessage({
 }
 
 export async function* getMessagesFromStore(node: LightNode) {
-    console.time("getMessagesFromStore")
-    for await (const messagePromises of node.store.queryGenerator([decoder])) {
-        const messages = await Promise.all(messagePromises);
-        for (const message of messages) {
-            console.log(message)
-            if (!message?.payload) continue;
-            const blockPayload = block.decode(message.payload) as unknown as BlockPayload;
-            blockPayload.signatures = blockPayload.signatures.map(s => JSON.parse(s as unknown as string) as Signature);
-            yield blockPayload;
+    try {
+        const startTime = performance.now();
+        for await (const messagePromises of node.store.queryGenerator([decoder])) {
+            const messages = await Promise.all(messagePromises);
+            for (const message of messages) {
+                console.log(message)
+                if (!message?.payload) continue;
+                const blockPayload = block.decode(message.payload) as unknown as BlockPayload;
+                blockPayload.signatures = blockPayload.signatures.map(s => JSON.parse(s as unknown as string) as Signature);
+                yield blockPayload;
+            }
         }
+        const endTime = performance.now();
+        const timeTaken = endTime - startTime;
+        console.log("getMessagesFromStore", timeTaken)
+
+        Telemetry.push(fromStore({
+            node,
+            decoder,
+            timestamp: startTime,
+            timeTaken,
+        }));
+    } catch(e) {
+        throw e;
     }
-    console.timeEnd("getMessagesFromStore")
 }
 
 export async function subscribeToFilter(node: LightNode, callback: (message: BlockPayload) => void) {
-    const {error, subscription, results} = await node.filter.subscribe([decoder], (message) => {
+    const result = await node.filter.subscribe([decoder], (message) => {
         console.log('message received from filter', message)
         if (message.payload) {
             const blockPayload = block.decode(message.payload) as unknown as BlockPayload;
@@ -90,6 +103,14 @@ export async function subscribeToFilter(node: LightNode, callback: (message: Blo
         }
     }, {forceUseAllPeers: false});
 
+    Telemetry.push(fromFilter({
+        result,
+        node,
+        decoder,
+        timestamp: Date.now(),
+    }));
+
+    const {error, subscription, results} = result;
     console.log("results", results)
     
     if (error) {

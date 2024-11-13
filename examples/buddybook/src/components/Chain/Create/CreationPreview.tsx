@@ -13,6 +13,7 @@ import { useWaku } from '@waku/react';
 import { LightNode } from '@waku/sdk';
 import { createMessage, encoder } from '@/lib/waku';
 import { useWalletPrompt } from '@/hooks/useWalletPrompt';
+import { fromLightPush, Telemetry, TelemetryType, buildExtraData } from '@/lib/telemetry';
 
 interface FormData {
   title: string;
@@ -48,18 +49,49 @@ const ChainCreationForm: React.FC = () => {
       const blockUUID = uuidv4();
       setCreatedBlockUUID(blockUUID);
       
+      const timestamp = Date.now();
       const message = createMessage({
         chainUUID: formData.uuid,
         blockUUID: blockUUID,
         title: formData.title,
         description: formData.description,
         signedMessage: signature,
-        timestamp: Date.now(),
+        timestamp: timestamp,
         signatures: [{address, signature}],
         parentBlockUUID: null
       });
 
-      await node?.lightPush.send(encoder, message)
+      try {
+        const result = await node?.lightPush.send(encoder, message);
+        Telemetry.push(fromLightPush({
+          result,
+          wallet: address,
+          bookId: formData.uuid,
+          node,
+          encoder,
+          timestamp,
+        }));
+      } catch (e) {
+        Telemetry.push([{
+          type: TelemetryType.LIGHT_PUSH_FILTER,
+          protocol: "lightPush",
+          timestamp: timestamp,
+          createdAt: timestamp,
+          seenTimestamp: timestamp,
+          peerId: node.peerId.toString(),
+          contentTopic: encoder.contentTopic,
+          pubsubTopic: encoder.pubsubTopic,
+          ephemeral: encoder.ephemeral,
+          messageHash: uuidv4(),
+          errorMessage: (e as Error)?.message ?? "Error during LightPush",
+          extraData: buildExtraData({
+            wallet: address,
+            bookId: formData.uuid,
+          }),
+        }]);
+        throw e;
+      }
+
       setIsSuccess(true);
       setIsSigning(false);
     },
@@ -112,8 +144,8 @@ const ChainCreationForm: React.FC = () => {
   const handleSubmit = async () => {
     setIsSigning(true);
     setSendError(null);
-    const message = `Create Chain:
-                    Chain UUID: ${formData.uuid}
+    const message = `Create Book:
+                    Book UUID: ${formData.uuid}
                     Title: ${formData.title}
                     Description: ${formData.description}
                     Timestamp: ${new Date().getTime()}
@@ -132,12 +164,12 @@ const ChainCreationForm: React.FC = () => {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Create a New Chain</CardTitle>
+        <CardTitle>Create a New Book</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleCreateChain} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="title">Chain Title</Label>
+            <Label htmlFor="title">Book Title</Label>
             <Input
               type="text"
               id="title"
@@ -150,7 +182,7 @@ const ChainCreationForm: React.FC = () => {
             {errors.title && <p className="text-sm text-destructive">{errors.title}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="description">Chain Description</Label>
+            <Label htmlFor="description">Book Description</Label>
             <Textarea
               id="description"
               name="description"
@@ -161,13 +193,13 @@ const ChainCreationForm: React.FC = () => {
             />
             {errors.description && <p className="text-sm text-destructive">{errors.description}</p>}
           </div>
-          <Button type="submit" className="w-full py-6 text-base sm:py-2 sm:text-sm">Create Chain</Button>
+          <Button type="submit" className="w-full py-6 text-base sm:py-2 sm:text-sm">Create Book</Button>
         </form>
       </CardContent>
       <Dialog open={showModal} onOpenChange={handleCloseModal}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{isSuccess ? "Chain Created" : "Chain Preview"}</DialogTitle>
+            <DialogTitle>{isSuccess ? "Book Created" : "Book Preview"}</DialogTitle>
           </DialogHeader>
           {!isSuccess ? (
             <>
