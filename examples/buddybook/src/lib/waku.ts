@@ -2,7 +2,7 @@ import { createEncoder, createDecoder, type LightNode } from "@waku/sdk";
 import { type CreateWakuNodeOptions } from "@waku/sdk";
 import protobuf from 'protobufjs';
 import { v4 as uuidv4 } from 'uuid';
-import { Telemetry, fromFilter, fromStore, TelemetryType, buildExtraData } from "./telemetry";
+import { Telemetry, fromFilter, fromStore, TelemetryType, buildExtraData, toInt } from "./telemetry";
 
 export const WAKU_NODE_OPTIONS: CreateWakuNodeOptions = {
     defaultBootstrap: true,
@@ -99,9 +99,9 @@ export async function* getMessagesFromStore(node: LightNode) {
         Telemetry.push([{
             type: TelemetryType.LIGHT_PUSH_FILTER,
             protocol: "lightPush",
-            timestamp: startTime,
-            createdAt: startTime,
-            seenTimestamp: startTime,
+            timestamp: toInt(startTime),
+            createdAt: toInt(startTime),
+            seenTimestamp: toInt(startTime),
             peerId: node.peerId.toString(),
             contentTopic: encoder.contentTopic,
             pubsubTopic: encoder.pubsubTopic,

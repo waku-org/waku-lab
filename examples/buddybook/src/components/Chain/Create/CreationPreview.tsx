@@ -13,7 +13,7 @@ import { useWaku } from '@waku/react';
 import { LightNode } from '@waku/sdk';
 import { createMessage, encoder } from '@/lib/waku';
 import { useWalletPrompt } from '@/hooks/useWalletPrompt';
-import { fromLightPush, Telemetry, TelemetryType, buildExtraData } from '@/lib/telemetry';
+import { fromLightPush, Telemetry, TelemetryType, buildExtraData, toInt } from '@/lib/telemetry';
 
 interface FormData {
   title: string;
@@ -75,9 +75,9 @@ const ChainCreationForm: React.FC = () => {
         Telemetry.push([{
           type: TelemetryType.LIGHT_PUSH_FILTER,
           protocol: "lightPush",
-          timestamp: timestamp,
-          createdAt: timestamp,
-          seenTimestamp: timestamp,
+          timestamp: toInt(timestamp),
+          createdAt: toInt(timestamp),
+          seenTimestamp: toInt(timestamp),
           peerId: node.peerId.toString(),
           contentTopic: encoder.contentTopic,
           pubsubTopic: encoder.pubsubTopic,

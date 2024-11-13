@@ -182,9 +182,9 @@ export const fromFilter = (data: FromFilter): TelemetryPushFilter[] => {
     telemetry.push({
       type: TelemetryType.LIGHT_PUSH_FILTER,
       protocol: "filter",
-      timestamp: data.timestamp,
-      createdAt: data.timestamp,
-      seenTimestamp: data.timestamp,
+      timestamp: toInt(data.timestamp),
+      createdAt: toInt(data.timestamp),
+      seenTimestamp: toInt(data.timestamp),
       peerId: data.node.peerId.toString(),
       contentTopic: data.decoder.contentTopic,
       pubsubTopic: data.decoder.pubsubTopic,
@@ -199,9 +199,9 @@ export const fromFilter = (data: FromFilter): TelemetryPushFilter[] => {
     telemetry.push({
       type: TelemetryType.LIGHT_PUSH_FILTER,
       protocol: "filter",
-      timestamp: data.timestamp,
-      createdAt: data.timestamp,
-      seenTimestamp: data.timestamp,
+      timestamp: toInt(data.timestamp),
+      createdAt: toInt(data.timestamp),
+      seenTimestamp: toInt(data.timestamp),
       peerId: fail?.peerId?.toString() || "",
       contentTopic: data.decoder.contentTopic,
       pubsubTopic: data.decoder.pubsubTopic,
@@ -216,9 +216,9 @@ export const fromFilter = (data: FromFilter): TelemetryPushFilter[] => {
     telemetry.push({
       type: TelemetryType.LIGHT_PUSH_FILTER,
       protocol: "filter",
-      timestamp: data.timestamp,
-      createdAt: data.timestamp,
-      seenTimestamp: data.timestamp,
+      timestamp: toInt(data.timestamp),
+      createdAt: toInt(data.timestamp),
+      seenTimestamp: toInt(data.timestamp),
       peerId: success.toString(),
       contentTopic: data.decoder.contentTopic,
       pubsubTopic: data.decoder.pubsubTopic,
@@ -243,9 +243,9 @@ export const fromStore = (data: FromStore): TelemetryPushFilter[] => {
   return [{
     type: TelemetryType.LIGHT_PUSH_FILTER,
     protocol: "filter",
-    timestamp: data.timestamp,
-    createdAt: data.timestamp,
-    seenTimestamp: data.timestamp,
+    timestamp: toInt(data.timestamp),
+    createdAt: toInt(data.timestamp),
+    seenTimestamp: toInt(data.timestamp),
     peerId: data.node.peerId.toString(),
     contentTopic: data.decoder.contentTopic,
     pubsubTopic: data.decoder.pubsubTopic,
@@ -257,3 +257,7 @@ export const fromStore = (data: FromStore): TelemetryPushFilter[] => {
     }),
   }];
 };
+
+export function toInt(v: any): number {
+  return parseInt(v);
+}
