@@ -1,10 +1,6 @@
-import { createEncoder, createDecoder, type LightNode, type CreateWakuNodeOptions } from "@waku/sdk";
+import { createEncoder, createDecoder, type LightNode } from "@waku/sdk";
 import protobuf from 'protobufjs';
 import { Telemetry, fromFilter, fromStore } from "./telemetry";
-
-export const WAKU_NODE_OPTIONS: CreateWakuNodeOptions = { defaultBootstrap: true, nodeToUse: {
-    store: "/dns4/store-02.ac-cn-hongkong-c.status.staging.status.im/tcp/443/wss/p2p/16Uiu2HAmU7xtcwytXpGpeDrfyhJkiFvTkQbLB9upL5MXPLGceG9K"
-} };
 
 export type Signature = {
   address: `0x${string}`;

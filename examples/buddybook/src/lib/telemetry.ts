@@ -253,7 +253,7 @@ export const fromStore = (data: FromStore): TelemetryPushFilter[] => {
     messageHash: uuidv4(),
     errorMessage: "",
     extraData: buildExtraData({
-      timeTaken
+      timeTaken: data.timeTaken
     }),
   }];
 };
