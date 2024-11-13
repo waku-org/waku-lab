@@ -44,8 +44,8 @@ const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ filter, store }) =>
   return (
     <Card className="fixed bottom-4 left-4 right-4 md:static md:bottom-auto md:left-auto p-2 bg-background/80 backdrop-blur-sm border shadow-lg z-50 md:z-auto">
       <div className="flex flex-row justify-around md:justify-start md:gap-4">
-        <StatusIndicator status={filter} label="Filter" />
-        <StatusIndicator status={store} label="Store" />
+        <StatusIndicator status={filter} label="Connection" />
+        <StatusIndicator status={store} label="History" />
       </div>
     </Card>
   );

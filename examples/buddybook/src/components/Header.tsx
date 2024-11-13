@@ -86,14 +86,14 @@ const Header: React.FC<HeaderProps> = ({ wakuStatus }) => {
                 {!isWakuLoading && !wakuError && (
                   <>
                     <div className="flex items-center space-x-1">
-                      <span className="hidden md:inline text-muted-foreground">Filter:</span>
+                      <span className="hidden md:inline text-muted-foreground">Connection:</span>
                       <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${getStatusColor(wakuStatus.filter)}`}></div>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <span className="hidden md:inline text-muted-foreground">Store:</span>
+                      <span className="hidden md:inline text-muted-foreground">History:</span>
                       <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${getStatusColor(wakuStatus.store)}`}></div>
                     </div>
-                    <div className="flex items-center space-x-1">
+                    <div className="flex items-center space-x-1 hidden">
                       <span className="hidden md:inline text-muted-foreground">Peers:</span>
                       {isWakuLoading ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
