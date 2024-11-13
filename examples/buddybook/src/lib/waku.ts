@@ -1,6 +1,7 @@
 import { createEncoder, createDecoder, type LightNode } from "@waku/sdk";
 import protobuf from 'protobufjs';
-import { Telemetry, fromFilter, fromStore } from "./telemetry";
+import { v4 as uuidv4 } from 'uuid';
+import { Telemetry, fromFilter, fromStore, TelemetryType, buildExtraData } from "./telemetry";
 
 export type Signature = {
   address: `0x${string}`;
@@ -62,8 +63,8 @@ export function createMessage({
 }
 
 export async function* getMessagesFromStore(node: LightNode) {
+    const startTime = performance.now();
     try {
-        const startTime = performance.now();
         for await (const messagePromises of node.store.queryGenerator([decoder])) {
             const messages = await Promise.all(messagePromises);
             for (const message of messages) {
@@ -85,6 +86,22 @@ export async function* getMessagesFromStore(node: LightNode) {
             timeTaken,
         }));
     } catch(e) {
+        const endTime = performance.now();
+        const timeTaken = endTime - startTime;
+        Telemetry.push([{
+            type: TelemetryType.LIGHT_PUSH_FILTER,
+            protocol: "lightPush",
+            timestamp: startTime,
+            createdAt: startTime,
+            seenTimestamp: startTime,
+            peerId: node.peerId.toString(),
+            contentTopic: encoder.contentTopic,
+            pubsubTopic: encoder.pubsubTopic,
+            ephemeral: encoder.ephemeral,
+            messageHash: uuidv4(),
+            errorMessage: (e as Error)?.message ?? "Error during Store",
+            extraData: buildExtraData({ timeTaken }),
+          }]);
         throw e;
     }
 }
