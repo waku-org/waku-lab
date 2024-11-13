@@ -171,8 +171,8 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
         {alreadySigned ? 'Already Signed' : !address ? 'Connect Wallet' : 'Sign Chain'}
       </Button>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh] md:max-h-[85vh]">
-          <DialogHeader className="flex-shrink-0">
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
             <DialogTitle>Sign Chain</DialogTitle>
             <DialogDescription>
               {alreadySigned 
@@ -180,32 +180,28 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
                 : 'Review the block details and sign to add your signature to the chain.'}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex-1 min-h-0 overflow-y-auto py-4">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <h4 className="font-medium">Block Details</h4>
-                <p className="text-sm text-muted-foreground">{block.title}</p>
-                <p className="text-sm text-muted-foreground">{block.description}</p>
-              </div>
-              <div className="flex justify-center">
-                <QRCode text={`${window.location.origin}/sign/${block.chainUUID}/${block.blockUUID}`} />
-              </div>
+          <div className="flex flex-col space-y-4">
+            <div className="space-y-2">
+              <h4 className="font-medium">Block Details</h4>
+              <p className="text-sm text-muted-foreground">{block.title}</p>
+              <p className="text-sm text-muted-foreground">{block.description}</p>
             </div>
-            {(error || isWalletPrompt) && (
-              <div className="space-y-2 mt-4">
-                {error && <p className="text-sm text-destructive">{error}</p>}
-                {isWalletPrompt && (
-                  <div className="rounded-md bg-blue-50 p-4">
-                    <p className="text-sm text-blue-700">Attempting to connect to your wallet...</p>
-                    <p className="text-xs text-blue-600 mt-1">
-                      If your wallet doesn't open automatically, please open it manually to approve the connection.
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
+            <QRCode text={`${window.location.origin}/sign/${block.chainUUID}/${block.blockUUID}`} />
           </div>
-          <DialogFooter className="flex-shrink-0 mt-4">
+          {(error || isWalletPrompt) && (
+            <div className="space-y-2">
+              {error && <p className="text-sm text-destructive">{error}</p>}
+              {isWalletPrompt && (
+                <div className="rounded-md bg-blue-50 p-4">
+                  <p className="text-sm text-blue-700">Attempting to connect to your wallet...</p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    If your wallet doesn't open automatically, please open it manually to approve the connection.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter>
             <Button variant="secondary" onClick={() => setIsOpen(false)}>Cancel</Button>
             <Button 
               onClick={handleSign} 

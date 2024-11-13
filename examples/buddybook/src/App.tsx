@@ -16,6 +16,8 @@ import ConnectionStatus from '@/components/ConnectionStatus';
 
 type Status = 'success' | 'in-progress' | 'error';
 
+
+
 interface WakuStatus {
   filter: Status;
   store: Status;
@@ -30,6 +32,9 @@ function App() {
     filter: 'in-progress',
     store: 'in-progress',
   });
+
+  (global.window as any).waku = node;
+
   const [telemetryOptIn, setTelemetryOptIn] = useState<boolean | null>(null);
   const [isLoadingChains, setIsLoadingChains] = useState(true);
 
@@ -41,10 +46,22 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (isWakuLoading || !node || node.libp2p.getConnections().length <= 1 || chainsData.length > 0 || isListening)  return;
+    if (isWakuLoading || !node || node.libp2p.getConnections().length === 0 || chainsData.length > 0 || isListening)  {
+      console.log("not starting message listening");
+      console.log({
+        isWakuLoading,
+        node,
+        connections: node?.libp2p.getConnections().length,
+        chainsData,
+        isListening
+      })
+      return;
+    }
       setIsListening(true);
       console.log("connections", node.libp2p.getConnections().length)
-      startMessageListening();
+        setTimeout(() => {
+          startMessageListening();
+        }, 2000);
   }, [node, isWakuLoading, wakuStatus])
 
   const handleTelemetryOptIn = (optIn: boolean) => {
@@ -69,25 +86,36 @@ function App() {
   const startMessageListening = async () => {
     console.log("Starting message listening")
     console.log("connections", node.libp2p.getConnections().length)
+
+    // Add timeout for store query
+    const STORE_TIMEOUT = 30000; // 30 seconds
+    const storeTimeout = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Store query timeout')), STORE_TIMEOUT);
+    });
+
     try {
       setWakuStatus(prev => ({ ...prev, store: 'in-progress' }));
       setIsLoadingChains(true);
       const messageGenerator = getMessagesFromStore(node as LightNode);
       
       try {
-        for await (const message of messageGenerator) {
-          setChainsData(prevChains => {
-            const blockExists = prevChains.some(block => block.blockUUID === message.blockUUID);
-            if (blockExists) return prevChains;
-            return [...prevChains, message];
-          });
-        }
+        // Race between store query and timeout
+        await Promise.race([
+          (async () => {
+            for await (const message of messageGenerator) {
+              setChainsData(prevChains => {
+                const blockExists = prevChains.some(block => block.blockUUID === message.blockUUID);
+                if (blockExists) return prevChains;
+                return [...prevChains, message];
+              });
+            }
+          })(),
+          storeTimeout
+        ]);
         setWakuStatus(prev => ({ ...prev, store: 'success' }));
       } catch (error) {
         console.error("Error processing message:", error);
-        // Update store status to error when query fails
         setWakuStatus(prev => ({ ...prev, store: 'error' }));
-        // Continue processing other messages
       }
     } catch (error) {
       console.error("Error fetching messages from store:", error);
@@ -96,11 +124,21 @@ function App() {
       setIsLoadingChains(false);
     }
 
+    // Add timeout for filter subscription
+    const FILTER_TIMEOUT = 15000; // 15 seconds
     try {
       setWakuStatus(prev => ({ ...prev, filter: 'in-progress' }));
-      await subscribeToFilter(node as LightNode, (message) => {
-        handleChainUpdate(message); // Use the same function for both updates
-      })
+      const filterPromise = subscribeToFilter(node as LightNode, (message) => {
+        handleChainUpdate(message);
+      });
+
+      await Promise.race([
+        filterPromise,
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Filter subscription timeout')), FILTER_TIMEOUT)
+        )
+      ]);
+      
       setWakuStatus(prev => ({ ...prev, filter: 'success' }));
     } catch (error) {
       console.error("Error subscribing to filter:", error);

@@ -65,28 +65,33 @@ export function createMessage({
 
 export async function* getMessagesFromStore(node: LightNode) {
     console.time("getMessagesFromStore")
-    for await (const messagePromises of node.store.queryGenerator([decoder])) {
-        const messages = await Promise.all(messagePromises);
-        for (const message of messages) {
-            console.log(message)
-            if (!message?.payload) continue;
-            const blockPayload = block.decode(message.payload) as unknown as BlockPayload;
-            blockPayload.signatures = blockPayload.signatures.map(s => JSON.parse(s as unknown as string) as Signature);
-            yield blockPayload;
+    try {
+        for await (const messagePromises of node.store.queryGenerator([decoder])) {
+            const messages = await Promise.all(messagePromises);
+            for (const message of messages) {
+                if (!message?.payload) continue;
+                const blockPayload = block.decode(message.payload) as unknown as BlockPayload;
+                blockPayload.signatures = blockPayload.signatures.map(s => JSON.parse(s as unknown as string) as Signature);
+                yield blockPayload;
+            }
         }
+    } finally {
+        console.timeEnd("getMessagesFromStore")
     }
-    console.timeEnd("getMessagesFromStore")
 }
 
 export async function subscribeToFilter(node: LightNode, callback: (message: BlockPayload) => void) {
-    const {error, subscription, results} = await node.filter.subscribe([decoder], (message) => {
-        console.log('message received from filter', message)
-        if (message.payload) {
-            const blockPayload = block.decode(message.payload) as unknown as BlockPayload;
-            blockPayload.signatures = blockPayload.signatures.map(s => JSON.parse(s as unknown as string) as Signature);
-            callback(blockPayload);
+    const {error, subscription, results} = await node.filter.subscribe(
+        [decoder], 
+        (message) => {
+            console.log('message received from filter', message)
+            if (message.payload) {
+                const blockPayload = block.decode(message.payload) as unknown as BlockPayload;
+                blockPayload.signatures = blockPayload.signatures.map(s => JSON.parse(s as unknown as string) as Signature);
+                callback(blockPayload);
+            }
         }
-    }, {forceUseAllPeers: false});
+    );
 
     console.log("results", results)
     
@@ -94,7 +99,7 @@ export async function subscribeToFilter(node: LightNode, callback: (message: Blo
         console.log("Error subscribing to filter", error)
     }
 
-    if (!subscription || error || results.successes.length === 0 ||results.failures.length >0) {
+    if (!subscription || error || results.successes.length === 0 || results.failures.length > 0) {
         throw new Error("Failed to subscribe to filter")
     }
 }
