@@ -5,10 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { Telemetry, fromFilter, fromStore, TelemetryType, buildExtraData } from "./telemetry";
 
 export const WAKU_NODE_OPTIONS: CreateWakuNodeOptions = {
-defaultBootstrap: true,
-nodeToUse: {
-    store: "/dns4/store-02.ac-cn-hongkong-c.status.staging.status.im/tcp/443/wss/p2p/16Uiu2HAmU7xtcwytXpGpeDrfyhJkiFvTkQbLB9upL5MXPLGceG9K"
-}
+    defaultBootstrap: true,
+    nodeToUse: {
+        store: "/dns4/node-01.ac-cn-hongkong-c.waku.test.status.im/tcp/8000/wss/p2p/16Uiu2HAkzHaTP5JsUwfR9NR8Rj9HC24puS6ocaU8wze4QrXr9iXp"
+    }
 };
 
 export type Signature = {
