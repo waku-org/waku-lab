@@ -66,9 +66,9 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
                     </DialogTrigger>
                     <DialogContent className="flex flex-col gap-4">
                       <DialogHeader>
-                        <DialogTitle>Share Chain</DialogTitle>
+                        <DialogTitle>Share this Book</DialogTitle>
                         <DialogDescription>
-                          Share this chain with others to collect their signatures.
+                          Share this book with others to collect their signatures.
                         </DialogDescription>
                       </DialogHeader>
 
@@ -110,18 +110,18 @@ const ChainList: React.FC<ChainListProps> = ({ chainsData, onChainUpdate, isLoad
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle>
-          Existing Chains
+          Existing Books
           {isLoading && (
             <span className="ml-2 inline-flex items-center text-muted-foreground text-sm font-normal">
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              Loading more chains...
+              Loading more books...
             </span>
           )}
         </CardTitle>
       </CardHeader>
       <CardContent>
         {rootBlocks.length === 0 && !isLoading ? (
-          <p>No chains found.</p>
+          <p>No books found.</p>
         ) : (
           <ul className="space-y-4">
             {rootBlocks.map((block) => renderBlock(block, 0))}
