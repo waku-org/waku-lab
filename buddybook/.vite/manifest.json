@@ -1,6 +1,6 @@
 {
-  "_events-DTVtRakk.js": {
-    "file": "assets/events-DTVtRakk.js",
+  "_events-DT22ZwC4.js": {
+    "file": "assets/events-DT22ZwC4.js",
     "name": "events",
     "imports": [
       "index.html"
@@ -10,19 +10,8 @@
     "file": "assets/hooks.module-D0gf0yJl.js",
     "name": "hooks.module"
   },
-  "_index-CTvXdnRL.js": {
-    "file": "assets/index-CTvXdnRL.js",
-    "name": "index",
-    "isDynamicEntry": true,
-    "imports": [
-      "index.html",
-      "_inherits_browser-c-WsrrNw.js",
-      "_hooks.module-D0gf0yJl.js",
-      "_events-DTVtRakk.js"
-    ]
-  },
-  "_index-Do02Tqa-.js": {
-    "file": "assets/index-Do02Tqa-.js",
+  "_index-3RtEhhzm.js": {
+    "file": "assets/index-3RtEhhzm.js",
     "name": "index",
     "isDynamicEntry": true,
     "imports": [
@@ -32,42 +21,53 @@
       "node_modules/@walletconnect/modal-ui/dist/index.js"
     ]
   },
-  "_index-Drc-C73D.js": {
-    "file": "assets/index-Drc-C73D.js",
+  "_index-BeN-aFbA.js": {
+    "file": "assets/index-BeN-aFbA.js",
     "name": "index",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
-      "_index-s1Uh1I2b.js",
-      "_events-DTVtRakk.js"
+      "_index-BnSaZ_jt.js",
+      "_events-DT22ZwC4.js"
     ]
   },
-  "_index-s1Uh1I2b.js": {
-    "file": "assets/index-s1Uh1I2b.js",
+  "_index-BnSaZ_jt.js": {
+    "file": "assets/index-BnSaZ_jt.js",
     "name": "index",
     "isDynamicEntry": true,
     "imports": [
       "index.html"
     ]
   },
-  "_inherits_browser-c-WsrrNw.js": {
-    "file": "assets/inherits_browser-c-WsrrNw.js",
+  "_index-D6MJTicx.js": {
+    "file": "assets/index-D6MJTicx.js",
+    "name": "index",
+    "isDynamicEntry": true,
+    "imports": [
+      "index.html",
+      "_inherits_browser-BKdA78FI.js",
+      "_hooks.module-D0gf0yJl.js",
+      "_events-DT22ZwC4.js"
+    ]
+  },
+  "_inherits_browser-BKdA78FI.js": {
+    "file": "assets/inherits_browser-BKdA78FI.js",
     "name": "inherits_browser",
     "imports": [
       "index.html"
     ]
   },
   "index.html": {
-    "file": "assets/index-tpwTCyHS.js",
+    "file": "assets/index-CBcRH9LY.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
     "dynamicImports": [
       "node_modules/viem/_esm/utils/ccip.js",
       "node_modules/@coinbase/wallet-sdk/dist/index.js",
-      "_index-CTvXdnRL.js",
-      "_index-s1Uh1I2b.js",
-      "_index-Drc-C73D.js",
+      "_index-D6MJTicx.js",
+      "_index-BnSaZ_jt.js",
+      "_index-BeN-aFbA.js",
       "node_modules/@walletconnect/ethereum-provider/dist/index.es.js"
     ],
     "css": [
@@ -75,7 +75,7 @@
     ]
   },
   "node_modules/@coinbase/wallet-sdk/dist/index.js": {
-    "file": "assets/index-yzjEDxfO.js",
+    "file": "assets/index-9j2nEnjI.js",
     "name": "index",
     "src": "node_modules/@coinbase/wallet-sdk/dist/index.js",
     "isDynamicEntry": true,
@@ -85,31 +85,31 @@
     ]
   },
   "node_modules/@walletconnect/ethereum-provider/dist/index.es.js": {
-    "file": "assets/index.es-D5UVwycq.js",
+    "file": "assets/index.es-CRyabuk4.js",
     "name": "index.es",
     "src": "node_modules/@walletconnect/ethereum-provider/dist/index.es.js",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
-      "_events-DTVtRakk.js",
-      "_inherits_browser-c-WsrrNw.js"
+      "_events-DT22ZwC4.js",
+      "_inherits_browser-BKdA78FI.js"
     ],
     "dynamicImports": [
-      "_index-Do02Tqa-.js"
+      "_index-3RtEhhzm.js"
     ]
   },
   "node_modules/@walletconnect/modal-ui/dist/index.js": {
-    "file": "assets/index-DWNoNvLC.js",
+    "file": "assets/index-BLeCt1zy.js",
     "name": "index",
     "src": "node_modules/@walletconnect/modal-ui/dist/index.js",
     "isDynamicEntry": true,
     "imports": [
-      "_index-Do02Tqa-.js",
+      "_index-3RtEhhzm.js",
       "index.html"
     ]
   },
   "node_modules/viem/_esm/utils/ccip.js": {
-    "file": "assets/ccip-zypZ5n5w.js",
+    "file": "assets/ccip-Uzdhqpi0.js",
     "name": "ccip",
     "src": "node_modules/viem/_esm/utils/ccip.js",
     "isDynamicEntry": true,
