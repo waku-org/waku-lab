@@ -71,7 +71,7 @@ export function createMessage({
 }
 
 export async function* getMessagesFromStore(node: LightNode) {
-    const startTime = Math.ceil(Date.now() / 1000);
+    const startTime = Math.floor(Date.now() / 1000);
     try {
         for await (const messagePromises of node.store.queryGenerator([decoder])) {
             const messages = await Promise.all(messagePromises);
@@ -83,7 +83,7 @@ export async function* getMessagesFromStore(node: LightNode) {
                 yield blockPayload;
             }
         }
-        const endTime = Math.ceil(Date.now() / 1000);
+        const endTime = Math.floor(Date.now() / 1000);
         const timeTaken = endTime - startTime;
         console.log("getMessagesFromStore", timeTaken)
 
@@ -94,7 +94,7 @@ export async function* getMessagesFromStore(node: LightNode) {
             timeTaken,
         }));
     } catch(e) {
-        const endTime = Math.ceil(Date.now() / 1000);
+        const endTime = Math.floor(Date.now() / 1000);
         const timeTaken = endTime - startTime;
         Telemetry.push([{
             type: TelemetryType.LIGHT_PUSH_FILTER,
@@ -128,7 +128,7 @@ export async function subscribeToFilter(node: LightNode, callback: (message: Blo
         result,
         node,
         decoder,
-        timestamp: Math.ceil(Date.now() / 1000),
+        timestamp: Math.floor(Date.now() / 1000),
     }));
 
     const {error, subscription, results} = result;
