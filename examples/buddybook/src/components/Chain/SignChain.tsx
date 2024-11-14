@@ -9,6 +9,7 @@ import { Loader2 } from "lucide-react";
 import QRCode from '@/components/QRCode';
 import { useWalletPrompt } from '@/hooks/useWalletPrompt';
 import { v4 as uuidv4 } from 'uuid';
+import { fromLightPush, Telemetry } from '@/lib/telemetry';
 
 interface SignChainProps {
   block: BlockPayload;
@@ -76,19 +77,31 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
             return;
           }
 
+          const timestamp = Date.now();
           const newBlock: BlockPayload = {
             chainUUID: block.chainUUID,
             blockUUID: uuidv4(),
             title: block.title,
             description: block.description,
             signedMessage: signature,
-            timestamp: Date.now(),
+            timestamp,
             signatures: [{ address, signature }],
             parentBlockUUID: block.blockUUID
           };
 
           const wakuMessage = createMessage(newBlock);
-          const { failures, successes } = await node.lightPush.send(encoder, wakuMessage);
+          const result = await node.lightPush.send(encoder, wakuMessage);
+
+          Telemetry.push(fromLightPush({
+            result,
+            node,
+            encoder,
+            timestamp,
+            bookId: block.chainUUID,
+            wallet: address,
+          }));
+
+          const { failures, successes } = result;
           
           if (failures.length > 0 || successes.length === 0) {
             throw new Error('Failed to send message to Waku network');
@@ -168,16 +181,16 @@ const SignChain: React.FC<SignChainProps> = ({ block, chainsData, onSuccess }) =
   return (
     <>
       <Button onClick={() => setIsOpen(true)} disabled={alreadySigned}>
-        {alreadySigned ? 'Already Signed' : !address ? 'Connect Wallet' : 'Sign Chain'}
+        {alreadySigned ? 'Already Signed' : !address ? 'Connect Wallet' : 'Sign Book'}
       </Button>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Sign Chain</DialogTitle>
+            <DialogTitle>Sign Book</DialogTitle>
             <DialogDescription>
               {alreadySigned 
-                ? 'You have already signed this chain.'
-                : 'Review the block details and sign to add your signature to the chain.'}
+                ? 'You have already signed this book.'
+                : 'Review the block details and sign to add your signature to the book.'}
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col space-y-4">

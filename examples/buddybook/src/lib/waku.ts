@@ -1,8 +1,15 @@
-import { createEncoder, createDecoder, type LightNode, type CreateWakuNodeOptions } from "@waku/sdk";
+import { createEncoder, createDecoder, type LightNode } from "@waku/sdk";
+import { type CreateWakuNodeOptions } from "@waku/sdk";
 import protobuf from 'protobufjs';
+import { v4 as uuidv4 } from 'uuid';
+import { Telemetry, fromFilter, fromStore, TelemetryType, buildExtraData, toInt } from "./telemetry";
 
-export const WAKU_NODE_OPTIONS: CreateWakuNodeOptions = { defaultBootstrap: true, nodeToUse: {store: "/dns4/boot-01.do-ams3.status.staging.status.im/tcp/443/wss/p2p/16Uiu2HAmEqqio4UR1SWqAc7KY19t6qyDvtmyjreZpzUBJvb4u65R"} };
-
+export const WAKU_NODE_OPTIONS: CreateWakuNodeOptions = {
+    defaultBootstrap: true,
+    nodeToUse: {
+        store: "/dns4/node-01.ac-cn-hongkong-c.waku.test.status.im/tcp/8000/wss/p2p/16Uiu2HAkzHaTP5JsUwfR9NR8Rj9HC24puS6ocaU8wze4QrXr9iXp"
+    }
+};
 
 export type Signature = {
   address: `0x${string}`;
@@ -64,35 +71,67 @@ export function createMessage({
 }
 
 export async function* getMessagesFromStore(node: LightNode) {
-    console.time("getMessagesFromStore")
+    const startTime = performance.now();
     try {
         for await (const messagePromises of node.store.queryGenerator([decoder])) {
             const messages = await Promise.all(messagePromises);
             for (const message of messages) {
+                console.log(message)
                 if (!message?.payload) continue;
                 const blockPayload = block.decode(message.payload) as unknown as BlockPayload;
                 blockPayload.signatures = blockPayload.signatures.map(s => JSON.parse(s as unknown as string) as Signature);
                 yield blockPayload;
             }
         }
-    } finally {
-        console.timeEnd("getMessagesFromStore")
+        const endTime = performance.now();
+        const timeTaken = endTime - startTime;
+        console.log("getMessagesFromStore", timeTaken)
+
+        Telemetry.push(fromStore({
+            node,
+            decoder,
+            timestamp: startTime,
+            timeTaken,
+        }));
+    } catch(e) {
+        const endTime = performance.now();
+        const timeTaken = endTime - startTime;
+        Telemetry.push([{
+            type: TelemetryType.LIGHT_PUSH_FILTER,
+            protocol: "lightPush",
+            timestamp: toInt(startTime),
+            createdAt: toInt(startTime),
+            seenTimestamp: toInt(startTime),
+            peerId: node.peerId.toString(),
+            contentTopic: encoder.contentTopic,
+            pubsubTopic: encoder.pubsubTopic,
+            ephemeral: encoder.ephemeral,
+            messageHash: uuidv4(),
+            errorMessage: (e as Error)?.message ?? "Error during Store",
+            extraData: buildExtraData({ timeTaken }),
+          }]);
+        throw e;
     }
 }
 
 export async function subscribeToFilter(node: LightNode, callback: (message: BlockPayload) => void) {
-    const {error, subscription, results} = await node.filter.subscribe(
-        [decoder], 
-        (message) => {
-            console.log('message received from filter', message)
-            if (message.payload) {
-                const blockPayload = block.decode(message.payload) as unknown as BlockPayload;
-                blockPayload.signatures = blockPayload.signatures.map(s => JSON.parse(s as unknown as string) as Signature);
-                callback(blockPayload);
-            }
+    const result = await node.filter.subscribe([decoder], (message) => {
+        console.log('message received from filter', message)
+        if (message.payload) {
+            const blockPayload = block.decode(message.payload) as unknown as BlockPayload;
+            blockPayload.signatures = blockPayload.signatures.map(s => JSON.parse(s as unknown as string) as Signature);
+            callback(blockPayload);
         }
-    );
+    }, {forceUseAllPeers: false});
 
+    Telemetry.push(fromFilter({
+        result,
+        node,
+        decoder,
+        timestamp: Date.now(),
+    }));
+
+    const {error, subscription, results} = result;
     console.log("results", results)
     
     if (error) {

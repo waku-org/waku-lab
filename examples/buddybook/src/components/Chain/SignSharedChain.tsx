@@ -29,7 +29,7 @@ const SignSharedChain: React.FC<SignSharedChainProps> = ({ chainsData, onChainUp
       <Card className="w-full max-w-md mx-auto">
         <CardContent className="flex flex-col items-center justify-center py-8 space-y-4">
           <Loader2 className="h-8 w-8 animate-spin" />
-          <p className="text-sm text-muted-foreground">Looking for chain...</p>
+          <p className="text-sm text-muted-foreground">Looking for book...</p>
         </CardContent>
       </Card>
     );
@@ -39,11 +39,11 @@ const SignSharedChain: React.FC<SignSharedChainProps> = ({ chainsData, onChainUp
     return (
       <Card className="w-full max-w-md mx-auto">
         <CardHeader>
-          <CardTitle>Chain Not Found</CardTitle>
+          <CardTitle>Book Not Found</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="mb-4">The requested chain or block could not be found.</p>
-          <Button onClick={() => navigate('/view')}>View All Chains</Button>
+          <p className="mb-4">The requested book or block could not be found.</p>
+          <Button onClick={() => navigate('/view')}>View All Books</Button>
         </CardContent>
       </Card>
     );
@@ -52,7 +52,7 @@ const SignSharedChain: React.FC<SignSharedChainProps> = ({ chainsData, onChainUp
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Sign Shared Chain</CardTitle>
+        <CardTitle>Sign Shared Book</CardTitle>
       </CardHeader>
       <CardContent>
         <h2 className="text-xl font-semibold mb-2">{block.title}</h2>
