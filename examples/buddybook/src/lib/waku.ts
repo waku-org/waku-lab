@@ -71,7 +71,7 @@ export function createMessage({
 }
 
 export async function* getMessagesFromStore(node: LightNode) {
-    const startTime = performance.now();
+    const startTime = Math.ceil(Date.now() / 1000);
     try {
         for await (const messagePromises of node.store.queryGenerator([decoder])) {
             const messages = await Promise.all(messagePromises);
@@ -83,7 +83,7 @@ export async function* getMessagesFromStore(node: LightNode) {
                 yield blockPayload;
             }
         }
-        const endTime = performance.now();
+        const endTime = Math.ceil(Date.now() / 1000);
         const timeTaken = endTime - startTime;
         console.log("getMessagesFromStore", timeTaken)
 
@@ -94,14 +94,14 @@ export async function* getMessagesFromStore(node: LightNode) {
             timeTaken,
         }));
     } catch(e) {
-        const endTime = performance.now();
+        const endTime = Math.ceil(Date.now() / 1000);
         const timeTaken = endTime - startTime;
         Telemetry.push([{
             type: TelemetryType.LIGHT_PUSH_FILTER,
             protocol: "lightPush",
-            timestamp: toInt(startTime),
-            createdAt: toInt(startTime),
-            seenTimestamp: toInt(startTime),
+            timestamp: startTime,
+            createdAt: startTime,
+            seenTimestamp: startTime,
             peerId: node.peerId.toString(),
             contentTopic: encoder.contentTopic,
             pubsubTopic: encoder.pubsubTopic,
@@ -128,7 +128,7 @@ export async function subscribeToFilter(node: LightNode, callback: (message: Blo
         result,
         node,
         decoder,
-        timestamp: Date.now(),
+        timestamp: Math.ceil(Date.now() / 1000),
     }));
 
     const {error, subscription, results} = result;
