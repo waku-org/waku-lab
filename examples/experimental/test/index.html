@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Railgun Messages</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        #status {
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+        }
+        .message {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+        #messageContainer {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        #messageInput {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #lastMessageTime {
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #e8f5e9;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div id="status">Status: Initializing...</div>
+    <div id="lastMessageTime">No messages received yet</div>
+    <div id="messageContainer"></div>
+    <div class="input-container">
+        <input type="text" id="messageInput" placeholder="Enter message">
+        <button onclick="sendMessage()">Send Message</button>
+    </div>
+    <script type="module" src="index.ts"></script>
+</body>
+</html> 
