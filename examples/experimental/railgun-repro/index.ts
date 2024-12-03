@@ -100,7 +100,12 @@ class Railgun {
         shards: [shard],
         clusterId: clusterId,
       }
-    });
+    });    
+
+    const peerIdElement = document.getElementById('peerId');
+    if (peerIdElement) {
+      peerIdElement.textContent = `Peer ID: ${this.waku.libp2p.peerId.toString()}`;
+    }
     
     updateStatus('Connecting to peer...');
     await this.waku.dial(railgunMa);
@@ -204,6 +209,10 @@ class Railgun {
       addMessageToUI(`Sent: ${message}`);
     }
   }
+
+  getWaku(): LightNode | null {
+    return this.waku;
+  }
 }
 
 const railgun = new Railgun();
@@ -213,10 +222,11 @@ export default railgun;
 await railgun.start();
 await railgun.subscribe();
 
-// Add global function for sending messages
+// Add global functions and objects
 declare global {
     interface Window {
         sendMessage: () => Promise<void>;
+        waku: LightNode | null;
     }
 }
 
@@ -227,4 +237,6 @@ window.sendMessage = async (): Promise<void> => {
         await railgun.push(message);
         input.value = '';
     }
-}; 
+};
+
+window.waku = railgun.getWaku();
