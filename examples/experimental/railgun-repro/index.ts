@@ -1,24 +1,5 @@
 import { type DecodedMessage } from "@waku/sdk";
-
-const CONTENT_TOPICS = [
-    "/railgun/v2/0-1-fees/json",
-    "/railgun/v2/0-56-fees/json", 
-    "/railgun/v2/0-137-fees/json",
-    "/railgun/v2/0-42161-fees/json",
-    "/railgun/v2/0-421$1-transact-response/json",
-    "/railgun/v2/encrypted-metrics-pong/json"
-] as const;
-
-interface ServiceWorkerMessage {
-    type: string;
-    message?: string;
-    status?: string;
-    peerId?: string;
-    error?: string;
-    timestamp?: string;
-    contentTopic?: string;
-    topics?: readonly string[];
-}
+import { WAKU_CONFIG, type ServiceWorkerMessage } from './types';
 
 let lastMessageTimestamp: number | null = null;
 
@@ -184,7 +165,7 @@ class Railgun {
 
         navigator.serviceWorker.controller.postMessage({
             type: 'subscribe',
-            payload: { topics: CONTENT_TOPICS }
+            payload: { topics: WAKU_CONFIG.CONTENT_TOPICS }
         });
     }
 
