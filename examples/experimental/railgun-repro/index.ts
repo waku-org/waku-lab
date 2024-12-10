@@ -1,25 +1,25 @@
-import { createDecoder, createEncoder, createLightNode, Protocols, type LightNode, type Decoder, type DecodedMessage } from "@waku/sdk";
-import { determinePubsubTopic } from "@waku/utils";
+import { type DecodedMessage } from "@waku/sdk";
 
 const CONTENT_TOPICS = [
-  "/railgun/v2/0-1-fees/json",
-  "/railgun/v2/0-56-fees/json", 
-  "/railgun/v2/0-137-fees/json",
-  "/railgun/v2/0-42161-fees/json",
-  "/railgun/v2/0-421$1-transact-response/json",
-  "/railgun/v2/encrypted-metrics-pong/json"
+    "/railgun/v2/0-1-fees/json",
+    "/railgun/v2/0-56-fees/json", 
+    "/railgun/v2/0-137-fees/json",
+    "/railgun/v2/0-42161-fees/json",
+    "/railgun/v2/0-421$1-transact-response/json",
+    "/railgun/v2/encrypted-metrics-pong/json"
 ] as const;
 
-const PUBSUB_TOPIC = "/waku/2/rs/0/1";
-const railgunMa = "/dns4/railgun.ivansete.xyz/tcp/8000/wss/p2p/16Uiu2HAmExcXDvdCr2XxfCeQY1jhCoJ1HodgKauRatCngQ9Q1X61";
-const clusterId = 0;
-const shard = 1;
+interface ServiceWorkerMessage {
+    type: string;
+    message?: string;
+    status?: string;
+    peerId?: string;
+    error?: string;
+    timestamp?: string;
+    contentTopic?: string;
+    topics?: readonly string[];
+}
 
-console.log({
-  pubsub: determinePubsubTopic(CONTENT_TOPICS[0], PUBSUB_TOPIC),
-});
-
-// Add timestamp tracking
 let lastMessageTimestamp: number | null = null;
 
 function updateLastMessageTime(): void {
@@ -46,13 +46,18 @@ function updateLastMessageTime(): void {
     }
 }
 
-// Update the timestamp display every second
-setInterval(updateLastMessageTime, 1000);
-
 function updateStatus(message: string): void {
     const statusElement = document.getElementById('status');
     if (!statusElement) return;
     statusElement.textContent = message;
+    console.log('📢', message);
+}
+
+function updatePeerId(peerId: string): void {
+    const peerIdElement = document.getElementById('peerId');
+    if (!peerIdElement) return;
+    peerIdElement.textContent = `Peer ID: ${peerId}`;
+    console.log('🆔 Peer ID:', peerId);
 }
 
 function addMessageToUI(message: DecodedMessage | string): void {
@@ -62,171 +67,148 @@ function addMessageToUI(message: DecodedMessage | string): void {
     const messageElement = document.createElement('div');
     messageElement.className = 'message';
     
-    // Update last message timestamp
     lastMessageTimestamp = Date.now();
     
-    let content: string;
-    if (typeof message === 'string') {
-        content = message;
-    } else if (message.payload) {
-        content = new TextDecoder().decode(message.payload);
-    } else {
-        content = 'Empty message';
-    }
+    const content = typeof message === 'string' 
+        ? message 
+        : message.payload 
+            ? new TextDecoder().decode(message.payload)
+            : 'Empty message';
     
     const timestamp = new Date().toLocaleTimeString();
     messageElement.textContent = `[${timestamp}] ${content}`;
     messageContainer.insertBefore(messageElement, messageContainer.firstChild);
+    console.log('💬 New message:', content);
 }
 
 class Railgun {
-  private waku: LightNode | null = null;
-  private subscriptionStartTime: number | null = null;
-  private messageCount = 0;
+    private serviceWorkerRegistration: ServiceWorkerRegistration | null = null;
 
-  constructor() {
-    updateStatus('Initializing Railgun...');
-  }
-
-  get decoders(): Decoder[] {
-    console.log('Creating decoders for content topics:', CONTENT_TOPICS);
-    return CONTENT_TOPICS.map(topic => createDecoder(topic, PUBSUB_TOPIC));
-  }
-
-  async start(): Promise<void> {
-    updateStatus('Starting Waku light node...');
-    this.waku = await createLightNode({
-      networkConfig: {
-        shards: [shard],
-        clusterId: clusterId,
-      }
-    });    
-
-    const peerIdElement = document.getElementById('peerId');
-    if (peerIdElement) {
-      peerIdElement.textContent = `Peer ID: ${this.waku.libp2p.peerId.toString()}`;
+    constructor() {
+        updateStatus('Initializing Railgun...');
+        this.initializeServiceWorker();
     }
-    
-    updateStatus('Connecting to peer...');
-    await this.waku.dial(railgunMa);
-    await this.waku.waitForPeers([Protocols.Filter]);
-    updateStatus('Connected successfully');
 
-    this.waku.libp2p.addEventListener("peer:identify", async(peer) => {
-      updateStatus('Peer connected');
-      addMessageToUI(`Peer connected: ${peer.detail.peerId}`);
-    });
-    
-    this.waku.libp2p.addEventListener("peer:disconnect", (peer) => {
-      updateStatus('Peer disconnected');
-      addMessageToUI(`Peer disconnected: ${peer.detail}`);
-    });
-  }
+    private async initializeServiceWorker(): Promise<void> {
+        if (!('serviceWorker' in navigator)) {
+            updateStatus('Service Workers are not supported in this browser');
+            return;
+        }
 
-  async subscribe(): Promise<void> {
-    if (!this.waku) throw new Error('Waku not initialized');
-    
-    this.subscriptionStartTime = Date.now();
-    this.messageCount = 0;
-    updateStatus('Subscribing to Waku filters...');
+        try {
+            this.serviceWorkerRegistration = await navigator.serviceWorker.register('/service-worker.ts', {
+                type: 'module'
+            });
+            console.log('🔧 Service Worker registered');
 
-    const {error} = await this.waku.filter.subscribe(this.decoders, (message) => {
-      this.messageCount++;
-      if (message.payload) {
-        const decodedMessage = new TextDecoder().decode(message.payload);
-        lastMessageTimestamp = Date.now();
-        addMessageToUI(decodedMessage);
+            navigator.serviceWorker.addEventListener('message', this.handleServiceWorkerMessage.bind(this));
+        } catch (error) {
+            console.error('❌ Service Worker registration failed:', error);
+            updateStatus('Failed to initialize Waku: Service Worker registration failed');
+        }
+    }
+
+    private async handleServiceWorkerMessage(event: MessageEvent<ServiceWorkerMessage>): Promise<void> {
+        const { type, message, status, peerId, error, timestamp, contentTopic } = event.data;
         
-        // Log debug information
-        console.log('Filter message received:', {
-          messageCount: this.messageCount,
-          timeSinceSubscription: `${(Date.now() - (this.subscriptionStartTime || 0)) / 1000}s`,
-          contentTopic: message.contentTopic,
-          payload: decodedMessage,
-          timestamp: new Date().toISOString(),
-          lastMessageTimestamp
+        switch (type) {
+            case 'wakuStatus':
+                this.handleWakuStatus(status, peerId, error);
+                break;
+                
+            case 'peerStatus':
+                this.handlePeerStatus(status, peerId);
+                break;
+                
+            case 'subscriptionStatus':
+                this.handleSubscriptionStatus(status, event.data.topics);
+                break;
+                
+            case 'newMessage':
+                this.handleNewMessage(message, timestamp, contentTopic);
+                break;
+                
+            case 'messageSent':
+                updateStatus('Message sent successfully');
+                break;
+                
+            case 'error':
+                console.error('❌ Service worker error:', error);
+                updateStatus(`Error: ${error}`);
+                break;
+        }
+    }
+
+    private handleWakuStatus(status?: string, peerId?: string, error?: string): void {
+        if (status === 'ready') {
+            updateStatus('Connected to Waku network');
+            if (peerId) {
+                updatePeerId(peerId);
+            }
+            this.subscribe();
+        } else if (status === 'error') {
+            updateStatus(`Waku error: ${error}`);
+        }
+    }
+
+    private handlePeerStatus(status?: string, peerId?: string): void {
+        if (!peerId) return;
+
+        if (status === 'connected') {
+            console.log('🟢 Peer connected:', peerId);
+            updateStatus('Peer connected');
+        } else if (status === 'disconnected') {
+            console.log('🔴 Peer disconnected:', peerId);
+            updateStatus('Peer disconnected');
+        }
+    }
+
+    private handleSubscriptionStatus(status?: string, topics?: readonly string[]): void {
+        if (status === 'subscribed') {
+            updateStatus('Subscribed to Waku topics');
+            console.log('📥 Subscribed to topics:', topics);
+        }
+    }
+
+    private handleNewMessage(message?: string, timestamp?: string, contentTopic?: string): void {
+        if (!message) return;
+        lastMessageTimestamp = timestamp ? new Date(timestamp).getTime() : Date.now();
+        addMessageToUI(`[${contentTopic}] ${message}`);
+    }
+
+    async subscribe(): Promise<void> {
+        if (!navigator.serviceWorker.controller) {
+            console.error('❌ Service Worker not ready');
+            return;
+        }
+
+        navigator.serviceWorker.controller.postMessage({
+            type: 'subscribe',
+            payload: { topics: CONTENT_TOPICS }
         });
-      }
-    }, {forceUseAllPeers: false});
-    
-    if (error) {
-      updateStatus(`Subscription error: ${error}`);
-    } else {
-      updateStatus('Successfully subscribed to Waku filters');
     }
 
-    // Add periodic connection check
-    setInterval(() => this.checkConnection(), 30000); // Check every 30 seconds
-  }
-
-  private async checkConnection(): Promise<void> {
-    if (!this.waku) return;
-
-    const connections = this.waku.libp2p.getConnections();
-    const filterPeers = this.waku.filter.connectedPeers;
-    
-    console.log('Connection status:', {
-      totalConnections: connections.length,
-      filterPeers: filterPeers.length,
-      messageCount: this.messageCount,
-      timeSinceLastMessage: lastMessageTimestamp ? 
-        `${(Date.now() - lastMessageTimestamp) / 1000}s ago` : 
-        'No messages received',
-      uptime: this.subscriptionStartTime ? 
-        `${(Date.now() - this.subscriptionStartTime) / 1000}s` : 
-        'Not subscribed'
-    });
-
-    if (connections.length === 0 || filterPeers.length === 0) {
-      updateStatus('Connection lost - attempting to reconnect...');
-      try {
-        await this.waku.dial(railgunMa);
-        await this.waku.waitForPeers([Protocols.Filter]);
-        updateStatus('Reconnected successfully');
-      } catch (error) {
-        updateStatus(`Reconnection failed: ${error}`);
-      }
+    async push(message: string): Promise<void> {
+        if (!navigator.serviceWorker.controller) {
+            throw new Error('Service Worker not ready');
+        }
+        
+        updateStatus('Sending message...');
+        navigator.serviceWorker.controller.postMessage({
+            type: 'sendMessage',
+            payload: { message }
+        });
+        
+        addMessageToUI(`Sent: ${message}`);
     }
-  }
-
-  async push(message: string): Promise<void> {
-    if (!this.waku) throw new Error('Waku not initialized');
-    
-    updateStatus('Pushing message...');
-    const encoder = createEncoder({
-      contentTopic: CONTENT_TOPICS[0],
-      pubsubTopic: PUBSUB_TOPIC
-    });
-    
-    const {failures} = await this.waku.lightPush.send(encoder, {
-      payload: new TextEncoder().encode(message)
-    });
-    
-    if (failures.length > 0) {
-      updateStatus(`Error sending message: ${failures}`);
-    } else {
-      updateStatus('Message sent successfully');
-      addMessageToUI(`Sent: ${message}`);
-    }
-  }
-
-  getWaku(): LightNode | null {
-    return this.waku;
-  }
 }
 
 const railgun = new Railgun();
-export default railgun;
+setInterval(updateLastMessageTime, 1000);
 
-// Initialize the application
-await railgun.start();
-await railgun.subscribe();
-
-// Add global functions and objects
 declare global {
     interface Window {
         sendMessage: () => Promise<void>;
-        waku: LightNode | null;
     }
 }
 
@@ -238,5 +220,3 @@ window.sendMessage = async (): Promise<void> => {
         input.value = '';
     }
 };
-
-window.waku = railgun.getWaku();
