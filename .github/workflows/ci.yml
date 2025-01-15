@@ -13,14 +13,16 @@ jobs:
       matrix:
         example:
           [
-            relay-angular-chat,
-            relay-reactjs-chat,
-            web-chat,
-            noise-js,
-            noise-rtc,
-            relay-direct-rtc,
-            rln-js,
-            rln-identity
+            experimental/web-chat,
+            experimental/noise-js,
+            experimental/noise-rtc,
+            experimental/relay-direct-rtc,
+            experimental/rln-js,
+            experimental/rln-identity,
+            dogfooding,
+            message-monitor,
+            flush-notes,
+            buddybook
           ]
     runs-on: ubuntu-latest
     steps:
@@ -39,7 +41,12 @@ jobs:
         working-directory: "examples/${{ matrix.example }}"
 
       - name: build
-        run: npm run build
+        run: |
+          if [ "${{ matrix.example }}" == "buddybook" ]; then
+            npm run build:ci
+          else
+            npm run build
+          fi
         working-directory: "examples/${{ matrix.example }}"
 
       - name: test

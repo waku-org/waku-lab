@@ -1,0 +1,30 @@
+{
+  "name": "waku-dogfooding",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "webpack --config webpack.config.js --mode production",
+    "start": "webpack-dev-server"
+  },
+  "dependencies": {
+    "@libp2p/crypto": "^4.0.1",
+    "@libp2p/peer-id-factory": "^4.2.4",
+    "@multiformats/multiaddr": "^12.3.1",
+    "@waku/sdk": "0.0.29-11bf1c1.0",
+    "libp2p": "^1.8.3",
+    "protobufjs": "^7.3.0",
+    "uint8arrays": "^5.1.0"
+  },
+  "devDependencies": {
+    "@libp2p/interface": "^1.7.0",
+    "@types/node": "^20.12.11",
+    "copy-webpack-plugin": "^11.0.0",
+    "eslint": "^8",
+    "eslint-config-next": "13.5.6",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.5",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.11.1"
+  }
+}
