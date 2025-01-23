@@ -60,8 +60,10 @@ export async function app(telemetryClient: TelemetryClient) {
   (window as any).waku = node;
 
   console.log("DEBUG: your peer ID is:", node.peerId.toString());
+  console.log("DEBUG: your peer ID is:", node.peerId.toString());
   
   await node.start();
+  await node.waitForPeers();
   await node.waitForPeers();
 
   const peerId = node.libp2p.peerId.toString();
@@ -120,6 +122,7 @@ export async function app(telemetryClient: TelemetryClient) {
           payload,
           timestamp: new Date(),
         }, {autoRetry: true });
+        }, {autoRetry: true });
 
         console.log("DEBUG: light push successes: ", result?.successes?.length, result?.successes.map(p => p.toString()));
         console.log("DEBUG: light push failures: ", result?.failures?.length, result?.failures.map(f => ({ error: f.error, peerId: f?.peerId?.toString()})));
@@ -147,12 +150,14 @@ export async function app(telemetryClient: TelemetryClient) {
         const failureEvents = (result.failures || [])
           .map(async (fail) => {
             const extraData = await buildExtraData(node, fail?.peerId?.toString());
+            const extraData = await buildExtraData(node, fail?.peerId?.toString());
             return {
               type: TelemetryType.LIGHT_PUSH_FILTER,
               protocol: "lightPush",
               timestamp: timestamp,
               createdAt: timestamp,
               seenTimestamp: timestamp,
+              peerId: fail?.peerId?.toString(),
               peerId: fail?.peerId?.toString(),
               contentTopic: DEFAULT_CONTENT_TOPIC,
               pubsubTopic: DEFAULT_PUBSUB_TOPIC,
@@ -194,6 +199,7 @@ export async function app(telemetryClient: TelemetryClient) {
           document.dispatchEvent(sequenceCompletedEvent);
         }
       } catch (error) {
+        console.error("DEBUG: Error sending message", error);
         console.error("DEBUG: Error sending message", error);
       }
     };
@@ -242,7 +248,7 @@ export async function app(telemetryClient: TelemetryClient) {
       document.dispatchEvent(messageReceivedEvent);
     };
 
-    const result = await node.filter.subscribe(decoder, subscriptionCallback);
+    const result = await node.filter.subscribe(decoder, subscriptionCallback, {}, { enableLightPushFilterCheck: true });
 
     let errorEvent = [];
     if (result.error) {
@@ -272,6 +278,7 @@ export async function app(telemetryClient: TelemetryClient) {
         timestamp,
         createdAt: timestamp,
         seenTimestamp: timestamp,
+        peerId: fail?.peerId?.toString(),
         peerId: fail?.peerId?.toString(),
         contentTopic: DEFAULT_CONTENT_TOPIC,
         pubsubTopic: DEFAULT_PUBSUB_TOPIC,

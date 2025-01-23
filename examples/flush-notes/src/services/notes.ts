@@ -27,6 +27,7 @@ export class Notes {
   private messages: DecodedMessage[] = [];
   private subscription: undefined | Unsubscribe;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor() {}
 
   public async createNote(content: string): Promise<NoteResult> {

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="BuddyBook - Create and share your chains" />
+    <meta property="og:title" content="BuddyBook" />
+    <meta property="og:description" content="Create and share your chains" />
+    <meta property="og:url" content="https://buddybook.fun" />
+    <title>BuddyBook</title>
+    <script>
+      window.global = window;
+      window.process = {
+        env: { 
+          NODE_ENV: 'production',
+          VITE_WALLETCONNECT_PROJECT_ID: '%VITE_WALLETCONNECT_PROJECT_ID%'
+        },
+        nextTick: function(fn) { setTimeout(fn, 0); },
+        platform: 'browser',
+        version: 'v16.0.0',
+        browser: true
+      };
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -21,6 +21,7 @@ pipeline {
     GIT_AUTHOR_NAME = 'status-im-auto'
     GIT_AUTHOR_EMAIL = 'auto@status.im'
     PUPPETEER_SKIP_DOWNLOAD = 'true'
+    VITE_WALLETCONNECT_PROJECT_ID = credentials('vite-walletconnect-project-id')
   }
 
   stages {
@@ -43,7 +44,8 @@ pipeline {
         stage('experimental/rln-identity') { steps { script { buildExample() } } }
         stage('dogfooding') { steps { script { buildExample() } } }
         stage('message-monitor') { steps { script { buildExample() } } }
-        stage('flush-notes') { steps { script { buildNextJSExample() } } }
+        stage('flush-notes') { steps { script { buildExample(example='flush-notes', outDir='out') } } }
+        stage('buddybook') { steps { script { buildExample(example='buddybook', outDir='dist') } } }
       }
     }
 
@@ -68,23 +70,13 @@ pipeline {
   }
 }
 
-def buildExample(example=STAGE_NAME) {
+def buildExample(example=STAGE_NAME, outDir='build') {
   def dest = "${WORKSPACE}/build/docs/${example}"
   dir("examples/${example}") {
     sh 'npm install --silent'
     sh 'npm run build'
     sh "mkdir -p ${dest}"
-    sh "cp -r build/. ${dest}"
-  }
-}
-
-def buildNextJSExample(example=STAGE_NAME) {
-  def dest = "${WORKSPACE}/build/docs/${example}"
-  dir("examples/${example}") {
-    sh 'npm install --silent'
-    sh 'npm run build'
-    sh "mkdir -p ${dest}"
-    sh "cp -r out/. ${dest}"
+    sh "cp -r ${outDir}/. ${dest}"
   }
 }
 

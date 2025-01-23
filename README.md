@@ -57,6 +57,11 @@ This example uses Waku Relay to send and receive simple text messages.
 - [website](https://lab.waku.org/experimental/relay-direct-rtc)
 - Demonstrates: Relay over WebRTC.
 
+### Buddychain App
+
+- [code](examples/buddychain)
+- [website](https://lab.waku.org/buddychain)
+- Demonstrates: [Add a brief description of what the Buddychain app demonstrates]
 
 # Continuous Integration
 

@@ -24,13 +24,10 @@ export enum WakuEvents {
 
 export class Waku {
   private node: undefined | LightNode;
-
   private emitter = new EventTarget();
-  private initialized: boolean = false;
-  private initializing: boolean = false;
+  private initialized = false;
+  private initializing = false;
   public pubsubTopic?: string;
-
-  constructor() {}
 
   public async init(): Promise<void> {
     if (this.initialized || this.initializing) {
@@ -108,7 +105,7 @@ export class Waku {
   }
 
   private ensureWakuInitialized() {
-    if (!waku.initialized) {
+    if (!this.initialized) {
       const message = "Waku is not initialized.";
       console.log(message);
       throw Error(message);

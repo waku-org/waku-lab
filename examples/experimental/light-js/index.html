@@ -71,18 +71,17 @@
     <script type="module">
       import {
         createLightNode,
-        waitForRemotePeer,
         createEncoder,
         createDecoder,
         utf8ToBytes,
         bytesToUtf8,
-      } from "https://unpkg.com/@waku/sdk@0.0.25/bundle/index.js";
+      } from "https://unpkg.com/@waku/sdk@0.0.29/bundle/index.js";
       import {
         enrTree,
         DnsNodeDiscovery,
         wakuDnsDiscovery,
-      } from "https://unpkg.com/@waku/discovery@0.0.2/bundle/index.js";
-      import { messageHash } from "https://unpkg.com/@waku/message-hash@0.1.13/bundle/index.js";
+      } from "https://unpkg.com/@waku/discovery@0.0.6/bundle/index.js";
+      import { messageHash } from "https://unpkg.com/@waku/message-hash@0.1.17/bundle/index.js";
 
       const peerIdDiv = document.getElementById("peer-id");
       const remotePeerIdDiv = document.getElementById("remote-peer-id");
@@ -127,8 +126,10 @@
 
       statusDiv.innerHTML = "<p>Creating Waku node.</p>";
       const node = await createLightNode({
-        contentTopics: [ContentTopic],
-        defaultBootstrap: true,
+        networkConfig: {
+          contentTopics: [ContentTopic],
+        },
+        defaultBootstrap: false,
       });
 
       statusDiv.innerHTML = "<p>Starting Waku node.</p>";
