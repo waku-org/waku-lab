@@ -6,8 +6,7 @@ import {
   LightNode,
   utils,
 } from "@waku/sdk";
-import { createFromPrivKey } from "@libp2p/peer-id-factory";
-import { unmarshalPrivateKey, generateKeyPairFromSeed } from "@libp2p/crypto/keys";
+import { generateKeyPairFromSeed } from "@libp2p/crypto/keys";
 import { fromString } from "uint8arrays";
 
 import { Type, Field } from "protobufjs";
@@ -50,8 +49,9 @@ const wakuNode = async (): Promise<LightNode> => {
     numPeersToUse: 2,
     defaultBootstrap: true,
     libp2p: {
-      peerId: await createFromPrivKey(await unmarshalPrivateKey(privateKey.bytes))
-    }
+      privateKey: privateKey
+    },
+    // filter: { enableLightPushFilterCheck: true }
   });
 };
 
@@ -121,8 +121,8 @@ export async function app(telemetryClient: TelemetryClient) {
           timestamp: new Date(),
         }, {autoRetry: true });
 
-        console.log("DEBUG: light push successes: ", result.successes.length, result.successes.map(p => p.toString()));
-        console.log("DEBUG: light push failures: ", result.failures.length, result.failures.map(f => ({ error: f.error, peerId: f?.peerId?.toString()})));
+        console.log("DEBUG: light push successes: ", result?.successes?.length, result?.successes.map(p => p.toString()));
+        console.log("DEBUG: light push failures: ", result?.failures?.length, result?.failures.map(f => ({ error: f.error, peerId: f?.peerId?.toString()})));
 
         const successEvents = result
           .successes
@@ -144,8 +144,7 @@ export async function app(telemetryClient: TelemetryClient) {
             };
           });
         
-        const failureEvents = result
-          .failures
+        const failureEvents = (result.failures || [])
           .map(async (fail) => {
             const extraData = await buildExtraData(node, fail?.peerId?.toString());
             return {
@@ -173,7 +172,7 @@ export async function app(telemetryClient: TelemetryClient) {
           telemetryClient.push<TelemetryPushFilter>(events);
         }
 
-        if (result.successes.length > 0) {
+        if (result?.successes?.length > 0) {
           // Update ui
           const messageElement = document.createElement("div");
           const messagesSent = document.getElementById("messagesSent");
@@ -243,7 +242,7 @@ export async function app(telemetryClient: TelemetryClient) {
       document.dispatchEvent(messageReceivedEvent);
     };
 
-    const result = await node.filter.subscribe(decoder, subscriptionCallback, {}, { enableLightPushFilterCheck: true });
+    const result = await node.filter.subscribe(decoder, subscriptionCallback);
 
     let errorEvent = [];
     if (result.error) {
@@ -264,7 +263,7 @@ export async function app(telemetryClient: TelemetryClient) {
       });
     }
     
-    const failEvents = result.results.failures.map(async (fail) => {
+    const failEvents = (result.results?.failures || []).map(async (fail) => {
       const extraData = await buildExtraData(node, fail?.peerId?.toString());
       const timestamp = Math.floor(new Date().getTime() / 1000);
       return {
@@ -283,7 +282,7 @@ export async function app(telemetryClient: TelemetryClient) {
       };
     });
 
-    const successEvents = result.results.successes.map(async (peerId) => {
+    const successEvents = (result.results?.successes || []).map(async (peerId) => {
       const extraData = await buildExtraData(node, peerId.toString());
       const timestamp = Math.floor(new Date().getTime() / 1000);
       return {
